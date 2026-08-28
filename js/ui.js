@@ -2,6 +2,7 @@ import { renderAll, renderStock, renderSQLResult, toggleCharts } from './render.
 import { postMovement } from './operations.js';
 import { executeSQL } from './data-layer.js';
 import { countRows } from './db.js';
+import { downloadSQLite, downloadStockCSV, downloadMovementsCSV, importSQLite } from './export.js';
 
 const SQL_PRESETS = [
   `-- Текущие остатки по всем позициям\nSELECT i.article_id, i.name, i.unit,\n       SUM(m.delta_qty) AS stock\nFROM items i\nLEFT JOIN inventory_movements m ON m.article_id = i.article_id\nGROUP BY i.article_id\nORDER BY stock DESC;`,
@@ -114,6 +115,10 @@ window.postMovement = handlePostMovement;
 window.runSQL = handleRunSQL;
 window.__setPreset = setPreset;
 window.toggleCharts = toggleCharts;
+window.downloadSQLite = downloadSQLite;
+window.downloadStockCSV = downloadStockCSV;
+window.downloadMovementsCSV = downloadMovementsCSV;
+window.importSQLite = importSQLite;
 
 export function exposeGlobals() {
   window.switchTab = switchTab;
@@ -122,4 +127,8 @@ export function exposeGlobals() {
   window.runSQL = handleRunSQL;
   window.__setPreset = setPreset;
   window.toggleCharts = toggleCharts;
+  window.downloadSQLite = downloadSQLite;
+  window.downloadStockCSV = downloadStockCSV;
+  window.downloadMovementsCSV = downloadMovementsCSV;
+  window.importSQLite = importSQLite;
 }

@@ -24,7 +24,7 @@ export function renderDashboard() {
         .slice(0, 5);
 
     document.getElementById('criticalList').innerHTML = criticalItems.length === 0
-        ? '<div style="padding:20px;text-align:center;color:var(--muted);"> Все позиции в норме</div>'
+        ? '<div style="padding:20px;text-align:center;color:var(--muted);">🟢 Все позиции в норме</div>'
         : criticalItems.map(x => `<div style="padding:12px;border-left:4px solid var(--${x.status});background:var(--panel-2);margin-bottom:8px;border-radius:4px;"><div style="font-weight:600;font-size:13px;">${x.name}</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">Остаток: <b>${x.stock}</b> · ROP: ${x.rop} · Дней до истощения: <b>${daysUntilStockout(x.art)}</b></div></div>`).join('');
 
     document.getElementById('recentMovements').innerHTML = recent.map(row => {
@@ -46,7 +46,7 @@ export function toggleCharts() {
     
     if (chartsVisible) {
         container.style.display = 'block';
-        btn.textContent = ' Скрыть графики';
+        btn.textContent = '📊 Скрыть графики';
         if (!chartsInitialized) {
             renderDashboardCharts();
             chartsInitialized = true;
