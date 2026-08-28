@@ -1,22 +1,8 @@
-/* ============================================================
-   МОДУЛЬ: ui.js
-   ОТВЕТСТВЕННОСТЬ: Управление интерфейсом — навигация между
-   вкладками, модальные окна, toast-уведомления, обработчики
-   событий пользовательского ввода
-   ФИЗИКА ПРОЦЕССА: UI-слой изолирует DOM-манипуляции от
-   бизнес-логики. Все обработчики событий регистрируются здесь,
-   чтобы при смене фреймворка (например, на React) не трогать
-   модули data-layer и analytics
-   ============================================================ */
-
-import { renderAll, renderStock, renderSQLResult } from './render.js';
+import { renderAll, renderStock, renderSQLResult, toggleCharts } from './render.js';
 import { postMovement } from './operations.js';
 import { executeSQL } from './data-layer.js';
 import { countRows } from './db.js';
 
-/* ============================================================
-   SQL-ПРЕДУСТАНОВКИ ДЛЯ КОНСОЛИ
-   ============================================================ */
 const SQL_PRESETS = [
   `-- Текущие остатки по всем позициям\nSELECT i.article_id, i.name, i.unit,\n       SUM(m.delta_qty) AS stock\nFROM items i\nLEFT JOIN inventory_movements m ON m.article_id = i.article_id\nGROUP BY i.article_id\nORDER BY stock DESC;`,
   `-- Критичные позиции (остаток ниже ROP)\nSELECT i.name, SUM(m.delta_qty) AS stock,\n       i.avg_daily_consumption * (COALESCE(s.lead_time_days,0) + i.safety_stock_days) AS rop\nFROM items i\nLEFT JOIN item_suppliers isp ON isp.article_id=i.article_id AND isp.is_primary=1\nLEFT JOIN suppliers s ON s.supplier_id=isp.supplier_id\nLEFT JOIN inventory_movements m ON m.article_id=i.article_id\nGROUP BY i.article_id\nHAVING stock <= rop\nORDER BY stock ASC;`,
@@ -26,15 +12,6 @@ const SQL_PRESETS = [
   `-- ABC-анализ: топ-20% позиций дают 80% расхода\nSELECT i.name, SUM(ABS(m.delta_qty)) AS total\nFROM inventory_movements m\nJOIN items i ON m.article_id=i.article_id\nWHERE m.delta_qty < 0\nGROUP BY i.article_id\nORDER BY total DESC;`
 ];
 
-/* ============================================================
-   НАВИГАЦИЯ МЕЖДУ ВКЛАДКАМИ
-   ============================================================ */
-
-/*
- * Переключение активной вкладки
- * Физика: скрываем все .tab, показываем нужную,
- * подсвечиваем соответствующий пункт меню
- */
 export function switchTab(tabId, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -42,16 +19,6 @@ export function switchTab(tabId, el) {
   if (el) el.classList.add('active');
 }
 
-/* ============================================================
-   TOAST-УВЕДОМЛЕНИЯ
-   ============================================================ */
-
-/*
- * Показать всплывающее уведомление
- * Физика: уведомление появляется в правом верхнем углу,
- * автоматически исчезает через 4 секунды. Цвет зависит от
- * уровня: ok=зелёный, warn=жёлтый, crit=красный
- */
 export function showToast(message, type = 'ok') {
   const toast = document.createElement('div');
   const colors = {
@@ -78,15 +45,6 @@ export function showToast(message, type = 'ok') {
   }, 4000);
 }
 
-/* ============================================================
-   ОБРАБОТЧИКИ СОБЫТИЙ
-   ============================================================ */
-
-/*
- * Обработка кнопки "Провести движение"
- * Физика: собираем данные из формы, вызываем postMovement,
- * показываем toast с результатом и алертом (если есть)
- */
 function handlePostMovement() {
   const type = document.getElementById('mvType').value;
   const art  = document.getElementById('mvItem').value;
@@ -105,9 +63,6 @@ function handlePostMovement() {
   }
 }
 
-/*
- * Обработка выполнения SQL-запроса
- */
 function handleRunSQL() {
   const sql = document.getElementById('sqlEditor').value.trim();
   if (!sql) {
@@ -118,20 +73,10 @@ function handleRunSQL() {
   renderSQLResult(result);
 }
 
-/*
- * Установка предустановленного SQL-запроса
- */
 export function setPreset(i) {
   document.getElementById('sqlEditor').value = SQL_PRESETS[i];
 }
 
-/* ============================================================
-   ИНИЦИАЛИЗАЦИЯ UI
-   ============================================================ */
-
-/*
- * Создание кнопок предустановок SQL
- */
 function initSQLPresets() {
   const container = document.getElementById('sqlPresets');
   const labels = ['Текущие остатки', 'Критичные позиции', 'Движения за 7 дней', 'Топ-5 по расходу', 'Поставщики', 'ABC-анализ'];
@@ -141,16 +86,9 @@ function initSQLPresets() {
   setPreset(0);
 }
 
-/*
- * Регистрация всех обработчиков событий
- * Физика: все onclick/onchange привязываются здесь,
- * а не в HTML — это separation of concerns
- */
 export function bindEventListeners() {
-  // Предустановка SQL по умолчанию
   initSQLPresets();
 
-  // Делегирование событий для кнопок предустановок SQL
   document.getElementById('sqlPresets').addEventListener('click', (e) => {
     if (e.target.classList.contains('preset-btn')) {
       const idx = Array.from(e.target.parentNode.children).indexOf(e.target);
@@ -158,7 +96,6 @@ export function bindEventListeners() {
     }
   });
 
-  // Обновление статуса БД
   try {
     const rows = countRows();
     document.getElementById('dbStatus').innerHTML = `● SQLite: OK · ${rows} записей`;
@@ -166,30 +103,23 @@ export function bindEventListeners() {
     document.getElementById('dbStatus').innerHTML = '● Ошибка БД';
   }
 
-  // Дата в шапке
   document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
 }
 
-/*
- * Экспорт глобальных функций для onclick в HTML
- * Физика: пока используем inline-обработчики в index.html,
- * поэтому пробрасываем функции в window. В будущем заменим
- * на addEventListener
- */
-// Присваиваем функции к window сразу при загрузке модуля
 window.switchTab = switchTab;
 window.renderStock = renderStock;
 window.postMovement = handlePostMovement;
 window.runSQL = handleRunSQL;
 window.__setPreset = setPreset;
+window.toggleCharts = toggleCharts;
 
 export function exposeGlobals() {
-  // Дублируем для надежности
   window.switchTab = switchTab;
   window.renderStock = renderStock;
   window.postMovement = handlePostMovement;
   window.runSQL = handleRunSQL;
   window.__setPreset = setPreset;
+  window.toggleCharts = toggleCharts;
 }
