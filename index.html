@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ремера · WMS + Учебная БД</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+</head>
+<body>
+
+<!-- БОКОВАЯ ПАНЕЛЬ -->
+<aside>
+  <div class="logo">
+    <h1> РЕМЕРА</h1>
+    <p>WMS · Учебная БД v1.0</p>
+  </div>
+  <nav>
+    <div class="nav-item active" onclick="switchTab('dashboard', this)">
+      <span class="nav-icon">📊</span> Дашборд
+    </div>
+    <div class="nav-item" onclick="switchTab('stock', this)">
+      <span class="nav-icon">📦</span> Склад
+    </div>
+    <div class="nav-item" onclick="switchTab('movements', this)">
+      <span class="nav-icon">🔄</span> Движения ТМЦ
+    </div>
+    <div class="nav-item" onclick="switchTab('sql', this)">
+      <span class="nav-icon">🗄️</span> SQL-консоль
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    SQLite in-browser<br>
+    <span id="dbStatus">● Инициализация...</span>
+  </div>
+</aside>
+
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<main>
+
+<!-- ============ ВКЛАДКА: ДАШБОРД ============ -->
+<div id="tab-dashboard" class="tab active">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Операционный дашборд</div>
+      <div class="page-subtitle">Сводка по складу сырья и готовой продукции · <span id="currentDate"></span></div>
+    </div>
+    <span class="badge">LIVE · обновление каждые 30 сек</span>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- ДВЕ ПАНЕЛИ: критичные позиции + последние движения -->
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🔴 Требуют внимания</div>
+        <span class="text-muted" style="font-size:12px;">Ниже точки заказа (ROP)</span>
+      </div>
+      <div id="criticalList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🕐 Последние движения</div>
+        <span class="text-muted" style="font-size:12px;">За последние 7 дней</span>
+      </div>
+      <div id="recentMovements"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ВКЛАДКА: СКЛАД ============ -->
+<div id="tab-stock" class="tab">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Остатки на складе</div>
+      <div class="page-subtitle">Сырьё, материалы и готовая продукция с расчётом точки заказа</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="flex">
+        <select id="categoryFilter" onchange="renderStock()">
+          <option value="all">Все категории</option>
+          <option value="raw_material">Сырьё</option>
+          <option value="consumable">Расходные материалы</option>
+          <option value="finished_good">Готовая продукция</option>
+        </select>
+        <select id="statusFilter" onchange="renderStock()">
+          <option value="all">Все статусы</option>
+          <option value="norm">🟢 Норма</option>
+          <option value="warn">🟡 Внимание</option>
+          <option value="crit">🔴 Критично</option>
+        </select>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Артикул</th>
+          <th>Наименование</th>
+          <th>Категория</th>
+          <th class="text-right">Остаток</th>
+          <th class="text-right">ROP</th>
+          <th class="text-right">Средний расход/день</th>
+          <th>Статус</th>
+          <th>Дней до истощения</th>
+        </tr>
+      </thead>
+      <tbody id="stockTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============ ВКЛАДКА: ДВИЖЕНИЯ ============ -->
+<div id="tab-movements" class="tab">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Движения ТМЦ</div>
+      <div class="page-subtitle">Приход от поставщиков · Расход в производство · Отгрузка клиентам</div>
+    </div>
+  </div>
+
+  <!-- ФОРМА НОВОГО ДВИЖЕНИЯ -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">➕ Провести новое движение</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Тип операции</label>
+        <select id="mvType">
+          <option value="receipt">📥 Приход от поставщика</option>
+          <option value="consumption">️ Расход в производство</option>
+          <option value="sale">🚚 Отгрузка клиенту</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Номенклатура</label>
+        <select id="mvItem"></select>
+      </div>
+      <div class="form-field">
+        <label>Количество</label>
+        <input type="number" id="mvQty" value="100" min="0.01" step="0.01">
+      </div>
+      <div class="form-field">
+        <label>&nbsp;</label>
+        <button onclick="postMovement()">Провести</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ИСТОРИЯ -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">📋 История операций</div>
+      <span class="text-muted" style="font-size:12px;">Последние 30 записей</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Тип</th>
+          <th>Номенклатура</th>
+          <th class="text-right">Количество</th>
+          <th>Комментарий</th>
+        </tr>
+      </thead>
+      <tbody id="movementsTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============ ВКЛАДКА: SQL-КОНСОЛЬ ============ -->
+<div id="tab-sql" class="tab">
+  <div class="page-header">
+    <div>
+      <div class="page-title">SQL-консоль</div>
+      <div class="page-subtitle">Прямые запросы к учебной SQLite-базе · Схема: suppliers, items, item_suppliers, inventory_movements</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">🧪 Предустановленные запросы</div>
+    </div>
+    <div class="sql-presets" id="sqlPresets"></div>
+    <textarea id="sqlEditor" class="sql-editor" spellcheck="false"></textarea>
+    <div class="flex mt-12">
+      <button onclick="runSQL()">▶ Выполнить запрос</button>
+      <button class="secondary" onclick="document.getElementById('sqlEditor').value=''">Очистить</button>
+      <span id="sqlResultInfo" class="text-muted" style="font-size:12px;"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">📊 Результат</div>
+    </div>
+    <div id="sqlResult" style="overflow-x:auto;"></div>
+  </div>
+</div>
+
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
