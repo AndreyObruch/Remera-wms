@@ -62,7 +62,7 @@ function renderDashboardCharts() {
     const db = getDB();
     const items = getItems();
 
-    // Data-first: расход сырья берём из реальных движений, а не из random()
+    // Data-first: расход сырья за 30 дней берём из реальных движений
     const consRes = db.exec(`
         SELECT movement_date, SUM(-delta_qty)
         FROM inventory_movements
@@ -78,17 +78,25 @@ function renderDashboardCharts() {
     const movementTypes = { receipt: 0, consumption: 0, sale: 0 };
     movements.forEach(m => { if (movementTypes[m[4]] !== undefined) movementTypes[m[4]]++; });
 
-    const stockByCategory = {};
+    // ФИЗИКА: кг, метры и штуки нельзя суммировать в одной шкале —
+    // метры ГП задавят всё. Показываем сопоставимую метрику:
+    // средний запас прочности в днях по категории (остаток / дневной расход)
+    const daysByCat = { raw_material: [], consumable: [], finished_good: [] };
     items.forEach(row => {
         const [art, name, cat] = row;
-        if (!stockByCategory[cat]) stockByCategory[cat] = 0;
-        stockByCategory[cat] += getCurrentStock(art);
+        const d = daysUntilStockout(art);
+        if (typeof d === 'number' && isFinite(d)) daysByCat[cat].push(d);
     });
+    const avgDays = arr => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
+
+    // Обновляем заголовок графика под новую метрику
+    const stockTitle = document.getElementById('chart-stock')?.closest('div')?.querySelector('h3');
+    if (stockTitle) stockTitle.textContent = '⏳ Запас прочности, дней (средний по категории)';
 
     initCharts(
         { labels: consumptionLabels, values: consumptionValues },
         { labels: ['Приход', 'Расход', 'Продажа'], values: [movementTypes.receipt, movementTypes.consumption, movementTypes.sale] },
-        { labels: ['Сырьё', 'Расходники', 'Готовая продукция'], values: [stockByCategory.raw_material || 0, stockByCategory.consumable || 0, stockByCategory.finished_good || 0] }
+        { labels: ['Сырьё', 'Расходники', 'Готовая продукция'], values: [avgDays(daysByCat.raw_material), avgDays(daysByCat.consumable), avgDays(daysByCat.finished_good)] }
     );
 }
 
@@ -108,7 +116,7 @@ export function renderStock() {
             return true;
         });
 
-    // Исправление: тёмный текст на светлом фоне чипа артикула (ранее было светлое на светлом)
+    // Тёмный текст на светлом фоне чипа артикула (ранее было светлое на светлом)
     document.getElementById('stockTable').innerHTML = filtered.map(x => `<tr><td><code style="background:#f1f5f9;color:#0f172a;padding:2px 6px;border-radius:3px;font-size:12px;">${x.art}</code></td><td><b>${x.name}</b></td><td>${categoryLabel[x.cat]}</td><td class="text-right"><b>${x.stock}</b> ${x.unit}</td><td class="text-right">${x.rop}</td><td class="text-right">${x.avg}</td><td><span class="status ${x.status}"><span class="status-dot"></span>${x.status === 'norm' ? 'Норма' : x.status === 'warn' ? 'Внимание' : 'Критично'}</span></td><td class="text-right" style="font-weight:600;color:${x.days < 7 ? 'var(--crit)' : x.days < 14 ? 'var(--warn)' : 'var(--text)'};">${x.days}</td></tr>`).join('');
 }
 
