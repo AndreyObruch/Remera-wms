@@ -4,53 +4,57 @@
    связывание модулей, запуск первого рендера, автоалерты
    ФИЗИКА ПРОЦЕССА: модуль координирует запуск всех подсистем
    в правильном порядке: сначала БД → потом UI → потом рендер
-   → потом сканирование склада на критический дефицит
+   → потом сканирование склада на критический дефицит через
+   те же функции, что использует дашборд (единый источник истины)
    ============================================================ */
 
 import { initDatabase, countRows } from './db.js';
 import { renderAll } from './render.js';
 import { bindEventListeners, exposeGlobals, switchTab } from './ui.js';
+import { getPurchaseRecommendations, countByStatus } from './analytics.js';
 
 /* ============================================================
    СКАНИРОВАНИЕ КРИТИЧЕСКИХ ПОЗИЦИЙ И ОТПРАВКА АЛЕРТА
-   ФИЗИКА: после загрузки склада проверяем, есть ли позиции,
-   остаток которых ниже точки заказа (ROP) с запасом менее 2 дней.
-   Если есть — стреляем в Telegram через serverless-шлюз.
+   ФИЗИКА: используем те же функции, что и дашборд (getPurchaseRecommendations),
+   чтобы цифры в алерте совпадали с цифрами в интерфейсе.
+   Шлём только статус 'crit' — риск остановки конвейера.
    Сетевой сбой шлюза НЕ роняет приложение (оборачиваем в try-catch).
    ============================================================ */
 async function checkCriticalAndAlert() {
   try {
-    if (!window.db) return;
-    
-    // SQL: ищем все позиции, где осталось меньше ROP (критический дефицит)
-    const result = window.db.exec(`
-      SELECT name, quantity, unit, rop 
-      FROM stock 
-      WHERE quantity < rop AND rop > 0
-      ORDER BY (quantity * 1.0 / rop) ASC
-      LIMIT 10
-    `);
-    
-    if (!result || result.length === 0) {
-      console.log('✅ Критического дефицита нет, алерт не нужен.');
+    // Считаем позиции по статусам (та же функция, что и для KPI-карточек)
+    const counts = countByStatus();
+
+    if (counts.crit === 0) {
+      console.log(`✅ Критического дефицита нет. Предупреждений: ${counts.warn}.`);
       return;
     }
-    
-    const rows = result[0].values;
-    
-    // Собираем текст алерта в читаемом для директора виде
-    const lines = rows.map(r => `• ${r[0]}: ${r[1]} ${r[2]} из ${r[3]}`);
-    const text = `Найдено ${rows.length} позиций ниже точки заказа:\n\n${lines.join('\n')}`;
-    
-    // Асинхронный выстрел в шлюз, не блокируем работу UI
+
+    // Получаем рекомендации для закупщика (уже отсортированы: критичные сверху)
+    const recommendations = getPurchaseRecommendations();
+    const critical = recommendations.filter(r => r.status === 'crit');
+
+    if (critical.length === 0) {
+      console.log('⚠️ Есть предупреждения, но критических дефицитов нет.');
+      return;
+    }
+
+    // Формируем читаемый текст алерта с физической информацией:
+    // остаток, единицы измерения, дней до истощения, точка заказа, объём закупки
+    const lines = critical.map(r =>
+      `• ${r.name}\n  Остаток: ${r.stock} ${r.unit} (хватит на ${r.daysLeft} дн.)\n  ROP: ${r.rop}, Заказать: ${r.recommended} ${r.unit}`
+    );
+    const text = `🚨 КРИТИЧЕСКИЙ ДЕФИЦИТ (${critical.length} поз.)\n\n${lines.join('\n\n')}`;
+
+    // Асинхронный выстрел в serverless-шлюз, не блокируем работу UI
     const response = await fetch('/api/telegram', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text })
     });
-    
+
     if (response.ok) {
-      console.log('📲 Алерт ушёл в Telegram.');
+      console.log(`📲 Алерт ушёл в Telegram: ${critical.length} критических позиций.`);
     } else {
       console.warn('⚠️ Шлюз Telegram недоступен, алерт не ушёл (работа WMS не нарушена).');
     }
