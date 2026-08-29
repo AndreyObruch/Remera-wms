@@ -3,13 +3,14 @@ import { postMovement } from './operations.js';
 import { executeSQL } from './data-layer.js';
 import { countRows } from './db.js';
 import { downloadSQLite, downloadStockCSV, downloadMovementsCSV, importSQLite } from './export.js';
+import { download1CTemplate, import1C } from './one-c.js';
 
 const SQL_PRESETS = [
   `-- Текущие остатки по всем позициям\nSELECT i.article_id, i.name, i.unit,\n       SUM(m.delta_qty) AS stock\nFROM items i\nLEFT JOIN inventory_movements m ON m.article_id = i.article_id\nGROUP BY i.article_id\nORDER BY stock DESC;`,
   `-- Критичные позиции (остаток ниже ROP)\nSELECT i.name, SUM(m.delta_qty) AS stock,\n       i.avg_daily_consumption * (COALESCE(s.lead_time_days,0) + i.safety_stock_days) AS rop\nFROM items i\nLEFT JOIN item_suppliers isp ON isp.article_id=i.article_id AND isp.is_primary=1\nLEFT JOIN suppliers s ON s.supplier_id=isp.supplier_id\nLEFT JOIN inventory_movements m ON m.article_id=i.article_id\nGROUP BY i.article_id\nHAVING stock <= rop\nORDER BY stock ASC;`,
   `-- Движения за последние 7 дней\nSELECT m.movement_date, i.name, m.delta_qty, m.movement_type\nFROM inventory_movements m\nJOIN items i ON m.article_id=i.article_id\nWHERE m.movement_date >= date('now','-7 days')\nORDER BY m.movement_id DESC LIMIT 50;`,
   `-- Топ-5 позиций по расходу за 30 дней\nSELECT i.name, SUM(ABS(m.delta_qty)) AS total_consumed\nFROM inventory_movements m\nJOIN items i ON m.article_id=i.article_id\nWHERE m.delta_qty < 0 AND m.movement_date >= date('now','-30 days')\nGROUP BY i.article_id\nORDER BY total_consumed DESC LIMIT 5;`,
-  `-- Поставщики и их условия\nSELECT s.name, s.lead_time_days, s.min_batch_qty, s.contract_type,\n       COUNT(isp.article_id) AS sku_count\nFROM suppliers s\nLEFT JOIN item_suppliers isp ON isp.supplier_id=s.supplier_id\nGROUP BY s.supplier_id;`,
+  `-- Поставщики и их условия\nSELECT s.name, s.lead_time_days, s.min_batch_qty, s.contract_type,\n       COUNT(isp.article_id) AS sku_count\nFROM suppliers s\nLEFT JOIN item_suppliers isp ON isp.supplier_id=isp.supplier_id\nGROUP BY s.supplier_id;`,
   `-- ABC-анализ: топ-20% позиций дают 80% расхода\nSELECT i.name, SUM(ABS(m.delta_qty)) AS total\nFROM inventory_movements m\nJOIN items i ON m.article_id=i.article_id\nWHERE m.delta_qty < 0\nGROUP BY i.article_id\nORDER BY total DESC;`
 ];
 
@@ -119,6 +120,8 @@ window.downloadSQLite = downloadSQLite;
 window.downloadStockCSV = downloadStockCSV;
 window.downloadMovementsCSV = downloadMovementsCSV;
 window.importSQLite = importSQLite;
+window.download1CTemplate = download1CTemplate;
+window.import1C = import1C;
 
 export function exposeGlobals() {
   window.switchTab = switchTab;
@@ -131,4 +134,6 @@ export function exposeGlobals() {
   window.downloadStockCSV = downloadStockCSV;
   window.downloadMovementsCSV = downloadMovementsCSV;
   window.importSQLite = importSQLite;
+  window.download1CTemplate = download1CTemplate;
+  window.import1C = import1C;
 }
