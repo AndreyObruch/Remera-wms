@@ -81,7 +81,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Telegram not configured' });
   }
 
-  // === ВЕТОЧКА 1: ВХОДЯЩЕЕ СООБЩЕНИЕ ОТ РАБОТНИКА (webhook) ===
+  // === ВЕТКА 1: ВХОДЯЩЕЕ СООБЩЕНИЕ ОТ РАБОТНИКА (webhook) ===
   if (req.body.message && req.body.message.text) {
     // Защита: проверяем секрет webhook (Telegram шлёт его в заголовке)
     const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -110,7 +110,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  // === ВЕТОЧКА 2: ОТПРАВКА АЛЕРТА ОТ WMS (старая логика) ===
+  // === ВЕТКА 2: ОТПРАВКА АЛЕРТА ОТ WMS (старая логика) ===
   const { message } = req.body;
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'No message provided' });
