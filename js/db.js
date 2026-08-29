@@ -1,9 +1,12 @@
 /* ============================================================
    МОДУЛЬ: db.js
-   ОТВЕТСТВЕННОСТЬ: Инициализация SQLite, схема БД, 
-   загрузка справочников, генерация исторических данных
+   ОТВЕТСТВЕННОСТЬ: Инициализация SQLite, схема БД,
+   загрузка справочников (реальная номенклатура канатного
+   производства), генерация исторических данных
    ФИЗИКА ПРОЦЕССА: БД живёт в памяти браузера через WASM,
-   при перезагрузке страницы пересоздаётся для демо-целей
+   при перезагрузке страницы пересоздаётся для демо-целей.
+   Отрицательный остаток невозможен: расход ограничен текущим
+   балансом (нельзя отгрузить то, чего физически нет на складе)
    ============================================================ */
 
 let db = null;
@@ -18,11 +21,11 @@ export async function initDatabase() {
       locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${f}`
     });
     db = new SQL.Database();
-    
+
     createSchema();
     loadReferenceData();
     generateHistoricalData();
-    
+
     return db;
   } catch (e) {
     console.error('Ошибка инициализации БД:', e);
@@ -75,103 +78,122 @@ function createSchema() {
 
 /*
  * Загрузка справочных данных
- * Физика: поставщики, номенклатура, связи ТМЦ-поставщик
+ * Физика: номенклатура соответствует реальному канатному
+   производству (ГОСТ 30055-93, тросовая свивка 3 пряди)
  */
 function loadReferenceData() {
   db.run(`
     INSERT INTO suppliers VALUES
-      (1, 'ООО Химпром',        7,  500, 'fixed_schedule'),
-      (2, 'ООО Полимер',        10, 300, 'on_demand'),
-      (3, 'ООО Тара',           3,  500, 'fixed_schedule'),
-      (4, 'ООО Синтетика СПб',  5,  200, 'on_demand');
+      (1, 'КурскХимВолокно',      7,  500,  'fixed_schedule'),
+      (2, 'ТверьПолиэфир',        5,  300,  'fixed_schedule'),
+      (3, 'ПолимерТрейд (ПП/джут)', 10, 400, 'on_demand'),
+      (4, 'ТараПлюс (упаковка)',  3,  200,  'on_demand'),
+      (5, 'ЛейблПринт',           4,  5000, 'on_demand');
 
     INSERT INTO items VALUES
-      ('POLY-1000', 'Полиэстер 1000D',         'raw_material', 'кг', 120, 3),
-      ('POLY-500',  'Полиамид 500D',           'raw_material', 'кг', 60,  4),
-      ('PPRO-800',  'Полипропилен 800D',       'raw_material', 'кг', 90,  3),
-      ('BOB-PL',    'Бобины пластиковые',      'consumable',   'шт', 180, 2),
-      ('PKG-STR',   'Стрейч-плёнка',           'consumable',   'рул', 15, 5),
-      ('LBL-PR',    'Этикетки печатные',       'consumable',   'шт', 400, 3),
-      ('ROPE-10',   'Канат полипропиленовый 10 мм', 'finished_good', 'м', 250, 5),
-      ('ROPE-16',   'Канат полиамидный 16 мм',      'finished_good', 'м', 120, 5),
-      ('CORD-6',    'Шнур универсальный 6 мм',      'finished_good', 'м', 380, 4),
-      ('SLING-2T',  'Строп петлевой 2т',            'finished_good', 'шт', 40,  7);
+      ('PA-935',   'Нить полиамидная 935 текс',        'raw_material',  'кг', 80,  3),
+      ('PA-187',   'Нить полиамидная 187 текс',        'raw_material',  'кг', 40,  3),
+      ('PES-1000', 'Нить полиэфирная 1000 текс',       'raw_material',  'кг', 60,  3),
+      ('PP-1100',  'Нить полипропиленовая 1100 текс',  'raw_material',  'кг', 90,  3),
+      ('PP-500',   'Нить полипропиленовая 500 текс',   'raw_material',  'кг', 50,  4),
+      ('JUTE-F',   'Джут волокно (Бангладеш)',         'raw_material',  'кг', 20,  5),
+      ('BOB-K',    'Бобины картонные',                 'consumable',    'шт', 150, 2),
+      ('LBL-PR',   'Этикетки печатные',                'consumable',    'шт', 400, 3),
+      ('PKG-STR',  'Стрейч-плёнка',                    'consumable',    'рул', 12, 5),
+      ('PKG-BAG',  'Пакеты ПЭ для упаковки',           'consumable',    'шт', 250, 3),
+      ('PAT-10',   'Канат полиамидный ПАТ-10 (d=10мм)', 'finished_good', 'м', 220, 5),
+      ('PAT-16',   'Канат полиамидный ПАТ-16 (d=16мм)', 'finished_good', 'м', 110, 5),
+      ('PP-8',     'Канат полипропиленовый ПП-8 (d=8мм)', 'finished_good', 'м', 300, 4),
+      ('PP-12',    'Канат полипропиленовый ПП-12 (d=12мм)', 'finished_good', 'м', 260, 4),
+      ('PP-16',    'Канат полипропиленовый ПП-16 (d=16мм)', 'finished_good', 'м', 150, 5),
+      ('CORD-6',   'Шнур универсальный 6 мм',          'finished_good', 'м', 380, 4),
+      ('BR-4',     'Шнур плетёный ПА 4 мм (8-прядный)', 'finished_good', 'м', 200, 4),
+      ('BR-PP6',   'Шнур плетёный ПП 6 мм',            'finished_good', 'м', 240, 4),
+      ('TW-J2',    'Шпагат джутовый 2-ниточный',       'finished_good', 'кг', 60, 5),
+      ('TW-PP',    'Шпагат полипропиленовый',          'finished_good', 'кг', 80, 4);
 
     INSERT INTO item_suppliers VALUES
-      ('POLY-1000', 1, 1),
-      ('POLY-500',  2, 1),
-      ('PPRO-800',  4, 1),
-      ('BOB-PL',    3, 1),
-      ('PKG-STR',   3, 1),
-      ('LBL-PR',    3, 1);
+      ('PA-935', 1, 1),
+      ('PA-187', 1, 1),
+      ('PES-1000', 2, 1),
+      ('PP-1100', 3, 1),
+      ('PP-500', 3, 1),
+      ('JUTE-F', 3, 1),
+      ('BOB-K', 4, 1),
+      ('PKG-STR', 4, 1),
+      ('PKG-BAG', 4, 1),
+      ('LBL-PR', 5, 1);
   `);
 }
 
 /*
  * Генерация 60 дней исторических данных
- * Физика: реалистичная история с учётом выходных, сезонности,
- * договорных условий поставок (мин. партии, lead_time)
+ * Физика: цех плетёт в будни, выходные — простой.
+ * Защита от отрицательного остатка: расход и отгрузка ограничены
+ * текущим балансом (нельзя списать больше, чем лежит на складе).
+ * Готовая продукция пополняется ежедневной выработкой станков.
  */
 function generateHistoricalData() {
   const today = new Date();
-  const rawMaterials = db.exec(`SELECT article_id, avg_daily_consumption FROM items WHERE category='raw_material'`)[0].values;
-  const consumables  = db.exec(`SELECT article_id, avg_daily_consumption FROM items WHERE category='consumable'`)[0].values;
-  const finished     = db.exec(`SELECT article_id, avg_daily_consumption FROM items WHERE category='finished_good'`)[0].values;
+  const rows = db.exec(`SELECT article_id, category, avg_daily_consumption FROM items`)[0].values;
 
-  const insertMovements = [];
+  // Стартовые остатки: фиксация начального баланса склада
+  const balance = {};
+  rows.forEach(([art, cat]) => {
+    balance[art] = Math.round(cat === 'finished_good' ? 3000 + Math.random() * 4000 : 1500 + Math.random() * 1500);
+    db.run(`INSERT INTO inventory_movements (article_id, movement_date, delta_qty, movement_type, comment)
+            VALUES ('${art}', date('now','-60 days'), ${balance[art]}, 'adjustment', 'Стартовый остаток')`);
+  });
+
+  // Каждая проводка сразу меняет баланс — так остаток всегда физичен
+  const push = (art, dateStr, qty, type, comment) => {
+    db.run(`INSERT INTO inventory_movements (article_id, movement_date, delta_qty, movement_type, comment)
+            VALUES ('${art}','${dateStr}',${qty},'${type}','${comment}')`);
+    balance[art] += qty;
+  };
 
   for (let d = 60; d >= 0; d--) {
     const date = new Date(today);
     date.setDate(date.getDate() - d);
     const dateStr = date.toISOString().slice(0, 10);
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+    if (isWeekend) continue; // цех не работает в выходные
 
-    if (!isWeekend) {
-      rawMaterials.forEach(([art, avg]) => {
-        const noise = 0.8 + Math.random() * 0.4;
-        const qty = Math.round(avg * noise * 10) / 10;
-        insertMovements.push(`('${art}','${dateStr}',${-qty},'consumption','Расход в производство')`);
-      });
-      
-      consumables.forEach(([art, avg]) => {
-        const noise = 0.7 + Math.random() * 0.6;
-        const qty = Math.round(avg * noise);
-        insertMovements.push(`('${art}','${dateStr}',${-qty},'consumption','Расход в производство')`);
-      });
-    }
+    rows.forEach(([art, cat, avg]) => {
+      if (cat === 'raw_material' || cat === 'consumable') {
+        // Расход сырья в производство, ограничен остатком
+        const want = Math.round(avg * (0.8 + Math.random() * 0.4) * 10) / 10;
+        const qty = Math.min(want, balance[art]);
+        if (qty > 0) push(art, dateStr, -qty, 'consumption', 'Расход в производство');
+      }
 
-    if (!isWeekend && Math.random() > 0.3) {
-      finished.forEach(([art, avg]) => {
-        if (Math.random() > 0.5) {
-          const qty = Math.round(avg * (0.3 + Math.random() * 0.7));
-          insertMovements.push(`('${art}','${dateStr}',${-qty},'sale','Отгрузка клиенту')`);
+      if (cat === 'finished_good') {
+        // Выработка станков пополняет склад готовой продукции
+        const prod = Math.round(avg * (0.9 + Math.random() * 0.3));
+        push(art, dateStr, prod, 'receipt', 'Производство (плетение)');
+
+        // Отгрузка клиенту — не больше физического остатка
+        if (Math.random() > 0.3) {
+          const wantSale = Math.round(avg * (0.5 + Math.random() * 0.7));
+          const sale = Math.min(wantSale, balance[art]);
+          if (sale > 0) push(art, dateStr, -sale, 'sale', 'Отгрузка клиенту');
         }
-      });
-    }
+      }
+    });
 
+    // Поставки сырья раз в неделю, минимальной партией по договору
     if (d % 7 === 0) {
-      rawMaterials.forEach(([art]) => {
-        const sup = db.exec(`SELECT s.min_batch_qty FROM item_suppliers i JOIN suppliers s ON i.supplier_id=s.supplier_id WHERE i.article_id='${art}' AND i.is_primary=1`)[0];
-        if (sup) {
-          const minBatch = sup.values[0][0];
-          const qty = minBatch * (1 + Math.floor(Math.random() * 3));
-          insertMovements.push(`('${art}','${dateStr}',${qty},'receipt','Поступление от поставщика')`);
-        }
+      const sup = db.exec(`
+        SELECT i.article_id, s.min_batch_qty FROM items i
+        JOIN item_suppliers isp ON isp.article_id = i.article_id AND isp.is_primary = 1
+        JOIN suppliers s ON s.supplier_id = isp.supplier_id
+      `)[0].values;
+      sup.forEach(([art, minBatch]) => {
+        const qty = minBatch * (1 + Math.floor(Math.random() * 2));
+        push(art, dateStr, qty, 'receipt', 'Поступление от поставщика');
       });
     }
   }
-
-  for (let i = 0; i < insertMovements.length; i += 100) {
-    const batch = insertMovements.slice(i, i + 100).join(',');
-    db.run(`INSERT INTO inventory_movements (article_id, movement_date, delta_qty, movement_type, comment) VALUES ${batch}`);
-  }
-
-  const allItems = db.exec(`SELECT article_id, category FROM items`)[0].values;
-  allItems.forEach(([art, cat]) => {
-    const initial = cat === 'finished_good' ? 3000 + Math.random() * 4000 : 1500 + Math.random() * 1500;
-    db.run(`INSERT INTO inventory_movements (article_id, movement_date, delta_qty, movement_type, comment)
-            VALUES ('${art}', date('now', '-60 days'), ${Math.round(initial)}, 'adjustment', 'Стартовый остаток')`);
-  });
 }
 
 /*
