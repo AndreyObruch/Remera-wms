@@ -130,8 +130,8 @@ function loadReferenceData() {
  * Генерация 60 дней исторических данных
  * Физика: цех плетёт в будни, выходные — простой.
  * Защита от отрицательного остатка: расход и отгрузка ограничены
- * текущим балансом (нельзя списать больше, чем лежит на складе).
- * Готовая продукция пополняется ежедневной выработкой станков.
+ * текущим балансом. Поставка покрывает минимум неделю потребления,
+ * иначе склад хронически голодает (ступенчатый расход).
  */
 function generateHistoricalData() {
   const today = new Date();
@@ -181,15 +181,20 @@ function generateHistoricalData() {
       }
     });
 
-    // Поставки сырья раз в неделю, минимальной партией по договору
+    // Поставки сырья раз в неделю.
+    // ФИЗИКА: партия = max(мин. партия по договору, потребность недели),
+    // иначе позиция хронически стоит в нуле и выпадает из расхода
     if (d % 7 === 0) {
       const sup = db.exec(`
-        SELECT i.article_id, s.min_batch_qty FROM items i
+        SELECT i.article_id, s.min_batch_qty, i.avg_daily_consumption
+        FROM items i
         JOIN item_suppliers isp ON isp.article_id = i.article_id AND isp.is_primary = 1
         JOIN suppliers s ON s.supplier_id = isp.supplier_id
       `)[0].values;
-      sup.forEach(([art, minBatch]) => {
-        const qty = minBatch * (1 + Math.floor(Math.random() * 2));
+      sup.forEach(([art, minBatch, avg]) => {
+        const weekNeed = avg * 7;
+        const base = Math.max(minBatch, weekNeed);
+        const qty = Math.round(base * (1 + Math.random() * 0.5));
         push(art, dateStr, qty, 'receipt', 'Поступление от поставщика');
       });
     }
