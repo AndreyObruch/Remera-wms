@@ -68,18 +68,22 @@
            МОБИЛЬНАЯ АДАПТАЦИЯ (<= 768px)
            ФИЗИКА: директор открывает с телефона — сетки складываются
            в одну колонку, таблицы скроллятся внутри панели,
-           навигация перестраивается 2x2
+           навигация 2x2. min-width:0 лечит распирание grid/flex.
            ============================================================ */
         @media (max-width: 768px) {
+            html, body { overflow-x: hidden; max-width: 100%; }
             body { padding: 10px; }
             header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 16px; }
             nav { flex-wrap: wrap; }
-            .nav-item { flex: 1 1 45%; }
+            .nav-item { flex: 1 1 45%; min-width: 0; }
             .two-col { grid-template-columns: 1fr !important; }
             .charts-grid { grid-template-columns: 1fr !important; }
             .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .kpi { min-width: 0; }
             .kpi-value { font-size: 22px; }
-            .panel { padding: 14px; overflow-x: auto; }
+            .kpi-label { word-break: break-word; }
+            main, section { min-width: 0; }
+            .panel { padding: 14px; overflow-x: auto; min-width: 0; }
             table { font-size: 12px; }
             th, td { padding: 6px 8px; white-space: nowrap; }
             .toast { left: 10px; right: 10px; max-width: none; }
