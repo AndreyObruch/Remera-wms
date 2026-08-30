@@ -1,7 +1,7 @@
 // api/max.js — Боевой шлюз MAX (двунаправленный)
 // Авторизация: заголовок Authorization. TLS-проверка отключена (Минцифры-CA).
-// Архитектура: 200 отдаём после отправки сообщений, с таймаутом 5 сек на fetch.
-// Сырой update логируем (самодиагностика формата MAX).
+// Отправка с fallback: сначала chat_id, при 400 — user_id (MAX для диалогов
+// может требовать user_id; код сам определит рабочий вариант и залоггирует).
 
 const BASE = 'https://platform-api2.max.ru';
 
@@ -52,7 +52,6 @@ export default async function handler(req, res) {
   const token = process.env.MAX_BOT_TOKEN;
   if (!token) return res.status(500).json({ error: 'MAX_BOT_TOKEN not configured' });
 
-  // MAX шлёт разные типы update — нам нужны только message_created
   const update = req.body || {};
   console.log('MAX RAW UPDATE:', JSON.stringify(update));
 
@@ -66,31 +65,48 @@ export default async function handler(req, res) {
   const sender = msg.sender || {};
   const username = sender.username || sender.first_name || sender.name || 'без_ника';
 
-  // Защитный выбор chat_id: пробуем несколько кандидатов из разных форматов
-  const chatIdWorker = msg.recipient?.chat_id ?? msg.chat_id ?? update.chat_id ?? sender.chat_id;
+  const chatIdWorker = msg.recipient?.chat_id;
+  const userIdWorker = sender.user_id;
 
-  if (!chatIdWorker || !text) {
+  if ((!chatIdWorker && !userIdWorker) || !text) {
     return res.status(200).json({ ok: true });
   }
 
   const reply = processCommand(text, username);
 
-  // Отвечаем работнику (всегда)
-  await sendMax(token, chatIdWorker, reply.text).catch(e =>
-    console.error('Worker reply failed:', e.message));
+  // Отвечаем работнику (всегда), с fallback chat_id → user_id
+  await sendWithFallback(token, chatIdWorker, userIdWorker, reply.text)
+    .catch(e => console.error('Worker reply failed:', e.message));
 
-  // Отчёт директору (только если chat_id настроен в Env)
+  // Отчёт директору (только если настроен MAX_CHAT_ID в Env)
   if (reply.forwardToDirector) {
-    const chatIdDirector = process.env.MAX_CHAT_ID;
-    if (chatIdDirector) {
-      await sendMax(token, chatIdDirector, reply.forwardToDirector).catch(e =>
-        console.error('Director report failed:', e.message));
+    const directorId = process.env.MAX_CHAT_ID;
+    if (directorId) {
+      await sendWithFallback(token, directorId, directorId, reply.forwardToDirector)
+        .catch(e => console.error('Director report failed:', e.message));
     } else {
-      console.error(`MAX_CHAT_ID not set. Sender chat_id: ${chatIdWorker}`);
+      console.error(`MAX_CHAT_ID not set. Sender: chat_id=${chatIdWorker}, user_id=${userIdWorker}`);
     }
   }
 
   res.status(200).json({ ok: true });
+}
+
+// Пробует отправить по chat_id; при ошибке — по user_id.
+// Успешный вариант логирует, чтобы зафиксировать формат MAX.
+async function sendWithFallback(token, chatId, userId, text) {
+  if (chatId) {
+    try {
+      const r = await sendMax(token, { chat_id: chatId }, text);
+      console.log(`MAX SEND OK via chat_id=${chatId}`);
+      return r;
+    } catch (e) {
+      console.error(`chat_id=${chatId} failed: ${e.message} — trying user_id`);
+    }
+  }
+  const r = await sendMax(token, { user_id: userId }, text);
+  console.log(`MAX SEND OK via user_id=${userId}`);
+  return r;
 }
 
 function processCommand(text, username) {
@@ -171,7 +187,7 @@ function processCommand(text, username) {
   };
 }
 
-async function sendMax(token, chatId, text) {
+async function sendMax(token, recipient, text) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
   try {
@@ -181,7 +197,7 @@ async function sendMax(token, chatId, text) {
         'Authorization': token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ chat_id: chatId, text }),
+      body: JSON.stringify({ ...recipient, text }),
       signal: controller.signal
     });
     if (!response.ok) {
