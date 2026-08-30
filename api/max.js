@@ -1,7 +1,7 @@
 // api/max.js — Боевой шлюз MAX (двунаправленный)
 // Авторизация: заголовок Authorization. TLS-проверка отключена (Минцифры-CA).
-// Архитектура: 200 Telegram-подобно, отправка сообщений ДО возврата ответа,
-// с таймаутом 5 сек на каждый fetch (в сумме ~5 сек < 30-сек лимита MAX).
+// Архитектура: 200 отдаём после отправки сообщений, с таймаутом 5 сек на fetch.
+// Сырой update логируем (самодиагностика формата MAX).
 
 const BASE = 'https://platform-api2.max.ru';
 
@@ -54,6 +54,8 @@ export default async function handler(req, res) {
 
   // MAX шлёт разные типы update — нам нужны только message_created
   const update = req.body || {};
+  console.log('MAX RAW UPDATE:', JSON.stringify(update));
+
   if (update.update_type !== 'message_created' || !update.message) {
     return res.status(200).json({ ok: true });
   }
@@ -62,8 +64,10 @@ export default async function handler(req, res) {
   const body = msg.body || {};
   const text = (body.text || '').trim();
   const sender = msg.sender || {};
-  const username = sender.username || sender.name || 'без_ника';
-  const chatIdWorker = msg.recipient?.chat_id;
+  const username = sender.username || sender.first_name || sender.name || 'без_ника';
+
+  // Защитный выбор chat_id: пробуем несколько кандидатов из разных форматов
+  const chatIdWorker = msg.recipient?.chat_id ?? msg.chat_id ?? update.chat_id ?? sender.chat_id;
 
   if (!chatIdWorker || !text) {
     return res.status(200).json({ ok: true });
