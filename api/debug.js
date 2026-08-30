@@ -1,19 +1,16 @@
 // api/debug.js — ВРЕМЕННАЯ самодиагностика (удалим после наладки).
-import { put, get } from '@vercel/blob';
+import { storageSelfTest } from '../lib/store.js';
 
 export default async function handler(req, res) {
   const out = {
-    build: 'debug-1',
-    hasBlobToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+    build: 'debug-2',
+    hasPrivToken: Boolean(process.env.PRIV_READ_WRITE_TOKEN),
     hasWorkerPin: Boolean(process.env.WORKER_PIN),
     hasDirectorPin: Boolean(process.env.DIRECTOR_PIN),
     blob: null,
   };
   try {
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    await put('wms2/debug.txt', 'ok', { access: 'private', addRandomSuffix: false, token });
-    const b = await get('wms2/debug.txt', { token });
-    out.blob = b ? 'ok' : 'get returned null';
+    out.blob = await storageSelfTest();
   } catch (e) {
     out.blob = 'ERROR: ' + (e.message || String(e));
   }
