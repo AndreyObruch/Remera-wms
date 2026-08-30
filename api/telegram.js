@@ -1,52 +1,30 @@
 // api/telegram.js
-// Двунаправленный шлюз Telegram: отправка алертов + приём команд от работников
-// Один endpoint, роутинг по структуре тела POST-запроса:
-//   - {message: "..."}           → отправка алерта от WMS
-//   - {message: {text: "/..."}}  → входящая команда от работника (webhook от Telegram)
+// Двунаправленный шлюз Telegram: отправка алертов + приём команд от работников.
+// Архитектура: webhook отвечает Telegram СРАЗУ (чтобы не было retry через 15 мин),
+// а отправка сообщений работнику/директору идёт в фоне параллельно.
 
-// ============================================================
-// СПРАВОЧНИК НОМЕНКЛАТУРЫ (коды, которые бот принимает)
-// Должен совпадать с items.article_id в db.js
-// Обновляется при расширении номенклатуры
-// ============================================================
 const NOMENCLATURE = {
-  // Сырьё
-  'PA-F': 'Нить полиамидная (капрон)',
-  'PES-F': 'Нить полиэфирная',
-  'PP-F': 'Нить полипропиленовая',
-  'PE-F': 'Нить полиэтиленовая',
-  'HMPE-F': 'Волокно HMPE (Dyneema)',
-  'ARAM-F': 'Нить арамидная (Русар)',
-  'SIL-F': 'Волокно кремнеземное',
-  'BAS-R': 'Ровинг базальтовый',
+  'PA-F': 'Нить полиамидная (капрон)', 'PES-F': 'Нить полиэфирная',
+  'PP-F': 'Нить полипропиленовая', 'PE-F': 'Нить полиэтиленовая',
+  'HMPE-F': 'Волокно HMPE (Dyneema)', 'ARAM-F': 'Нить арамидная (Русар)',
+  'SIL-F': 'Волокно кремнеземное', 'BAS-R': 'Ровинг базальтовый',
   'GLS-R': 'Ровинг стеклянный',
-  // Расходники
   'BOB-K': 'Бобины картонные', 'BOB-P': 'Бобины пластиковые',
   'PKG-STR': 'Стрейч-плёнка', 'PKG-BAG': 'Пакеты ПЭ',
-  // ГП — Промальп
-  'STAT-10': 'Верёвка статическая 10мм',
-  'STAT-11': 'Верёвка статическая 11мм',
+  'STAT-10': 'Верёвка статическая 10мм', 'STAT-11': 'Верёвка статическая 11мм',
   'DYN-105': 'Верёвка динамическая 10.5мм',
   'REP-6': 'Репшнур 6мм', 'REP-7': 'Репшнур 7мм (арамид)',
-  // ГП — Арамид/HMPE
   'ARAM-6': 'Шнур арамидный 6мм',
   'HMPE-6': 'Канат HMPE 6мм', 'HMPE-10': 'Канат HMPE 10мм',
-  // ГП — Полиамид
   'PA-8': 'Канат ПА 8мм', 'PA-10': 'Канат ПА 10мм', 'PA-12': 'Канат ПА 12мм',
-  // ГП — Полипропилен
   'PP-10': 'Канат ПП 10мм', 'PP-16': 'Канат ПП 16мм', 'PP-24': 'Канат ПП 24мм',
-  // ГП — Огнеупорные
   'SIL-8': 'Шнур кремнеземный 8мм', 'SIL-12': 'Шнур кремнеземный 12мм',
   'BAS-8': 'Шнур базальтовый 8мм', 'BAS-10': 'Шнур базальтовый 10мм',
-  // ГП — Яхты/рыболовные
   'YAHT-8': 'Канат яхтенный 8мм', 'FISH-25': 'Шнур рыболовный 2.5мм',
-  // ГП — Протяжка/ограждение
   'CABLE-6': 'Канат для протяжки 6мм', 'FENCE-8': 'Канат ограждающий 8мм',
-  // ГП — Упаковка/баннер
   'BAG-4': 'Шнур для пакетов 4мм', 'BANNER-4': 'Шнур баннерный 4мм',
 };
 
-// Команды и их метки в отчёте директору
 const COMMANDS = {
   'расход':       { label: 'Расход в производство',  type: 'consumption' },
   'отгрузка':     { label: 'Отгрузка клиенту',        type: 'sale' },
@@ -54,7 +32,6 @@ const COMMANDS = {
   'производство': { label: 'Производство (плетение)', type: 'receipt' },
 };
 
-// Типовая суточная норма (грубый фильтр опечаток: 10× от нормы = аномалия)
 const DAILY_NORM = {
   'PA-F': 150, 'PES-F': 120, 'PP-F': 160, 'PE-F': 60,
   'HMPE-F': 15, 'ARAM-F': 12, 'SIL-F': 20, 'BAS-R': 25,
@@ -65,9 +42,6 @@ const DAILY_NORM = {
   'BAG-4': 800, 'BANNER-4': 400,
 };
 
-// ============================================================
-// ГЛАВНЫЙ HANDLER
-// ============================================================
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -75,15 +49,13 @@ export default async function handler(req, res) {
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-
   if (!token || !chatId) {
-    console.error('Telegram credentials missing');
     return res.status(500).json({ error: 'Telegram not configured' });
   }
 
-  // === ВЕТКА 1: ВХОДЯЩЕЕ СООБЩЕНИЕ ОТ РАБОТНИКА (webhook) ===
+  // === ВЕТКА 1: ВХОДЯЩЕЕ ОТ РАБОТНИКА (webhook) ===
   if (req.body.message && req.body.message.text) {
-    // Защита: проверяем секрет webhook (Telegram шлёт его в заголовке)
+    // Защита webhook секретом
     const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
     if (secret) {
       const incoming = req.headers['x-telegram-bot-api-secret-token'];
@@ -92,6 +64,10 @@ export default async function handler(req, res) {
       }
     }
 
+    // КРИТИЧНО: отвечаем Telegram 200 СРАЗУ, до любых sendTelegram.
+    // Иначе Telegram упирается в 30-сек таймаут и делает retry через 1/5/15 минут.
+    res.status(200).json({ ok: true });
+
     const from = req.body.message.from || {};
     const username = from.username || from.first_name || 'без_ника';
     const chatIdWorker = String(req.body.message.chat.id);
@@ -99,18 +75,21 @@ export default async function handler(req, res) {
 
     const reply = processCommand(text, username);
 
-    // Отвечаем работнику
-    await sendTelegram(token, chatIdWorker, reply.text);
+    // Отправка работнику и директору идёт в фоне параллельно.
+    // Ошибки логируем, но не роняем уже отданный 200.
+    Promise.all([
+      sendTelegram(token, chatIdWorker, reply.text).catch(e =>
+        console.error('Worker reply failed:', e.message)),
+      reply.forwardToDirector
+        ? sendTelegram(token, chatId, reply.forwardToDirector).catch(e =>
+            console.error('Director report failed:', e.message))
+        : Promise.resolve(),
+    ]);
 
-    // Параллельно: форвард в чат директора (если операция прошла валидацию)
-    if (reply.forwardToDirector) {
-      await sendTelegram(token, chatId, reply.forwardToDirector);
-    }
-
-    return res.status(200).json({ ok: true });
+    return;
   }
 
-  // === ВЕТКА 2: ОТПРАВКА АЛЕРТА ОТ WMS (старая логика) ===
+  // === ВЕТКА 2: ОТПРАВКА АЛЕРТА ОТ WMS ===
   const { message } = req.body;
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'No message provided' });
@@ -125,11 +104,7 @@ export default async function handler(req, res) {
   }
 }
 
-// ============================================================
-// ОБРАБОТКА КОМАНДЫ (4 СЛОЯ ЗАЩИТЫ)
-// ============================================================
 function processCommand(text, username) {
-  // Слой 0: справочные команды
   if (text === '/start' || text === '/help' || text === '/список') {
     return {
       text: '🏭 WMS РЕМЕРА — полевая отчётность\n\n' +
@@ -155,7 +130,6 @@ function processCommand(text, username) {
     };
   }
 
-  // Парсим: /команда количество КОД [!]
   const match = text.match(/^\/(\S+)\s+(\d+(?:[.,]\d+)?)\s+(\S+?)(\s!)?$/i);
   if (!match) {
     return {
@@ -167,9 +141,8 @@ function processCommand(text, username) {
   const cmd = match[1].toLowerCase();
   const qty = parseFloat(match[2].replace(',', '.'));
   const code = match[3].toUpperCase();
-  const confirmed = Boolean(match[4]); // восклицательный знак в конце
+  const confirmed = Boolean(match[4]);
 
-  // Слой 1: валидация команды
   if (!COMMANDS[cmd]) {
     return {
       text: `❌ Неизвестная команда „${cmd}".\nДоступно: /расход, /отгрузка, /приход, /производство.\n\nСправка: /список`,
@@ -177,7 +150,6 @@ function processCommand(text, username) {
     };
   }
 
-  // Слой 2: валидация кода в справочнике
   const itemName = NOMENCLATURE[code];
   if (!itemName) {
     return {
@@ -186,15 +158,10 @@ function processCommand(text, username) {
     };
   }
 
-  // Валидация количества
   if (qty <= 0 || qty > 1000000) {
-    return {
-      text: '❌ Количество должно быть > 0 и ≤ 1 000 000.',
-      forwardToDirector: null
-    };
+    return { text: '❌ Количество должно быть > 0 и ≤ 1 000 000.', forwardToDirector: null };
   }
 
-  // Слой 3: здравый смысл (аномалия > 10× нормы)
   const norm = DAILY_NORM[code];
   if (norm && qty > norm * 10 && !confirmed) {
     return {
@@ -205,42 +172,37 @@ function processCommand(text, username) {
     };
   }
 
-  // Слой 4: операция валидирована, отвечаем работнику и пересылаем директору
   const { label } = COMMANDS[cmd];
-  const workerReply = `✅ Принято: ${label}\n` +
-    `• ${qty} × ${code} (${itemName})\n` +
-    `• Отправлено в журнал`;
-
-  const directorReport = `📝 *Отчёт с производства*\n\n` +
-    `*От:* @${username}\n` +
-    `*Операция:* ${label}\n` +
-    `*Код:* ${code}\n` +
-    `*Наименование:* ${itemName}\n` +
-    `*Количество:* ${qty}\n` +
-    `_Для проводки в WMS: открыть вкладку „Движения" → „Провести"_`;
-
   return {
-    text: workerReply,
-    forwardToDirector: directorReport
+    text: `✅ Принято: ${label}\n• ${qty} × ${code} (${itemName})\n• Отправлено в журнал`,
+    forwardToDirector: `📝 *Отчёт с производства*\n\n` +
+      `*От:* @${username}\n*Операция:* ${label}\n*Код:* ${code}\n` +
+      `*Наименование:* ${itemName}\n*Количество:* ${qty}\n` +
+      `_Для проводки в WMS: открыть вкладку „Движения" → „Провести"_`
   };
 }
 
-// ============================================================
-// ВСПОМОГАТЕЛЬНАЯ: отправка одного сообщения в Telegram
-// ============================================================
 async function sendTelegram(token, chatId, text, parseMode = null) {
-  const body = { chat_id: chatId, text };
-  if (parseMode) body.parse_mode = parseMode;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
+  try {
+    const body = { chat_id: chatId, text };
+    if (parseMode) body.parse_mode = parseMode;
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Telegram API ${response.status}: ${errText}`);
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Telegram API ${response.status}: ${errText}`);
+    }
+    return response.json();
+  } finally {
+    clearTimeout(timeout);
   }
-  return response.json();
 }
