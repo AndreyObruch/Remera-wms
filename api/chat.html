@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ремера · Внутренний чат v2</title>
+<style>
+  :root{--bg:#0f1420;--card:#1a2233;--line:#2c3a52;--txt:#e8edf7;--mut:#8fa0bd;--ok:#3ddc84;--warn:#ffb020;--bad:#ff5252;--acc:#4da3ff}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+  body{background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+  header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+  header h1{font-size:15px;flex:1}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--bad)}
+  .dot.on{background:var(--ok)}
+  .muted{color:var(--mut);font-size:12px}
+  button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--txt);border-radius:8px;padding:8px 12px;font-size:14px}
+  button.primary{background:var(--acc);border-color:var(--acc);color:#04101f;font-weight:600}
+  button.ok{background:var(--ok);border-color:var(--ok);color:#04101f;font-weight:600}
+  button.bad{background:transparent;border-color:var(--bad);color:var(--bad)}
+  #login{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+  #login .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px;width:100%;max-width:320px;text-align:center}
+  #login input{width:100%;margin:14px 0;padding:12px;font-size:20px;letter-spacing:6px;text-align:center;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--txt)}
+  #feed{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;max-width:760px;margin:0 auto;width:100%}
+  .msg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-width:85%;white-space:pre-wrap;font-size:14px;line-height:1.45}
+  .msg .meta{font-size:11px;color:var(--mut);margin-bottom:4px}
+  .msg.cmd{border-color:var(--acc)}
+  .msg.reply{border-color:var(--ok)}
+  .msg.me{align-self:flex-end}
+  #queue{max-width:760px;margin:0 auto;width:100%;padding:10px 14px 0;display:flex;flex-direction:column;gap:8px}
+  .pend{background:#232c3f;border:1px solid var(--warn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .pend .row{display:flex;gap:8px;margin-top:8px}
+  .pend .row button{flex:1;padding:6px}
+  #bar{display:flex;gap:8px;padding:10px 14px;background:var(--card);border-top:1px solid var(--line);position:sticky;bottom:0}
+  #bar input{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--txt);font-size:15px}
+  .hidden{display:none!important}
+  .err{color:var(--bad);font-size:13px;min-height:18px;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <span class="dot" id="dot"></span>
+  <h1>🏭 РЕМЕРА · внутренний чат <span class="muted" id="who"></span></h1>
+  <button id="logout" class="hidden">Выйти</button>
+</header>
+
+<div id="login">
+  <div class="box">
+    <h2>Введите PIN</h2>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••">
+    <button class="primary" id="go" style="width:100%">Войти</button>
+    <div class="err" id="lerr"></div>
+  </div>
+</div>
+
+<div id="queue"></div>
+<div id="feed" class="hidden"></div>
+<div id="bar" class="hidden">
+  <input id="txt" placeholder="/расход 5 PA-F" autocomplete="off">
+  <button class="primary" id="send">➤</button>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LS = 'wms2_session';
+let session = null, lastTs = 0;
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(ts){return new Date(ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});}
+async function api(path,opts){
+  const r = await fetch(path,opts);
+  if(!r.ok){let e;try{e=await r.json();}catch(_){}throw new Error((e&&e.error)||('HTTP '+r.status));}
+  return r.json();
+}
+
+$('go').onclick = async () => {
+  $('lerr').textContent='';
+  try{
+    const d = await api('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:$('pin').value.trim()})});
+    session = {pin:$('pin').value.trim(), role:d.role, name:d.name};
+    localStorage.setItem(LS, JSON.stringify(session));
+    start();
+  }catch(e){ $('lerr').textContent = e.message || 'Неверный PIN'; }
+};
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click();});
+$('logout').onclick = () => { localStorage.removeItem(LS); location.reload(); };
+
+function start(){
+  $('login').classList.add('hidden');
+  $('feed').classList.remove('hidden');
+  $('bar').classList.remove('hidden');
+  $('logout').classList.remove('hidden');
+  $('who').textContent = '· '+session.name+' ('+(session.role==='director'?'директор':'работник')+')';
+  lastTs = 0;
+  poll();
+  setInterval(poll, 6000); // поллинг 6 сек
+}
+
+async function poll(){
+  try{
+    const d = await api('/api/chat?pin='+encodeURIComponent(session.pin)+'&since='+lastTs);
+    $('dot').classList.add('on'); // индикатор «онлайн-контур»
+    for(const m of d.messages){ if(m.ts>lastTs) lastTs=m.ts; addMsg(m); }
+    if(d.pending!==undefined) renderQueue(d.pending);
+  }catch(e){ $('dot').classList.remove('on'); }
+}
+
+function addMsg(m){
+  const div=document.createElement('div');
+  div.className='msg '+(m.kind||'msg');
+  if(m.role===session.role && m.kind!=='reply') div.classList.add('me');
+  div.innerHTML='<div class="meta">'+esc(m.author)+' · '+fmt(m.ts)+'</div>'+esc(m.text);
+  $('feed').appendChild(div);
+  $('feed').scrollTop=$('feed').scrollHeight;
+}
+
+function renderQueue(list){
+  const q=$('queue'); q.innerHTML='';
+  if(session.role!=='director'||!list||!list.length) return;
+  for(const p of list){
+    const div=document.createElement('div');
+    div.className='pend';
+    div.innerHTML='⏳ '+esc(p.label)+': <b>'+p.qty+' × '+esc(p.code)+'</b> ('+esc(p.name)+')'+
+      '<div class="muted">'+esc(p.author)+' · '+fmt(p.ts)+'</div>'+
+      '<div class="row"><button class="ok" data-a="approve" data-id="'+p.id+'">Провести</button>'+
+      '<button class="bad" data-a="reject" data-id="'+p.id+'">Отклонить</button></div>';
+    q.appendChild(div);
+  }
+}
+$('queue').onclick = async (e) => {
+  const b=e.target.closest('button[data-id]');
+  if(!b) return;
+  b.disabled=true;
+  try{
+    await api('/api/approve',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({pin:session.pin,id:b.dataset.id,action:b.dataset.a})});
+    poll();
+  }catch(err){ alert(err.message); b.disabled=false; }
+};
+
+async function send(){
+  const text=$('txt').value.trim();
+  if(!text) return;
+  $('txt').value='';
+  try{ await api('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:session.pin,text})}); }
+  catch(e){ alert(e.message); }
+}
+$('send').onclick=send;
+$('txt').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+
+try{ const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.pin){session=s;start();} }catch(_){}
+</script>
+</body>
+</html>
