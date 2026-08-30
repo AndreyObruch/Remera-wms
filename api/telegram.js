@@ -1,7 +1,8 @@
 // api/telegram.js
-// Двунаправленный шлюз Telegram: отправка алертов + приём команд от работников.
-// Архитектура: webhook отвечает Telegram СРАЗУ (чтобы не было retry через 15 мин),
-// а отправка сообщений работнику/директору идёт в фоне параллельно.
+// Двунаправленный шлюз Telegram: алерты WMS + приём команд работников.
+// Архитектура: отправка работнику и директору идёт ПАРАЛЛЕЛЬНО и с таймаутом
+// 5 сек ДО возврата 200 Telegram (иначе Vercel заморозит фоновые Promise,
+// а без таймаута зависший fetch ловил 30-сек таймаут Telegram и retry 15 мин).
 
 const NOMENCLATURE = {
   'PA-F': 'Нить полиамидная (капрон)', 'PES-F': 'Нить полиэфирная',
@@ -55,7 +56,6 @@ export default async function handler(req, res) {
 
   // === ВЕТКА 1: ВХОДЯЩЕЕ ОТ РАБОТНИКА (webhook) ===
   if (req.body.message && req.body.message.text) {
-    // Защита webhook секретом
     const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
     if (secret) {
       const incoming = req.headers['x-telegram-bot-api-secret-token'];
@@ -64,10 +64,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // КРИТИЧНО: отвечаем Telegram 200 СРАЗУ, до любых sendTelegram.
-    // Иначе Telegram упирается в 30-сек таймаут и делает retry через 1/5/15 минут.
-    res.status(200).json({ ok: true });
-
     const from = req.body.message.from || {};
     const username = from.username || from.first_name || 'без_ника';
     const chatIdWorker = String(req.body.message.chat.id);
@@ -75,9 +71,9 @@ export default async function handler(req, res) {
 
     const reply = processCommand(text, username);
 
-    // Отправка работнику и директору идёт в фоне параллельно.
-    // Ошибки логируем, но не роняем уже отданный 200.
-    Promise.all([
+    // Отправляем ОБА сообщения параллельно и ЖДЁМ их (с таймаутом 5 сек каждое),
+    // и только потом отвечаем Telegram. Суммарно <= ~5 сек < 30-сек лимита.
+    await Promise.all([
       sendTelegram(token, chatIdWorker, reply.text).catch(e =>
         console.error('Worker reply failed:', e.message)),
       reply.forwardToDirector
@@ -86,7 +82,7 @@ export default async function handler(req, res) {
         : Promise.resolve(),
     ]);
 
-    return;
+    return res.status(200).json({ ok: true });
   }
 
   // === ВЕТКА 2: ОТПРАВКА АЛЕРТА ОТ WMS ===
