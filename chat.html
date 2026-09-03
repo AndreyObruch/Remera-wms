@@ -62,20 +62,27 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const LS = 'wms2_session';
-let session = null, lastTs = 0;
+let session = null, lastTs = 0, pollTimer = null;
+const seenIds = new Set();
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function fmt(ts){return new Date(ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});}
+
 async function api(path,opts){
   const r = await fetch(path,opts);
-  if(!r.ok){let e;try{e=await r.json();}catch(_){}throw new Error((e&&e.error)||('HTTP '+r.status));}
-  return r.json();
+  let body = null;
+  const ct = r.headers.get('content-type') || '';
+  if (ct.includes('application/json')) { try { body = await r.json(); } catch(_){} }
+  else { body = { _raw: await r.text() }; }
+  if(!r.ok){ throw new Error((body && (body.error||body._raw)) || ('HTTP '+r.status)); }
+  return body;
 }
 
 $('go').onclick = async () => {
   $('lerr').textContent='';
   try{
     const d = await api('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:$('pin').value.trim()})});
+    console.log('[auth]', d);
     session = {pin:$('pin').value.trim(), role:d.role, name:d.name};
     localStorage.setItem(LS, JSON.stringify(session));
     start();
@@ -91,17 +98,28 @@ function start(){
   $('logout').classList.remove('hidden');
   $('who').textContent = '· '+session.name+' ('+(session.role==='director'?'директор':'работник')+')';
   lastTs = 0;
+  seenIds.clear();
   poll();
-  setInterval(poll, 6000); // поллинг 6 сек
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(poll, 6000);
 }
 
 async function poll(){
   try{
     const d = await api('/api/chat?pin='+encodeURIComponent(session.pin)+'&since='+lastTs);
-    $('dot').classList.add('on'); // индикатор «онлайн-контур»
-    for(const m of d.messages){ if(m.ts>lastTs) lastTs=m.ts; addMsg(m); }
-    if(d.pending!==undefined) renderQueue(d.pending);
-  }catch(e){ $('dot').classList.remove('on'); }
+    console.log('[poll]', d);
+    $('dot').classList.add('on');
+    for(const m of d.messages || []){
+      if (seenIds.has(m.id)) continue;
+      seenIds.add(m.id);
+      if (m.ts > lastTs) lastTs = m.ts;
+      addMsg(m);
+    }
+    if (d.pending !== undefined) renderQueue(d.pending);
+  }catch(e){
+    console.error('[poll error]', e.message, e);
+    $('dot').classList.remove('on');
+  }
 }
 
 function addMsg(m){
@@ -141,8 +159,15 @@ async function send(){
   const text=$('txt').value.trim();
   if(!text) return;
   $('txt').value='';
-  try{ await api('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:session.pin,text})}); }
-  catch(e){ alert(e.message); }
+  try{
+    const d = await api('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:session.pin,text})});
+    console.log('[send]', d);
+    // Мгновенный poll после отправки — убираем задержку 6 сек
+    setTimeout(poll, 200);
+  }catch(e){
+    console.error('[send error]', e.message, e);
+    alert(e.message);
+  }
 }
 $('send').onclick=send;
 $('txt').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
