@@ -1,8 +1,5 @@
-// api/debug.js — debug-7: детальная диагностика SDK (версия + матрица put/get)
+// api/debug.js — debug-8: крашеустойчивый зонд (всё внутри try-catch)
 import { put, get } from '@vercel/blob';
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
 
 const opts = (extra = {}) => ({
   token: process.env.PRIV_READ_WRITE_TOKEN,
@@ -11,25 +8,20 @@ const opts = (extra = {}) => ({
   ...extra,
 });
 
-const err = (e) => `${e.code ? e.code + ': ' : ''}${e.message || String(e)}`;
+const err = (e) =>
+  `${e && e.code ? e.code + ': ' : ''}${(e && e.message) || String(e)}`;
 
 export default async function handler(req, res) {
-  let sdkVersion = 'unknown';
-  try {
-    sdkVersion = require('@vercel/blob/package.json').version;
-  } catch (e) {
-    sdkVersion = 'read-error: ' + err(e);
-  }
+  const out = { build: 'debug-8' };
 
-  const out = {
-    build: 'debug-7',
-    sdkVersion,
-    hasOldBlobToken: !!(
-      process.env.BLOB_READ_WRITE_TOKEN ||
-      process.env.BLOB_STORE_ID ||
-      process.env.BLOB_WEBHOOK_PUBLIC_KEY
-    ),
-  };
+  // Версия SDK — только внутри защищённого блока
+  try {
+    const mod = await import('module');
+    const reqLocal = mod.createRequire(process.cwd() + '/');
+    out.sdkVersion = reqLocal('@vercel/blob/package.json').version;
+  } catch (e) {
+    out.sdkVersion = 'probe-error';
+  }
 
   // Тест A: put БЕЗ опции access
   try {
