@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ремера · Руководство по WMS</title>
+<style>
+  :root{--bg:#0f1420;--panel:#161d2e;--panel2:#1e293b;--line:#2a3550;--text:#e8ecf7;--muted:#8b96b0;--ok:#10b981;--warn:#f59e0b;--bad:#ef4444;--acc:#3b82f6;--lite:#dbeafe}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font:15px/1.65 system-ui,'Segoe UI',Roboto,sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:0 16px}
+  header{position:sticky;top:0;background:rgba(15,20,32,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:20}
+  .hdr{display:flex;align-items:center;gap:10px;padding:12px 0}
+  .hdr b{font-size:15px}
+  .hdr .btns{margin-left:auto;display:flex;gap:8px}
+  .hbtn{padding:6px 12px;border-radius:8px;border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:13px}
+  .hbtn.home{background:#fff;color:#000;border-color:#fff;font-weight:600}
+  .hero{padding:52px 0 30px;text-align:center}
+  .hero h1{font-size:32px;line-height:1.25;margin-bottom:12px}
+  .hero h1 span{color:var(--acc)}
+  .hero p{color:var(--muted);max-width:600px;margin:0 auto}
+  .flow{display:flex;gap:10px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin:34px 0 6px}
+  .fstep{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;width:230px;text-align:left}
+  .fstep .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;font-size:13px;margin-bottom:8px}
+  .fstep h4{font-size:14px;margin-bottom:4px}
+  .fstep p{font-size:12.5px;color:var(--muted)}
+  .farrow{align-self:center;color:var(--muted);font-size:20px}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:26px 0 10px}
+  .toc a{padding:6px 12px;border:1px solid var(--line);border-radius:20px;color:var(--muted);text-decoration:none;font-size:12.5px}
+  .toc a:hover{color:var(--text);border-color:var(--acc)}
+  section{padding:34px 0 6px}
+  section h2{font-size:22px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  section h2 .ico{display:inline-flex;width:34px;height:34px;border-radius:10px;align-items:center;justify-content:center;font-size:17px}
+  section .lead{color:var(--muted);margin-bottom:18px;max-width:680px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+  .card h3{font-size:15px;margin-bottom:10px}
+  ol.steps{padding-left:0;list-style:none;counter-reset:st}
+  ol.steps li{counter-increment:st;position:relative;padding:0 0 14px 44px;font-size:14px}
+  ol.steps li::before{content:counter(st);position:absolute;left:0;top:1px;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);color:var(--acc);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.steps li:last-child{padding-bottom:2px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:600}
+  code{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--ok);font-family:'Courier New',monospace;font-size:12.5px;white-space:nowrap}
+  .role{display:inline-block;padding:3px 10px;border-radius:14px;font-size:12px;font-weight:700}
+  .role.w{background:rgba(59,130,246,.15);color:var(--acc)}
+  .role.d{background:rgba(245,158,11,.15);color:var(--warn)}
+  .role.a{background:rgba(16,185,129,.15);color:var(--ok)}
+  .tip{border-left:4px solid var(--acc);background:var(--panel2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;margin:12px 0;color:var(--text)}
+  .tip.warn{border-left-color:var(--warn)}
+  .tip.ok{border-left-color:var(--ok)}
+  .btn-demo{display:inline-block;padding:5px 14px;border-radius:8px;font-weight:700;font-size:13px}
+  .btn-demo.green{background:var(--ok);color:#06240f}
+  .btn-demo.red{border:1px solid var(--bad);color:var(--bad)}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+  summary{padding:13px 18px;cursor:pointer;font-size:14px;font-weight:600;list-style:none;display:flex;align-items:center;gap:10px}
+  summary::before{content:'＋';color:var(--acc);font-weight:700}
+  details[open] summary::before{content:'－'}
+  details p{padding:0 18px 14px 41px;color:var(--muted);font-size:13.5px}
+  footer{border-top:1px solid var(--line);margin-top:44px;padding:22px 0 30px;color:var(--muted);font-size:12.5px;text-align:center}
+  @media(max-width:640px){.hero h1{font-size:24px}.farrow{display:none}.fstep{width:100%}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hdr">
+    <b>🏭 РЕМЕРА · Руководство</b>
+    <div class="btns">
+      <a class="hbtn" href="/chat.html">💬 Чат</a>
+      <a class="hbtn home" href="/">🏠 Дашборд</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Руководство по <span>WMS «Ремера»</span></h1>
+    <p>Внутренняя отчётность склада: работник сдаёт рапорт с телефона, директор подтверждает одной кнопкой, бухгалтер сверяет с 1С. Осваивается за 5 минут.</p>
+    <div class="flow">
+      <div class="fstep"><span class="n">1</span><h4>👷 Работник</h4><p>Отправляет рапорт о движении ТМЦ из чата</p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><span class="n">2</span><h4>👔 Директор</h4><p>Видит карточку рапорта и подтверждает проводку</p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><span class="n">3</span><h4>📋 Бухгалтер</h4><p>Сверяет остатки и журнал движений с 1С</p></div>
+    </div>
+    <nav class="toc">
+      <a href="#start">🚀 Старт</a>
+      <a href="#worker">👷 Работник</a>
+      <a href="#director">👔 Директор</a>
+      <a href="#accountant">📋 Бухгалтер</a>
+      <a href="#codes">🏷️ Коды</a>
+      <a href="#onec">📦 1С</a>
+      <a href="#access">🔐 Доступ</a>
+      <a href="#faq">❓ FAQ</a>
+    </nav>
+  </div>
+
+  <section id="start">
+    <h2><span class="ico" style="background:rgba(59,130,246,.15)">🚀</span>Быстрый старт</h2>
+    <p class="lead">Всё работает с телефона и компьютера, установка не нужна — только браузер.</p>
+    <div class="card">
+      <ol class="steps">
+        <li>Откройте дашборд <code>remera-wms-bvii.vercel.app</code> и нажмите зелёную кнопку <b>💬 Чат</b> справа в тулбаре.</li>
+        <li>Выберите свою роль в выпадающем меню: работник, директор или бухгалтер.</li>
+        <li>Введите PIN, который выдал директор, — и работайте.</li>
+      </ol>
+      <div class="tip">💡 Кнопка «🏠 Дашборд» в шапке чата возвращает к складским таблицам без выхода из сессии.</div>
+    </div>
+  </section>
+
+  <section id="worker">
+    <h2><span class="ico" style="background:rgba(59,130,246,.15)">👷</span>Работник: рапорт за 10 секунд</h2>
+    <p class="lead">Ваша задача — сообщить о движении ТМЦ. Балансы и журналы ведёт система, вам нужны только команды.</p>
+    <div class="card">
+      <h3>Как отправить рапорт</h3>
+      <ol class="steps">
+        <li>Выберите операцию в списке: <b>Расход / Приход / Отгрузка / Производство</b>.</li>
+        <li>Начните писать код или название в поле «Код или название…» — выпадет список позиций, кликните нужную.</li>
+        <li>Укажите количество и нажмите зелёную <b>➤</b>.</li>
+      </ol>
+      <div class="tip ok">✅ Опытные могут печатать вручную в нижней строке: <code>/расход 5 PA-F</code></div>
+    </div>
+    <div class="card">
+      <h3>Таблица команд</h3>
+      <table>
+        <thead><tr><th>Команда</th><th>Что означает</th><th>Пример</th></tr></thead>
+        <tbody>
+          <tr><td><code>/расход</code></td><td>Выдал материал в производство</td><td><code>/расход 5 PA-F</code></td></tr>
+          <tr><td><code>/приход</code></td><td>Принял от поставщика</td><td><code>/приход 10 PA-F</code></td></tr>
+          <tr><td><code>/отгрузка</code></td><td>Отгрузил клиенту</td><td><code>/отгрузка 3 PP-16</code></td></tr>
+          <tr><td><code>/производство</code></td><td>Сплёл готовую продукцию</td><td><code>/производство 20 STAT-10</code></td></tr>
+          <tr><td><code>/коды</code></td><td>Список кодов номенклатуры</td><td><code>/коды</code></td></tr>
+          <tr><td><code>/список</code></td><td>Справка по командам</td><td><code>/список</code></td></tr>
+        </tbody>
+      </table>
+      <div class="tip warn">⚠️ Защита от опечатки: количество больше 10 дневных норм система попросит подтвердить восклицательным знаком: <code>/расход 2000 PA-F !</code></div>
+    </div>
+  </section>
+
+  <section id="director">
+    <h2><span class="ico" style="background:rgba(245,158,11,.15)">👔</span>Директор: точка контроля</h2>
+    <p class="lead">Ни одна операция не изменит остатки без вашего подтверждения. Это главный контрольный узел системы.</p>
+    <div class="card">
+      <ol class="steps">
+        <li>Войдите через меню <b>💬 Чат → «Вход для директора»</b>.</li>
+        <li>Жёлтая карточка сверху ленты — рапорт работника, ожидающий решения. Карточка закреплена и видна всегда.</li>
+        <li><span class="btn-demo green">Провести</span> — операция попадёт в журнал, остатки изменятся сразу.</li>
+        <li><span class="btn-demo red">Отклонить</span> — рапорт отменён, остатки не тронуты.</li>
+      </ol>
+      <div class="tip">💡 Вкладки «Остатки» и «Журнал» в шапке чата — текущая картина склада и история всех операций с подписями, кто и что провёл.</div>
+    </div>
+  </section>
+
+  <section id="accountant">
+    <h2><span class="ico" style="background:rgba(16,185,129,.15)">📋</span>Бухгалтер: сверка с 1С</h2>
+    <div class="card">
+      <ol class="steps">
+        <li>Войдите через меню <b>💬 Чат → «Вход для бухгалтера»</b>.</li>
+        <li>«Остатки» — текущие количества по кодам. «Журнал» — все проведённые операции: время, количество, остаток после, кто подтвердил.</li>
+        <li>Поля ввода у бухгалтера нет — режим только чтения, случайное изменение исключено.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="codes">
+    <h2><span class="ico" style="background:rgba(59,130,246,.15)">🏷️</span>Коды номенклатуры</h2>
+    <p class="lead">Список в чате полный и совпадает со складским справочником: сырьё, расходники и вся готовая продукция сгруппированы по категориям.</p>
+    <div class="card">
+      <table>
+        <thead><tr><th>Группа</th><th>Примеры кодов</th></tr></thead>
+        <tbody>
+          <tr><td>🧵 Сырьё (нити, волокна, ровинги)</td><td><code>PA-F</code> <code>PES-F</code> <code>HMPE-F</code> <code>ARAM-F</code></td></tr>
+          <tr><td>🧰 Расходники (тара, упаковка)</td><td><code>BOB-K</code> <code>PKG-STR</code> <code>LBL-PR</code></td></tr>
+          <tr><td>🧗 Промальп и альпинизм</td><td><code>STAT-10</code> <code>DYN-105</code> <code>REP-6</code></td></tr>
+          <tr><td>🛡️ Арамид и HMPE</td><td><code>HMPE-6</code> <code>ARAM-6</code></td></tr>
+          <tr><td>🔥 Огнеупорные шнуры</td><td><code>SIL-8</code> <code>BAS-10</code> <code>GLS-6</code></td></tr>
+          <tr><td>⚙️ Специальные (яхта, рыбалка, протяжка)</td><td><code>YAHT-8</code> <code>FISH-25</code> <code>CABLE-6</code></td></tr>
+        </tbody>
+      </table>
+      <div class="tip">💡 Не помните код — начните писать название («капрон», «яхтенный») в поле поиска, список сузится сам.</div>
+    </div>
+  </section>
+
+  <section id="onec">
+    <h2><span class="ico" style="background:rgba(245,158,11,.15)">📦</span>Обмен с 1С (учебная БД)</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Кнопка на дашборде</th><th>Назначение</th></tr></thead>
+        <tbody>
+          <tr><td><b>📥 CSV: 1С (остатки)</b></td><td>Загрузить начальные остатки из 1С в учебную базу</td></tr>
+          <tr><td><b>📄 CSV: Склад / Движения</b></td><td>Выгрузить данные из учебной базы для бухгалтера</td></tr>
+        </tbody>
+      </table>
+      <div class="tip warn">⚠️ Учебная БД на дашборде — тренажёр для тренировок. Реальные остатки живого контура смотрятся во вкладках «Остатки» и «Журнал» чата.</div>
+    </div>
+  </section>
+
+  <section id="access">
+    <h2><span class="ico" style="background:rgba(239,68,68,.15)">🔐</span>Доступ и безопасность</h2>
+    <div class="card">
+      <ol class="steps">
+        <li>PIN-коды выдаёт директор. У каждой роли — свой код.</li>
+        <li>Выбрали роль «Директор», а ввели PIN работника — система попросит ввести заново и не пустит в чужую роль.</li>
+        <li>Забыли PIN — обратитесь к директору за новым.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2><span class="ico" style="background:rgba(59,130,246,.15)">❓</span>Частые вопросы</h2>
+    <details><summary>Команда не распознана — что делать?</summary><p>Проверьте формат: слэш, команда, количество, код. Пример: <code>/расход 5 PA-F</code>. Список кодов — команда <code>/коды</code> или поиск в конструкторе команды.</p></details>
+    <details><summary>Отправил рапорт, а остатки не изменились.</summary><p>Так и задумано: остатки меняются только после подтверждения директором. Карточка рапорта ждёт его решения в чате.</p></details>
+    <details><summary>Где посмотреть историю операций?</summary><p>Директор и бухгалтер: вкладка «Журнал» в чате. На дашборде — раздел «Движения ТМЦ» учебной БД.</p></details>
+    <details><summary>Можно ли работать с телефона?</summary><p>Да, интерфейс адаптирован под мобильные экраны. Достаточно браузера и PIN.</p></details>
+    <details><summary>Кнопка «Провести» нажалась дважды — операция спишется два раза?</summary><p>Нет. Система узнаёт повторный запрос по номеру рапорта и молча игнорирует дубль — в журнал попадёт одна проводка.</p></details>
+  </section>
+
+  <footer>🏭 WMS «Ремера» · внутренний контур · документ обновлён 07.09.2026</footer>
+</div>
+</body>
+</html>
