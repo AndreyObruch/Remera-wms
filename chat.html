@@ -32,6 +32,8 @@
   table{width:100%;border-collapse:collapse;background:var(--panel)}
   th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
   th{color:var(--muted);font-weight:500}
+  #impBtn{background:var(--warn);border:none;color:#3b2503;font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px}
+  #impInfo{color:var(--muted);font-size:12px;margin-left:8px}
   #bar{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:8px;z-index:30}
   #builder,#freeRow{display:flex;gap:6px;width:100%}
   #builder{flex-wrap:wrap}
@@ -89,6 +91,11 @@
     </div>
     <div id="view-stock" class="hide">
       <h3>Остатки (только чтение)</h3>
+      <div id="importRow" class="hide" style="margin:6px 0 10px">
+        <button id="impBtn">📥 Импорт CSV (1С)</button>
+        <input type="file" id="impFile" accept=".csv,.txt" class="hide">
+        <span id="impInfo">формат: КОД;КОЛИЧЕСТВО, по строке на позицию</span>
+      </div>
       <table><thead><tr><th>Код</th><th>Остаток</th></tr></thead><tbody id="stockBody"></tbody></table>
     </div>
     <div id="view-journal" class="hide">
@@ -189,6 +196,7 @@ function start(){
   if(session.role==='accountant'){ $('bar').classList.add('hide'); $('tabs').classList.remove('hide'); }
   else if(session.role==='director'){ $('tabs').classList.remove('hide'); }
   else { $('tabs').classList.add('hide'); }
+  $('importRow').classList.toggle('hide', session.role!=='director');
   seenIds=new Set(); $('feed').innerHTML=''; $('queue').innerHTML='';
   if(timer) clearInterval(timer);
   poll();
@@ -300,39 +308,41 @@ $('bSend').onclick=async()=>{
   sendText('/'+cmd+' '+qty+' '+code);
 };
 
+// --- Импорт CSV (1С): только директор ---
+function parseCSV(text){
+  const lines=String(text).split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const rows=[];
+  for(let i=0;i<lines.length;i++){
+    const parts=lines[i].split(/[;\t,]/);
+    if(parts.length<2) continue;
+    const code=parts[0].trim().toUpperCase();
+    if(i===0 && /код|code|article/i.test(code)) continue; // шапка
+    rows.push({code, qty:parseFloat(parts[1].replace(',','.'))});
+  }
+  return rows;
+}
+$('impBtn').onclick=()=>$('impFile').click();
+$('impFile').onchange=async(e)=>{
+  const f=e.target.files[0];
+  e.target.value='';
+  if(!f) return;
+  const text=await f.text();
+  const rows=parseCSV(text);
+  if(!rows.length){ alert('В файле не распознано ни одной строки.\nФормат: КОД;КОЛИЧЕСТВО, по строке на позицию.'); return; }
+  if(!confirm('Применить строк: '+rows.length+'?')) return;
+  try{
+    const j=await api('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({pin:session.pin,rows})});
+    alert('✅ Применено позиций: '+j.applied+
+      (j.errors&&j.errors.length?'\n⚠️ Пропущено с ошибками: '+j.errors.length+' ('+j.errors.slice(0,5).join(', ')+')':''));
+    await loadStock();
+    poll();
+  }catch(err){ alert(err.message); }
+};
+
+// --- вкладки ---
 $('tabs').onclick=e=>{
   const t=e.target.closest('.tab');
   if(!t) return;
   curTab=t.dataset.t;
-  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
-  $('view-chat').classList.toggle('hide',curTab!=='chat');
-  $('view-stock').classList.toggle('hide',curTab!=='stock');
-  $('view-journal').classList.toggle('hide',curTab!=='journal');
-  if(curTab!=='chat') loadStock();
-};
-
-async function loadStock(){
-  try{
-    const d=await api('/api/stock?pin='+encodeURIComponent(session.pin));
-    const codes=Object.keys(d.stock||{});
-    $('stockBody').innerHTML=codes.length
-      ? codes.map(c=>'<tr><td>'+esc(c)+'</td><td><b>'+d.stock[c]+'</b></td></tr>').join('')
-      : '<tr><td colspan="2">Пока пусто</td></tr>';
-    $('movBody').innerHTML=(d.movements||[]).length
-      ? (d.movements||[]).map(m=>'<tr><td>'+fmt(m.ts)+'</td><td>'+esc(m.label)+(m.status==='rejected'?' ❌':'')+'</td><td>'+(m.sign>0?'+':'−')+m.qty+'</td><td>'+esc(m.code)+'</td><td>'+(m.next??'—')+'</td><td>'+esc(m.decidedBy||m.author||'')+'</td></tr>').join('')
-      : '<tr><td colspan="6">Пока пусто</td></tr>';
-  }catch(e){ console.error('[stock error]',e); }
-}
-
-(function init(){
-  if(urlRole && ROLE_NAMES[urlRole]){
-    $('roleHint').textContent='👤 Вход в роли: '+ROLE_NAMES[urlRole];
-    $('roleHint').classList.remove('hide');
-  }
-  try{ session=JSON.parse(localStorage.getItem('wms2_session')||'null'); }catch(e){ session=null; }
-  if(session && session.pin && (!urlRole || session.role===urlRole)) start();
-  else { session=null; showLogin(); }
-})();
-</script>
-</body>
-</html>
+ 
