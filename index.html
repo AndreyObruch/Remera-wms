@@ -40,7 +40,7 @@
         .status.norm { background: rgba(16, 185, 129, 0.15); color: var(--norm); }
         .status.warn { background: rgba(245, 158, 11, 0.15); color: var(--warn); }
         .status.crit { background: rgba(239, 68, 68, 0.15); color: var(--crit); }
-        .status-dot { width: 8px; height; 8px; border-radius: 50%; background: currentColor; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
         .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
         select, input, textarea, button { font-family: inherit; font-size: 13px; }
         select, input, textarea { padding: 8px 12px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); }
@@ -58,14 +58,12 @@
         .toolbar-sep { border-left: 1px solid var(--border); margin: 0 4px; }
         .hide { display: none !important; }
         .chat-wrap { position: relative; margin-left: 16px; }
-        .chat-main { background: var(--norm); color: #000; border-color: var(--norm); font-weight: 700; }
-        .chat-main:hover { background: #0ea371; }
+        .chat-main { background: var(--norm) !important; color: #000 !important; border: 1px solid var(--norm) !important; font-weight: 700; }
         .chat-menu { position: absolute; left: 0; top: calc(100% + 6px); background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; min-width: 230px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.4); overflow: hidden; }
         .chat-menu a { display: block; padding: 10px 14px; color: var(--text); text-decoration: none; font-size: 13px; }
         .chat-menu a:hover { background: var(--accent); color: #fff; }
         .guide-wrap { position: relative; margin-left: auto; }
-        .guide-btn { background: #ffffff; color: #000; border: 1px solid #cbd5e1; font-weight: 600; }
-        .guide-btn:hover { background: #e2e8f0; }
+        .guide-btn { background: #ffffff !important; color: #000 !important; border: 1px solid #cbd5e1 !important; font-weight: 600; }
         .guide-menu { position: absolute; right: 0; top: calc(100% + 6px); width: min(500px, 92vw); max-height: 76vh; overflow-y: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
         .g-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
         .g-lead { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.6; }
@@ -137,7 +135,7 @@
         <button class="secondary onec" onclick="download1CTemplate()">📋 Шаблон 1С</button>
 
         <div class="chat-wrap">
-            <button class="secondary chat-main" id="chatBtn">💬 Чат ▾</button>
+            <button class="secondary chat-main" id="chatBtn">💬 Чат </button>
             <div class="chat-menu hide" id="chatMenu">
                 <a href="/chat.html?role=director">👔 Вход для директора</a>
                 <a href="/chat.html?role=accountant">📋 Вход для бухгалтера</a>
