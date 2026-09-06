@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ремера - Внутренний чат v2</title>
 <style>
-  :root{--bg:#0f1420;--panel:#161d2e;--line:#2a3550;--text:#e8ecf7;--muted:#8b96b0;--ok:#22c55e;--bad:#ef4444;--warn:#f59e0b;--acc:#3b82f6;--lite:#dbeafe;--lite-line:#93c5fd;--lite-text:#0b1220;--lite-acc:#1e40af}
+  :root{--bg:#0f1420;--panel:#161d2e;--line:#2a3550;--text:#e8ecf7;--muted:#8b96b0;--ok:#22c55e;--bad:#ef4444;--warn:#f59e0b;--acc:#3b82f6;--lite:#dbeafe;--lite-line:#93c5fd;--lite-text:#0b1220;--lite-acc:#1e40af;--lite-group:#bfdbfe}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font:14px/1.5 system-ui,'Segoe UI',Roboto,sans-serif}
   .hide{display:none!important}
@@ -39,7 +39,8 @@
   .combo{position:relative;flex:1 1 160px}
   #bCode{width:100%;background:var(--bg);border:1px solid var(--lite-line);color:var(--text);border-radius:10px;padding:8px 10px}
   #bQty{width:92px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px}
-  #bList{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--lite);border:1px solid var(--lite-line);border-radius:10px;max-height:300px;overflow-y:auto;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,0.55)}
+  #bList{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--lite);border:1px solid var(--lite-line);border-radius:10px;max-height:360px;overflow-y:auto;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,0.55)}
+  .bGroup{padding:6px 12px;background:var(--lite-group);font-size:11px;font-weight:700;color:var(--lite-acc);text-transform:uppercase;letter-spacing:0.5px;position:sticky;top:0}
   .bItem{padding:9px 12px;font-size:12.5px;cursor:pointer;color:var(--lite-text);border-bottom:1px solid rgba(30,64,175,0.15)}
   .bItem:last-child{border-bottom:none}
   .bItem b{color:var(--lite-acc)}
@@ -126,7 +127,31 @@ let session=null, seenIds=new Set(), timer=null, curTab='chat';
 const ROLE_NAMES={director:'Директор',accountant:'Бухгалтер',worker:'Работник'};
 const urlRole=new URLSearchParams(location.search).get('role');
 
-const NOM={'PA-F':'Нить полиамидная (капрон)','PES-F':'Нить полиэфирная','PP-F':'Нить полипропиленовая','PE-F':'Нить полиэтиленовая','HMPE-F':'Волокно HMPE (Dyneema)','ARAM-F':'Нить арамидная (Русар)','SIL-F':'Волокно кремнеземное','BAS-R':'Ровинг базальтовый','GLS-R':'Ровинг стеклянный','BOB-K':'Бобины картонные','BOB-P':'Бобины пластиковые','PKG-STR':'Стрейч-плёнка','PKG-BAG':'Пакеты ПЭ','STAT-10':'Верёвка статическая 10мм','STAT-11':'Верёвка статическая 11мм','DYN-105':'Верёвка динамическая 10.5мм','REP-6':'Репшнур 6мм','REP-7':'Репшнур 7мм (арамид)','ARAM-6':'Шнур арамидный 6мм','HMPE-6':'Канат HMPE 6мм','HMPE-10':'Канат HMPE 10мм','PA-8':'Канат ПА 8мм','PA-10':'Канат ПА 10мм','PA-12':'Канат ПА 12мм','PP-10':'Канат ПП 10мм','PP-16':'Канат ПП 16мм','PP-24':'Канат ПП 24мм','SIL-8':'Шнур кремнеземный 8мм','SIL-12':'Шнур кремнеземный 12мм','BAS-8':'Шнур базальтовый 8мм','BAS-10':'Шнур базальтовый 10мм','YAHT-8':'Канат яхтенный 8мм','FISH-25':'Шнур рыболовный 2.5мм','CABLE-6':'Канат для протяжки 6мм','FENCE-8':'Канат ограждающий 8мм','BAG-4':'Шнур для пакетов 4мм','BANNER-4':'Шнур баннерный 4мм'};
+// Группы позиций (1:1 с учебной БД): сырьё, расходники, ГП по категориям
+const GROUPS=[
+  {t:'🧵 Сырьё',c:['PA-F','PES-F','PP-F','PE-F','HMPE-F','ARAM-F','SIL-F','BAS-R','GLS-R']},
+  {t:'🧰 Расходники',c:['BOB-K','BOB-P','SPOOL-L','LBL-PR','LBL-TAG','PKG-STR','PKG-BAG','PKG-BOX','TAPE-PK']},
+  {t:'🧗 Промальп и альпинизм',c:['STAT-9','STAT-10','STAT-105','STAT-11','STAT-12','DYN-98','DYN-105','REP-4','REP-6','REP-7','REP-8']},
+  {t:'🛡️ Арамид и HMPE',c:['ARAM-4','ARAM-6','HMPE-2','HMPE-3','HMPE-4','HMPE-6','HMPE-8','HMPE-10','HMPE-12']},
+  {t:'📏 Низкорастяжимые',c:['LS-10','LS-12','LS-14','LS-16']},
+  {t:'⚓ Полиамид',c:['PA-4','PA-6','PA-8','PA-10','PA-12','PA-14','PA-16']},
+  {t:'🔷 Полипропилен',c:['PP-8','PP-10','PP-12','PP-16','PP-20','PP-24','PP-32','PP-40']},
+  {t:'🟣 Полиэтилен',c:['PE-6','PE-8','PE-10']},
+  {t:'🔥 Огнеупорные',c:['SIL-4','SIL-6','SIL-8','SIL-10','SIL-12','SIL-14','SIL-16','SIL-18','BAS-6','BAS-8','BAS-10','BAS-12','GLS-4','GLS-6','GLS-8','GLS-10']},
+  {t:'⚙️ Специальные',c:['FISH-18','FISH-25','FISH-3','YAHT-6','YAHT-8','YAHT-10','YAHT-12','LEER-5','LEER-6','LEER-8','CABLE-4','CABLE-6','CABLE-8','FENCE-6','FENCE-8','FENCE-10','CARGO-16','CARGO-20','CARGO-24','BAG-4','BAG-5','BANNER-3','BANNER-4','HORSE-8','HORSE-10','PACK-10']},
+];
+const NOM={
+'PA-F':'Нить полиамидная (капрон)','PES-F':'Нить полиэфирная (полиэстер)','PP-F':'Нить полипропиленовая','PE-F':'Нить полиэтиленовая (HDPE)','HMPE-F':'Волокно HMPE (Dyneema SK78)','ARAM-F':'Нить арамидная (Русар)','SIL-F':'Волокно кремнеземное','BAS-R':'Ровинг базальтовый','GLS-R':'Ровинг стеклянный',
+'BOB-K':'Бобины картонные','BOB-P':'Бобины пластиковые','SPOOL-L':'Катушки большие','LBL-PR':'Этикетки печатные','LBL-TAG':'Бирки с номером партии','PKG-STR':'Стрейч-плёнка','PKG-BAG':'Пакеты ПЭ','PKG-BOX':'Коробки картонные','TAPE-PK':'Скотч упаковочный',
+'STAT-9':'Верёвка статическая 9мм','STAT-10':'Верёвка статическая 10мм','STAT-105':'Верёвка статическая 10.5мм','STAT-11':'Верёвка статическая 11мм','STAT-12':'Верёвка статическая 12мм','DYN-98':'Верёвка динамическая 9.8мм','DYN-105':'Верёвка динамическая 10.5мм','REP-4':'Репшнур 4мм (ПА)','REP-6':'Репшнур 6мм (ПА)','REP-7':'Репшнур 7мм (арамид)','REP-8':'Репшнур 8мм (ПА)',
+'ARAM-4':'Шнур арамидный 4мм','ARAM-6':'Шнур арамидный 6мм','HMPE-2':'Канат HMPE 2мм','HMPE-3':'Канат HMPE 3мм','HMPE-4':'Канат HMPE 4мм','HMPE-6':'Канат HMPE 6мм','HMPE-8':'Канат HMPE 8мм','HMPE-10':'Канат HMPE 10мм','HMPE-12':'Канат HMPE 12мм',
+'LS-10':'Канат низкорастяжимый 10мм','LS-12':'Канат низкорастяжимый 12мм','LS-14':'Канат низкорастяжимый 14мм','LS-16':'Канат низкорастяжимый 16мм',
+'PA-4':'Канат полиамидный 4мм','PA-6':'Канат полиамидный 6мм','PA-8':'Канат полиамидный 8мм','PA-10':'Канат полиамидный 10мм','PA-12':'Канат полиамидный 12мм','PA-14':'Канат полиамидный 14мм','PA-16':'Канат полиамидный 16мм',
+'PP-8':'Канат ПП 8мм (8-прядный)','PP-10':'Канат ПП 10мм (12-прядный)','PP-12':'Канат ПП 12мм (16-прядный)','PP-16':'Канат ПП 16мм (24-прядный)','PP-20':'Канат ПП 20мм (32-прядный)','PP-24':'Канат ПП 24мм (48-прядный)','PP-32':'Канат ПП 32мм (48-прядный)','PP-40':'Канат ПП 40мм (48-прядный)',
+'PE-6':'Канат полиэтиленовый 6мм','PE-8':'Канат полиэтиленовый 8мм','PE-10':'Канат полиэтиленовый 10мм',
+'SIL-4':'Шнур кремнеземный 4мм','SIL-6':'Шнур кремнеземный 6мм','SIL-8':'Шнур кремнеземный 8мм','SIL-10':'Шнур кремнеземный 10мм','SIL-12':'Шнур кремнеземный 12мм','SIL-14':'Шнур кремнеземный 14мм','SIL-16':'Шнур кремнеземный 16мм','SIL-18':'Шнур кремнеземный 18мм','BAS-6':'Шнур базальтовый 6мм','BAS-8':'Шнур базальтовый 8мм (сердечник)','BAS-10':'Шнур базальтовый 10мм (сердечник)','BAS-12':'Шнур базальтовый 12мм','GLS-4':'Шнур стеклянный 4мм','GLS-6':'Шнур стеклянный 6мм','GLS-8':'Шнур стеклянный 8мм','GLS-10':'Шнур стеклянный 10мм',
+'FISH-18':'Шнур рыболовный 1.8мм','FISH-25':'Шнур рыболовный 2.5мм','FISH-3':'Шнур рыболовный 3мм','YAHT-6':'Канат яхтенный 6мм (шкоты)','YAHT-8':'Канат яхтенный 8мм','YAHT-10':'Канат яхтенный 10мм (фалы)','YAHT-12':'Канат яхтенный 12мм','LEER-5':'Леер для лодок 5мм','LEER-6':'Леер для лодок 6мм','LEER-8':'Леер для лодок 8мм','CABLE-4':'Канат для протяжки кабеля 4мм','CABLE-6':'Канат для протяжки кабеля 6мм','CABLE-8':'Трос-лидер 8мм','FENCE-6':'Канат ограждающий 6мм','FENCE-8':'Канат ограждающий 8мм','FENCE-10':'Канат ограждающий 10мм','CARGO-16':'Канат грузовой 16мм','CARGO-20':'Канат грузовой 20мм','CARGO-24':'Канат грузовой 24мм','BAG-4':'Шнур для пакетов 4мм','BAG-5':'Шнур для пакетов 5мм','BANNER-3':'Шнур баннерный 3мм','BANNER-4':'Шнур баннерный 4мм','HORSE-8':'Шнур конный спорт 8мм','HORSE-10':'Шнур конный спорт 10мм','PACK-10':'Верёвка упакованная 10мм (бухты)',
+};
 
 async function api(path,opts){
   const r=await fetch(path,opts);
@@ -220,7 +245,6 @@ $('queue').onclick=async(e)=>{
   }catch(err){ alert(err.message); b.disabled=false; }
 };
 
-// --- отправка ---
 async function sendText(text){
   text=String(text||'').trim();
   if(!text) return;
@@ -235,14 +259,24 @@ async function sendText(text){
 $('send').onclick=()=>{ const t=$('inp').value; $('inp').value=''; sendText(t); };
 $('inp').onkeydown=e=>{ if(e.key==='Enter') $('send').click(); };
 
-// --- конструктор команды: ПОЛНЫЙ список позиций с поиском ---
+// --- Конструктор: ПОЛНЫЙ список с группировкой категорий ---
 function renderCodeList(q){
   const s=String(q||'').trim().toLowerCase();
-  const items=Object.entries(NOM)
-    .filter(([c,n])=>!s||c.toLowerCase().includes(s)||n.toLowerCase().includes(s));
   const L=$('bList');
-  if(!items.length){ L.classList.add('hide'); return; }
-  L.innerHTML=items.map(([c,n])=>'<div class="bItem" data-c="'+c+'"><b>'+c+'</b> — '+esc(n)+'</div>').join('');
+  let html='';
+  if(!s){
+    for(const g of GROUPS){
+      const items=g.c.filter(c=>NOM[c]).map(c=>'<div class="bItem" data-c="'+c+'"><b>'+c+'</b> — '+esc(NOM[c])+'</div>').join('');
+      html+='<div class="bGroup">'+esc(g.t)+'</div>'+items;
+    }
+  }else{
+    const items=Object.entries(NOM)
+      .filter(([c,n])=>c.toLowerCase().includes(s)||n.toLowerCase().includes(s))
+      .map(([c,n])=>'<div class="bItem" data-c="'+c+'"><b>'+c+'</b> — '+esc(n)+'</div>').join('');
+    if(!items){ L.classList.add('hide'); return; }
+    html=items;
+  }
+  L.innerHTML=html;
   L.classList.remove('hide');
 }
 $('bCode').addEventListener('focus',()=>renderCodeList($('bCode').value));
@@ -266,7 +300,6 @@ $('bSend').onclick=async()=>{
   sendText('/'+cmd+' '+qty+' '+code);
 };
 
-// --- вкладки ---
 $('tabs').onclick=e=>{
   const t=e.target.closest('.tab');
   if(!t) return;
