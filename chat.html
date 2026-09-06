@@ -13,7 +13,8 @@
   #dot{width:8px;height:8px;border-radius:50%;background:#555}
   #dot.on{background:var(--ok)}
   #who{color:var(--muted);font-size:12px}
-  #logout{margin-left:auto;background:none;border:1px solid var(--line);color:var(--text);padding:4px 10px;border-radius:6px;cursor:pointer}
+  .hdr-btn{margin-left:auto;background:none;border:1px solid var(--line);color:var(--text);padding:4px 10px;border-radius:6px;cursor:pointer;text-decoration:none;font-size:13px}
+  #logout{background:none;border:1px solid var(--line);color:var(--text);padding:4px 10px;border-radius:6px;cursor:pointer}
   #tabs{display:flex;gap:6px;padding:8px 14px 0;max-width:900px;margin:0 auto}
   .tab{background:none;border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:8px 8px 0 0;cursor:pointer}
   .tab.on{background:var(--panel);color:var(--text)}
@@ -37,6 +38,7 @@
   #login h2{font-size:16px;margin-bottom:12px}
   #pin{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   #go{width:100%;background:var(--acc);border:none;color:#fff;border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+  #backDash{display:block;text-align:center;margin-top:10px;color:var(--muted);font-size:12px;text-decoration:none}
   h3{margin:12px 0 8px;font-size:14px;color:var(--muted)}
 </style>
 </head>
@@ -46,6 +48,7 @@
   <h2>🏭 РЕМЕРА · внутренний чат</h2>
   <input id="pin" type="password" placeholder="PIN" inputmode="numeric">
   <button id="go">Войти</button>
+  <a id="backDash" href="/">← К дашборду</a>
 </div>
 
 <div id="app" class="hide">
@@ -53,6 +56,7 @@
     <span id="dot"></span>
     <b>🏭 РЕМЕРА · внутренний чат</b>
     <span id="who"></span>
+    <a class="hdr-btn" href="/">🏠 Дашборд</a>
     <button id="logout">Выйти</button>
   </header>
   <div id="tabs" class="hide">
