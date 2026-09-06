@@ -134,7 +134,6 @@ let session=null, seenIds=new Set(), timer=null, curTab='chat';
 const ROLE_NAMES={director:'Директор',accountant:'Бухгалтер',worker:'Работник'};
 const urlRole=new URLSearchParams(location.search).get('role');
 
-// Группы позиций (1:1 с учебной БД): сырьё, расходники, ГП по категориям
 const GROUPS=[
   {t:'🧵 Сырьё',c:['PA-F','PES-F','PP-F','PE-F','HMPE-F','ARAM-F','SIL-F','BAS-R','GLS-R']},
   {t:'🧰 Расходники',c:['BOB-K','BOB-P','SPOOL-L','LBL-PR','LBL-TAG','PKG-STR','PKG-BAG','PKG-BOX','TAPE-PK']},
@@ -267,7 +266,6 @@ async function sendText(text){
 $('send').onclick=()=>{ const t=$('inp').value; $('inp').value=''; sendText(t); };
 $('inp').onkeydown=e=>{ if(e.key==='Enter') $('send').click(); };
 
-// --- Конструктор: ПОЛНЫЙ список с группировкой категорий ---
 function renderCodeList(q){
   const s=String(q||'').trim().toLowerCase();
   const L=$('bList');
@@ -308,7 +306,6 @@ $('bSend').onclick=async()=>{
   sendText('/'+cmd+' '+qty+' '+code);
 };
 
-// --- Импорт CSV (1С): только директор ---
 function parseCSV(text){
   const lines=String(text).split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   const rows=[];
@@ -316,7 +313,7 @@ function parseCSV(text){
     const parts=lines[i].split(/[;\t,]/);
     if(parts.length<2) continue;
     const code=parts[0].trim().toUpperCase();
-    if(i===0 && /код|code|article/i.test(code)) continue; // шапка
+    if(i===0 && /код|code|article/i.test(code)) continue;
     rows.push({code, qty:parseFloat(parts[1].replace(',','.'))});
   }
   return rows;
@@ -340,9 +337,39 @@ $('impFile').onchange=async(e)=>{
   }catch(err){ alert(err.message); }
 };
 
-// --- вкладки ---
 $('tabs').onclick=e=>{
   const t=e.target.closest('.tab');
   if(!t) return;
   curTab=t.dataset.t;
- 
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  $('view-chat').classList.toggle('hide',curTab!=='chat');
+  $('view-stock').classList.toggle('hide',curTab!=='stock');
+  $('view-journal').classList.toggle('hide',curTab!=='journal');
+  if(curTab!=='chat') loadStock();
+};
+
+async function loadStock(){
+  try{
+    const d=await api('/api/stock?pin='+encodeURIComponent(session.pin));
+    const codes=Object.keys(d.stock||{});
+    $('stockBody').innerHTML=codes.length
+      ? codes.map(c=>'<tr><td>'+esc(c)+'</td><td><b>'+d.stock[c]+'</b></td></tr>').join('')
+      : '<tr><td colspan="2">Пока пусто</td></tr>';
+    $('movBody').innerHTML=(d.movements||[]).length
+      ? (d.movements||[]).map(m=>'<tr><td>'+fmt(m.ts)+'</td><td>'+esc(m.label)+(m.status==='rejected'?' ❌':'')+'</td><td>'+(m.sign>0?'+':'−')+m.qty+'</td><td>'+esc(m.code)+'</td><td>'+(m.next??'—')+'</td><td>'+esc(m.decidedBy||m.author||'')+'</td></tr>').join('')
+      : '<tr><td colspan="6">Пока пусто</td></tr>';
+  }catch(e){ console.error('[stock error]',e); }
+}
+
+(function init(){
+  if(urlRole && ROLE_NAMES[urlRole]){
+    $('roleHint').textContent='👤 Вход в роли: '+ROLE_NAMES[urlRole];
+    $('roleHint').classList.remove('hide');
+  }
+  try{ session=JSON.parse(localStorage.getItem('wms2_session')||'null'); }catch(e){ session=null; }
+  if(session && session.pin && (!urlRole || session.role===urlRole)) start();
+  else { session=null; showLogin(); }
+})();
+</script>
+</body>
+</html>
