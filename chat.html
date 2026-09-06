@@ -232,7 +232,9 @@ async function loadStock(){
     $('roleHint').classList.remove('hide');
   }
   try{ session=JSON.parse(localStorage.getItem('wms2_session')||'null'); }catch(e){ session=null; }
-  if(session&&session.pin) start(); else showLogin();
+  // автологин только если сохранённая роль совпадает с выбранной в меню
+  if(session && session.pin && (!urlRole || session.role===urlRole)) start();
+  else { session=null; showLogin(); }
 })();
 </script>
 </body>
