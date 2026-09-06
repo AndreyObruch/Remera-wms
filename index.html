@@ -57,12 +57,23 @@
         .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
         .toolbar-sep { border-left: 1px solid var(--border); margin: 0 4px; }
         .hide { display: none !important; }
-        .chat-wrap { position: relative; margin-left: auto; }
-        .chat-main { border-color: var(--norm); color: var(--norm); font-weight: 600; }
-        .chat-main:hover { background: rgba(16, 185, 129, 0.12); }
-        .chat-menu { position: absolute; right: 0; top: calc(100% + 6px); background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; min-width: 230px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.4); overflow: hidden; }
+        .chat-wrap { position: relative; }
+        .chat-main { background: var(--norm); color: #052e1a; border-color: #0ea371; font-weight: 700; }
+        .chat-main:hover { background: #0ea371; }
+        .chat-menu { position: absolute; left: 0; top: calc(100% + 6px); background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; min-width: 230px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.4); overflow: hidden; }
         .chat-menu a { display: block; padding: 10px 14px; color: var(--text); text-decoration: none; font-size: 13px; }
         .chat-menu a:hover { background: var(--accent); color: #fff; }
+        .guide-wrap { position: relative; margin-left: auto; }
+        .guide-btn { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-weight: 600; }
+        .guide-btn:hover { background: #e2e8f0; }
+        .guide-menu { position: absolute; right: 0; top: calc(100% + 6px); width: min(440px, 92vw); max-height: 72vh; overflow-y: auto; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .guide-menu h4 { font-size: 13px; margin: 12px 0 4px; color: var(--text); }
+        .guide-menu h4:first-child { margin-top: 0; }
+        .guide-menu p { font-size: 12px; color: var(--muted); margin: 4px 0; }
+        .guide-menu ul { padding-left: 16px; margin: 4px 0; }
+        .guide-menu li { font-size: 12px; color: var(--muted); margin: 3px 0; }
+        .guide-menu li b { color: var(--text); }
+        .guide-menu code { background: var(--bg); padding: 1px 5px; border-radius: 4px; color: var(--norm); font-size: 11px; }
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; background: var(--panel-2); border-left: 4px solid var(--accent); border-radius: 6px; max-width: 420px; z-index: 1000; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: slideIn 0.3s ease; }
         .toast.success { border-left-color: var(--norm); }
         .toast.error { border-left-color: var(--crit); }
@@ -91,9 +102,8 @@
             table { font-size: 12px; }
             th, td { padding: 6px 8px; white-space: nowrap; }
             .toast { left: 10px; right: 10px; max-width: none; }
-            .chat-wrap { margin-left: 0; width: 100%; }
-            .chat-main { width: 100%; }
-            .chat-menu { min-width: 100%; }
+            .guide-wrap { margin-left: 0; width: 100%; }
+            .guide-btn { width: 100%; }
         }
     </style>
 </head>
@@ -127,6 +137,44 @@
                 <a href="/chat.html?role=director">👔 Вход для директора</a>
                 <a href="/chat.html?role=accountant">📋 Вход для бухгалтера</a>
                 <a href="/chat.html?role=worker">👷 Вход для работника</a>
+            </div>
+        </div>
+
+        <div class="guide-wrap">
+            <button class="secondary guide-btn" id="guideBtn">❓ Руководство</button>
+            <div class="guide-menu hide" id="guideMenu">
+                <h4>❓ Как работает WMS «Ремера»</h4>
+                <p>Здесь два контура: <b>учебная БД</b> (этот дашборд) и <b>внутренний чат</b> — живая отчётность с пола цеха.</p>
+
+                <h4>👷 Работник: рапорт за 10 секунд</h4>
+                <ul>
+                    <li>Дашборд → <b>💬 Чат</b> → «Вход для работника» → свой PIN.</li>
+                    <li>Набери команду, например <code>/расход 5 PA-F</code> — и отправь.</li>
+                    <li>Команды: <code>/расход</code> <code>/приход</code> <code>/отгрузка</code> <code>/производство</code>; <code>/коды</code> — список кодов, <code>/список</code> — справка.</li>
+                </ul>
+
+                <h4>👔 Директор: согласование проводок</h4>
+                <ul>
+                    <li>«Вход для директора» → свой PIN.</li>
+                    <li>Жёлтая карточка сверху — рапорт, ждущий решения.</li>
+                    <li><b>Провести</b> — операция попадёт в журнал, остатки изменятся. <b>Отклонить</b> — рапорт отменён.</li>
+                    <li>Вкладки «Остатки» и «Журнал» — текущая картина склада.</li>
+                </ul>
+
+                <h4>📋 Бухгалтер: только чтение</h4>
+                <ul>
+                    <li>«Вход для бухгалтера» → свой PIN.</li>
+                    <li>Доступны «Остатки» и «Журнал» для сверки с 1С, поля ввода нет.</li>
+                </ul>
+
+                <h4>📦 Обмен с 1С</h4>
+                <ul>
+                    <li><b>📥 CSV: 1С (остатки)</b> — загрузить начальные остатки в учебную БД.</li>
+                    <li><b>📄 CSV: Склад / Движения</b> — выгрузка данных для бухгалтера.</li>
+                </ul>
+
+                <h4>🔐 Доступ</h4>
+                <p>PIN выдаёт директор. Ошибся в PIN — система попросит ввести снова и не пустит в чужую роль.</p>
             </div>
         </div>
     </div>
@@ -280,14 +328,23 @@
     </main>
 
     <script>
-        // Выпадающее меню кнопки «Чат»
-        document.getElementById('chatBtn').addEventListener('click', function (e) {
-            e.stopPropagation();
-            document.getElementById('chatMenu').classList.toggle('hide');
-        });
-        document.addEventListener('click', function () {
+        // Выпадающие меню «Чат» и «Руководство»: открываются по одному, закрываются кликом мимо
+        function closeMenus() {
             document.getElementById('chatMenu').classList.add('hide');
-        });
+            document.getElementById('guideMenu').classList.add('hide');
+        }
+        function bindMenu(btnId, menuId) {
+            document.getElementById(btnId).addEventListener('click', function (e) {
+                e.stopPropagation();
+                const m = document.getElementById(menuId);
+                const was = m.classList.contains('hide');
+                closeMenus();
+                if (was) m.classList.remove('hide');
+            });
+        }
+        bindMenu('chatBtn', 'chatMenu');
+        bindMenu('guideBtn', 'guideMenu');
+        document.addEventListener('click', closeMenus);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
