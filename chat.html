@@ -36,6 +36,7 @@
   #send{background:var(--acc);border:none;border-radius:10px;width:44px;color:#fff;cursor:pointer;font-size:16px}
   #login{max-width:340px;margin:15vh auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
   #login h2{font-size:16px;margin-bottom:12px}
+  #roleHint{font-size:12px;color:var(--warn);margin-bottom:10px}
   #pin{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   #go{width:100%;background:var(--acc);border:none;color:#fff;border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
   #backDash{width:100%;margin-top:10px;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:9px;cursor:pointer;font-size:13px}
@@ -47,6 +48,7 @@
 
 <div id="login" class="hide">
   <h2>🏭 РЕМЕРА · внутренний чат</h2>
+  <div id="roleHint" class="hide"></div>
   <input id="pin" type="password" placeholder="PIN" inputmode="numeric">
   <button id="go">Войти</button>
   <button id="backDash" onclick="location.href='/'">🏠 Вернуться в меню</button>
@@ -89,6 +91,9 @@
 const $=id=>document.getElementById(id);
 let session=null, seenIds=new Set(), timer=null, curTab='chat';
 
+const ROLE_NAMES={director:'Директор',accountant:'Бухгалтер',worker:'Работник'};
+const urlRole=new URLSearchParams(location.search).get('role');
+
 async function api(path,opts){
   const r=await fetch(path,opts);
   const j=await r.json().catch(()=>({}));
@@ -106,10 +111,16 @@ $('go').onclick=async()=>{
   if(!pin) return;
   try{
     const j=await api('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
+    // PIN обязан совпадать с ролью, выбранной в меню дашборда
+    if(urlRole && j.role!==urlRole){
+      alert('❌ Неверный PIN для роли «'+(ROLE_NAMES[urlRole]||urlRole)+'».\nЭтот код принадлежит другой роли — введите PIN ещё раз.');
+      $('pin').value='';
+      return;
+    }
     session={pin,role:j.role,name:j.name};
     localStorage.setItem('wms2_session',JSON.stringify(session));
     start();
-  }catch(e){ alert(e.message); }
+  }catch(e){ alert(e.message); $('pin').value=''; }
 };
 $('pin').onkeydown=e=>{ if(e.key==='Enter') $('go').click(); };
 $('logout').onclick=()=>{ localStorage.removeItem('wms2_session'); location.reload(); };
@@ -216,6 +227,10 @@ async function loadStock(){
 }
 
 (function init(){
+  if(urlRole && ROLE_NAMES[urlRole]){
+    $('roleHint').textContent='👤 Вход в роли: '+ROLE_NAMES[urlRole];
+    $('roleHint').classList.remove('hide');
+  }
   try{ session=JSON.parse(localStorage.getItem('wms2_session')||'null'); }catch(e){ session=null; }
   if(session&&session.pin) start(); else showLogin();
 })();
