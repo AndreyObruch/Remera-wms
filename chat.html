@@ -19,11 +19,12 @@
   .tab{background:none;border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:8px 8px 0 0;cursor:pointer}
   .tab.on{background:var(--panel);color:var(--text)}
   main{max-width:900px;margin:0 auto;padding:12px 14px 150px}
+  #queue{position:sticky;top:52px;z-index:25}
   .msg{max-width:75%;margin:8px 0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);white-space:pre-wrap}
   .msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
   .msg.me{margin-left:auto;border-color:var(--acc)}
   .msg.sys{border-color:var(--ok)}
-  .qcard{border:1px solid var(--warn);border-radius:10px;padding:10px;margin:10px 0;background:var(--panel)}
+  .qcard{border:1px solid var(--warn);border-radius:10px;padding:10px;margin:10px 0;background:var(--panel);box-shadow:0 6px 18px rgba(0,0,0,0.45)}
   .qcard .muted{color:var(--muted);font-size:12px;margin:4px 0 8px}
   .row{display:flex;gap:8px}
   button.ok{flex:1;background:var(--ok);border:none;color:#06240f;font-weight:600;padding:8px;border-radius:8px;cursor:pointer}
@@ -38,7 +39,7 @@
   .combo{position:relative;flex:1 1 160px}
   #bCode{width:100%;background:var(--bg);border:1px solid var(--lite-line);color:var(--text);border-radius:10px;padding:8px 10px}
   #bQty{width:92px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px}
-  #bList{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--lite);border:1px solid var(--lite-line);border-radius:10px;max-height:240px;overflow-y:auto;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,0.55)}
+  #bList{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--lite);border:1px solid var(--lite-line);border-radius:10px;max-height:300px;overflow-y:auto;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,0.55)}
   .bItem{padding:9px 12px;font-size:12.5px;cursor:pointer;color:var(--lite-text);border-bottom:1px solid rgba(30,64,175,0.15)}
   .bItem:last-child{border-bottom:none}
   .bItem b{color:var(--lite-acc)}
@@ -234,12 +235,11 @@ async function sendText(text){
 $('send').onclick=()=>{ const t=$('inp').value; $('inp').value=''; sendText(t); };
 $('inp').onkeydown=e=>{ if(e.key==='Enter') $('send').click(); };
 
-// --- конструктор команды: поиск кода ---
+// --- конструктор команды: ПОЛНЫЙ список позиций с поиском ---
 function renderCodeList(q){
   const s=String(q||'').trim().toLowerCase();
   const items=Object.entries(NOM)
-    .filter(([c,n])=>!s||c.toLowerCase().includes(s)||n.toLowerCase().includes(s))
-    .slice(0,8);
+    .filter(([c,n])=>!s||c.toLowerCase().includes(s)||n.toLowerCase().includes(s));
   const L=$('bList');
   if(!items.length){ L.classList.add('hide'); return; }
   L.innerHTML=items.map(([c,n])=>'<div class="bItem" data-c="'+c+'"><b>'+c+'</b> — '+esc(n)+'</div>').join('');
