@@ -65,10 +65,29 @@
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         /* ============================================================
+           БАННЕР ВНУТРЕННЕГО ЧАТА (контур v2)
+           ============================================================ */
+        .chat-banner {
+            display: flex; align-items: center; gap: 16px;
+            padding: 14px 18px; margin-bottom: 20px;
+            background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(59,130,246,0.08));
+            border: 1px solid var(--norm); border-left: 4px solid var(--norm);
+            border-radius: 10px;
+        }
+        .chat-banner .chat-icon { font-size: 28px; }
+        .chat-banner .chat-info { flex: 1; }
+        .chat-banner .chat-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .chat-banner .chat-desc { font-size: 12px; color: var(--muted); }
+        .chat-banner .chat-btn {
+            display: inline-block; padding: 8px 18px;
+            background: var(--norm); color: #052e1a; text-decoration: none;
+            border-radius: 6px; font-weight: 700; font-size: 13px;
+            white-space: nowrap; transition: background 0.2s;
+        }
+        .chat-banner .chat-btn:hover { background: #0ea371; }
+
+        /* ============================================================
            МОБИЛЬНАЯ АДАПТАЦИЯ (<= 768px)
-           ФИЗИКА: директор открывает с телефона — сетки складываются
-           в одну колонку, таблицы скроллятся внутри панели,
-           навигация 2x2. min-width:0 лечит распирание grid/flex.
            ============================================================ */
         @media (max-width: 768px) {
             html, body { overflow-x: hidden; max-width: 100%; }
@@ -87,6 +106,9 @@
             table { font-size: 12px; }
             th, td { padding: 6px 8px; white-space: nowrap; }
             .toast { left: 10px; right: 10px; max-width: none; }
+            .chat-banner { flex-wrap: wrap; gap: 10px; padding: 12px; }
+            .chat-banner .chat-info { flex-basis: 100%; }
+            .chat-banner .chat-btn { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -100,6 +122,16 @@
             <span id="dbStatus">● Инициализация...</span> | <span id="currentDate"></span>
         </div>
     </header>
+
+    <!-- БАССЕЙНЕР ВНУТРЕННЕГО ЧАТА (v2-контур) -->
+    <div class="chat-banner">
+        <div class="chat-icon">💬</div>
+        <div class="chat-info">
+            <div class="chat-title">Внутренний чат · отчётность WMS</div>
+            <div class="chat-desc">Мобильные рапорты работников, очередь проводок директора, остатки и журнал бухгалтера — всё в одном окне, с телефона.</div>
+        </div>
+        <a class="chat-btn" href="/chat.html">Открыть чат →</a>
+    </div>
 
     <div class="toolbar">
         <button class="secondary" onclick="downloadSQLite()">💾 Скачать БД</button>
