@@ -1,4 +1,4 @@
-// api/approve.js — v2: сначала проверки, потом изменения (без потери проводки)
+// api/approve.js — v3: идемпотентность (двойной клик без alert)
 import { checkPin } from '../lib/core.js';
 import { withState, uid } from '../lib/store.js';
 
@@ -17,7 +17,14 @@ export default async function handler(req, res) {
 
     const result = await withState((state) => {
       const idx = state.pending.findIndex((p) => p.id === id && p.status === 'pending');
-      if (idx < 0) return { ok: false, reason: 'not-found' };
+
+      // Уже обработана (есть в журнале) — молча ok, без alert
+      if (idx < 0) {
+        const done = (state.movements || []).some((m) => m.id === id);
+        if (done) return { ok: true, dup: true };
+        return { ok: false, reason: 'not-found' };
+      }
+
       const op = state.pending[idx];
 
       if (action === 'approve') {
@@ -56,7 +63,7 @@ export default async function handler(req, res) {
       if (result.reason === 'stock-negative')
         return res.status(400).json({ error: `Остаток ${result.code} ушёл бы в минус (${result.prev})` });
     }
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, dup: !!result.dup });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
