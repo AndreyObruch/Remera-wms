@@ -18,7 +18,7 @@
   #tabs{display:flex;gap:6px;padding:8px 14px 0;max-width:900px;margin:0 auto}
   .tab{background:none;border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:8px 8px 0 0;cursor:pointer}
   .tab.on{background:var(--panel);color:var(--text)}
-  main{max-width:900px;margin:0 auto;padding:12px 14px 90px}
+  main{max-width:900px;margin:0 auto;padding:12px 14px 150px}
   .msg{max-width:75%;margin:8px 0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);white-space:pre-wrap}
   .msg .meta{font-size:11px;color:var(--muted);margin-bottom:4px}
   .msg.me{margin-left:auto;border-color:var(--acc)}
@@ -31,7 +31,17 @@
   table{width:100%;border-collapse:collapse;background:var(--panel)}
   th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
   th{color:var(--muted);font-weight:500}
-  #bar{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:8px}
+  #bar{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:8px;z-index:10}
+  #builder,#freeRow{display:flex;gap:6px;width:100%}
+  #builder{flex-wrap:wrap}
+  #bCmd{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px;flex:1 1 130px}
+  .combo{position:relative;flex:1 1 160px}
+  #bCode{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px}
+  #bQty{width:92px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px}
+  #bList{position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;max-height:230px;overflow-y:auto;z-index:60}
+  .bItem{padding:8px 10px;font-size:12px;cursor:pointer;color:var(--text)}
+  .bItem:hover{background:var(--acc);color:#fff}
+  #bSend{background:var(--ok);border:none;border-radius:10px;width:44px;color:#06240f;cursor:pointer;font-size:16px;font-weight:700}
   #inp{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px}
   #send{background:var(--acc);border:none;border-radius:10px;width:44px;color:#fff;cursor:pointer;font-size:16px}
   #login{max-width:340px;margin:15vh auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
@@ -82,8 +92,26 @@
     </div>
   </main>
   <div id="bar">
-    <input id="inp" placeholder="/расход 5 PA-F">
-    <button id="send">➤</button>
+    <div id="builder">
+      <select id="bCmd">
+        <option value="расход">⚙️ Расход</option>
+        <option value="приход">📥 Приход</option>
+        <option value="отгрузка">🚚 Отгрузка</option>
+        <option value="производство">🏭 Производство</option>
+        <option value="/коды">📋 Коды</option>
+        <option value="/список">❓ Справка</option>
+      </select>
+      <div class="combo">
+        <input id="bCode" placeholder="Код или название…" autocomplete="off">
+        <div id="bList" class="hide"></div>
+      </div>
+      <input id="bQty" type="number" min="0" step="any" placeholder="Кол-во">
+      <button id="bSend">➤</button>
+    </div>
+    <div id="freeRow">
+      <input id="inp" placeholder="или вручную: /расход 5 PA-F">
+      <button id="send">➤</button>
+    </div>
   </div>
 </div>
 
@@ -93,6 +121,8 @@ let session=null, seenIds=new Set(), timer=null, curTab='chat';
 
 const ROLE_NAMES={director:'Директор',accountant:'Бухгалтер',worker:'Работник'};
 const urlRole=new URLSearchParams(location.search).get('role');
+
+const NOM={'PA-F':'Нить полиамидная (капрон)','PES-F':'Нить полиэфирная','PP-F':'Нить полипропиленовая','PE-F':'Нить полиэтиленовая','HMPE-F':'Волокно HMPE (Dyneema)','ARAM-F':'Нить арамидная (Русар)','SIL-F':'Волокно кремнеземное','BAS-R':'Ровинг базальтовый','GLS-R':'Ровинг стеклянный','BOB-K':'Бобины картонные','BOB-P':'Бобины пластиковые','PKG-STR':'Стрейч-плёнка','PKG-BAG':'Пакеты ПЭ','STAT-10':'Верёвка статическая 10мм','STAT-11':'Верёвка статическая 11мм','DYN-105':'Верёвка динамическая 10.5мм','REP-6':'Репшнур 6мм','REP-7':'Репшнур 7мм (арамид)','ARAM-6':'Шнур арамидный 6мм','HMPE-6':'Канат HMPE 6мм','HMPE-10':'Канат HMPE 10мм','PA-8':'Канат ПА 8мм','PA-10':'Канат ПА 10мм','PA-12':'Канат ПА 12мм','PP-10':'Канат ПП 10мм','PP-16':'Канат ПП 16мм','PP-24':'Канат ПП 24мм','SIL-8':'Шнур кремнеземный 8мм','SIL-12':'Шнур кремнеземный 12мм','BAS-8':'Шнур базальтовый 8мм','BAS-10':'Шнур базальтовый 10мм','YAHT-8':'Канат яхтенный 8мм','FISH-25':'Шнур рыболовный 2.5мм','CABLE-6':'Канат для протяжки 6мм','FENCE-8':'Канат ограждающий 8мм','BAG-4':'Шнур для пакетов 4мм','BANNER-4':'Шнур баннерный 4мм'};
 
 async function api(path,opts){
   const r=await fetch(path,opts);
@@ -111,7 +141,6 @@ $('go').onclick=async()=>{
   if(!pin) return;
   try{
     const j=await api('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
-    // PIN обязан совпадать с ролью, выбранной в меню дашборда
     if(urlRole && j.role!==urlRole){
       alert('❌ Неверный PIN для роли «'+(ROLE_NAMES[urlRole]||urlRole)+'».\nЭтот код принадлежит другой роли — введите PIN ещё раз.');
       $('pin').value='';
@@ -187,21 +216,54 @@ $('queue').onclick=async(e)=>{
   }catch(err){ alert(err.message); b.disabled=false; }
 };
 
-$('send').onclick=send;
-$('inp').onkeydown=e=>{ if(e.key==='Enter') send(); };
-async function send(){
-  const text=$('inp').value.trim();
+// --- отправка ---
+async function sendText(text){
+  text=String(text||'').trim();
   if(!text) return;
-  $('send').disabled=true;
+  $('send').disabled=true; $('bSend').disabled=true;
   try{
     await api('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({pin:session.pin,text})});
-    $('inp').value='';
     poll();
   }catch(e){ alert(e.message); }
-  $('send').disabled=false;
+  $('send').disabled=false; $('bSend').disabled=false;
 }
+$('send').onclick=()=>{ const t=$('inp').value; $('inp').value=''; sendText(t); };
+$('inp').onkeydown=e=>{ if(e.key==='Enter') $('send').click(); };
 
+// --- конструктор команды: поиск кода ---
+function renderCodeList(q){
+  const s=String(q||'').trim().toLowerCase();
+  const items=Object.entries(NOM)
+    .filter(([c,n])=>!s||c.toLowerCase().includes(s)||n.toLowerCase().includes(s))
+    .slice(0,8);
+  const L=$('bList');
+  if(!items.length){ L.classList.add('hide'); return; }
+  L.innerHTML=items.map(([c,n])=>'<div class="bItem" data-c="'+c+'"><b>'+c+'</b> — '+esc(n)+'</div>').join('');
+  L.classList.remove('hide');
+}
+$('bCode').addEventListener('focus',()=>renderCodeList($('bCode').value));
+$('bCode').addEventListener('input',()=>renderCodeList($('bCode').value));
+$('bList').addEventListener('mousedown',e=>{
+  const it=e.target.closest('.bItem');
+  if(!it) return;
+  $('bCode').value=it.dataset.c;
+  $('bList').classList.add('hide');
+});
+$('bCode').addEventListener('blur',()=>setTimeout(()=>$('bList').classList.add('hide'),150));
+
+$('bSend').onclick=async()=>{
+  const cmd=$('bCmd').value;
+  if(cmd.startsWith('/')){ sendText(cmd); return; }
+  const code=$('bCode').value.trim().toUpperCase();
+  const qty=parseFloat(String($('bQty').value).replace(',','.'));
+  if(!NOM[code]){ alert('Выбери код из выпадающего списка (начни писать код или название).'); return; }
+  if(!(qty>0)){ alert('Укажи количество больше нуля.'); return; }
+  $('bQty').value='';
+  sendText('/'+cmd+' '+qty+' '+code);
+};
+
+// --- вкладки ---
 $('tabs').onclick=e=>{
   const t=e.target.closest('.tab');
   if(!t) return;
@@ -232,7 +294,6 @@ async function loadStock(){
     $('roleHint').classList.remove('hide');
   }
   try{ session=JSON.parse(localStorage.getItem('wms2_session')||'null'); }catch(e){ session=null; }
-  // автологин только если сохранённая роль совпадает с выбранной в меню
   if(session && session.pin && (!urlRole || session.role===urlRole)) start();
   else { session=null; showLogin(); }
 })();
