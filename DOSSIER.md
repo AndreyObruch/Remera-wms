@@ -1,64 +1,45 @@
-# ДОСЬЕ · WMS «РЕМЕРА» v2.0 «ВНУТРЕННИЙ КОНТУР»
-Обновлено: 2026-09-06. Закрыт этап: сквозной тест Фаза 1 (работник + директор).
+# Dossier · WMS "REMEMERA" v2.0 "Internal Contour"
+Updated: 2026-09-06. Stage closed: Phase 2 (posting), cleanup (R5/R6), end-to-end test of Phase 1.
 
-## 0. ПРАВИЛА
-0.1. Одна команда на ответ, пошагово.
-0.2. Готовый файл на замену: полный текст + точный путь.
-0.3. Без переноса в новый чат; после каждого закрытого этапа — обновлённый DOSSIER.md файлом.
-0.4. Футер: «📊 Заполненность ~X% | Сжатие».
-0.5. К деплою — готовый текст коммита.
-0.6. Меньше комментариев, кратко и по делу (требование пользователя).
+## 0. Rules
+0.1. One command per response, step by step; comments brief and to the point.
+0.2. File for replacement: full text + exact path; verify that the file appears in the GitHub Desktop change list; after commit — Push origin (check the button); build marker/behavior — indicator of arrival ("build", alert, behavior).
+0.3. No migration to a new chat; after each closed stage — updated DOSSIER.md as a file.
+0.4. Footer: "📊 Fill rate ~X% | Compression".
 
-## 1. ЦЕЛЬ
-Работник: телефон → PIN → рапорт в чате. Директор: очередь → «Провести» → остаток меняется.
-Без MAX/Telegram. Данные — Vercel Blob private. Эволюция: роль бухгалтера.
+## 1. Goal
+Worker: phone → PIN → report in chat. Director: queue → "Execute" → balance changes on the server side. No MAX/Telegram. Data — Blob private. Evolution: accountant role.
 
-## 2. АРХИТЕКТУРА
-Домен: https://remera-wms-bvii.vercel.app (две i). Чат: /chat.html.
-chat.html → /api/auth, /api/chat, (/api/approve, /api/stock — создать) → lib/core.js + lib/store.js → Blob remera-private.
-SDK @vercel/blob latest: access:'private' во ВСЕХ операциях; allowOverwrite:true при перезаписи.
-get() возвращает {statusCode, stream, headers, blob}; чтение тела: blob.blob.text() или new Response(blob.stream).text().
+## 2. Architecture
+Domain: https://remera-wms-bvii.vercel.app (two i's). Chat: /chat.html (session in localStorage; "Logout"/incognito).
+chat.html → /api/auth, /api/chat, /api/approve → lib/core.js + lib/store.js v13 → Blob remera-private (wms2/state.json).
+SDK @vercel/blob latest: access:'private' on all operations; allowOverwrite:true; get() = {statusCode, stream, headers, blob}; body reading: blob.blob.text() or new Response(blob.stream).text().
 
-## 3. ДАННЫЕ (wms2/state.json)
-{version, stock:{CODE:qty}, pending:[...], movements:[...], messages:[...]}
-approve → movements + stock по sign (receipt/production +1; consumption/sale −1).
+## 3. Data (wms2/state.json)
+{version, stock:{CODE:qty}, pending:[], movements:[], messages:[]}
+approve → movements + stock by sign; protection against negative balance; repeated posting → 404 "Posting not found" (safe).
 
-## 4. ENV
-WORKER_PIN=1234, DIRECTOR_PIN=5678, PRIV_READ_WRITE_TOKEN, PRIV_STORE_ID, PRIV_WEBHOOK_PUBLIC_KEY.
-Удалить в уборке: MAX_BOT_TOKEN, TELEGRAM_*.
+## 4. Env (reference)
+WORKER_PIN=1234, DIRECTOR_PIN=5678, PRIV_READ_WRITE_TOKEN, PRIV_STORE_ID, PRIV_WEBHOOK_PUBLIC_KEY. MAX_*/TELEGRAM_* have been deleted.
 
-## 5. ФАЙЛЫ
-chat.html — рабочий (мгновенный poll, анти-дубли, сессия в localStorage).
-api/auth.js — рабочий. api/chat.js v2 — рабочий (с логами).
-lib/core.js — рабочий. lib/store.js v13 — рабочий (чтение починено).
-api/debug.js (debug-11) — УДАЛИТЬ в уборке. Создать: api/approve.js, api/stock.js.
+## 5. Files
+Working: chat.html, api/auth.js, api/chat.js v2 (with server logs), api/approve.js v2, lib/core.js, lib/store.js v13.
+Deleted: api/debug.js, bot files, old store. To be created: api/stock.js, accountant interface.
 
-## 6. СДЕЛАНО
-Ремонт: старый store удалён; bot-файлы удалены; SDK latest (Redeploy without cache);
-store.js v8→v13; PIN 1234/5678; чат обновлён.
-Сквозной тест 06.09: работник — команда+ответ в ленте; директор — лента+карточка очереди. ПРОЙДЕНО.
+## 6. Completed
+Repair (store, SDK, PIN) → end-to-end test of Phase 1 (worker+director) → cleanup (debug.js, Env) → Phase 2: approve.js v2; tests 06.09: protection against negative (alert, card remains), receipt 0→10, issue 10→5. All passed.
 
-## 7. УРОКИ (кратко)
-7.1 SDK 0.27 не знает private → latest.
-7.2 Без lockfile build-кэш не инвалидируется → Redeploy without cache.
-7.3 Новый SDK: access обязателен во всех операциях.
-7.4 createRequire — только в try-catch (краш на верхнем уровне).
-7.5 Пустой/битый state.json → defaultState.
-7.6 Перезапись blob → allowOverwrite:true.
-7.7 Форма get() нового SDK: тело в blob.blob / blob.stream.
-7.8 Env — только со следующим деплоем.
-7.9 «No local changes» = файл не перезаписан; проверять файл в списке изменений.
-7.10 build-маркер debug.js = индикатор доезда коммита.
-7.11 Locked Env снимаются через Delete Store.
-7.12 Автовход через localStorage; смена роли — «Выйти»/инкогнито.
+## 7. Lessons (new)
+7.1 NOT_FOUND at new endpoint = commit hasn't arrived (Push not pressed).
+7.2 Double-click on "Execute": first POST posts, second gives 404 alert — data intact; UX fix pending (disable double-submit/idempotency).
+7.3 withState always saves — risk of overwriting on read failure; hardening v14 pending (don't save if blob exists but is unreadable).
+7.4 Old lessons: SDK latest + Redeploy without cache; access on all operations; allowOverwrite; empty/corrupt JSON → defaultState; get() shape {stream, blob}; "No local changes" = file not overwritten; Env from next deploy.
 
-## 8. ДОРОЖНАЯ КАРТА
-R5: удалить api/debug.js (коммит).
-R6: удалить Env MAX_BOT_TOKEN/TELEGRAM_*.
-Фаза 2: api/approve.js (Провести/Отклонить → movements + stock); api/stock.js; тест проводки.
-Фаза B: ACCOUNTANT_PIN + вкладки «Остатки»/«Журнал» (чтение).
-Фаза 3: уведомления (Resend — открытый вопрос). Фаза 4: импорт 1С, бейдж v1.
-Фаза 5: QR, аналитика, JWT.
+## 8. Roadmap
+Step A (optional hardening): store.js v14 (overwrite protection) + approve.js v3 (double-click protection).
+Phase B: ACCOUNTANT_PIN + tabs "Balance"/"Journal" (read-only) + api/stock.js.
+Phase 3: notifications (Resend — open question). Phase 4: 1C import, v1 badge. Phase 5: QR, analytics, JWT.
+After each stage — update the dossier.
 
-## 9. РИСКИ
-Blob без транзакций (ок для 2–3 пользователей); PIN = MVP (JWT в Фазе 5).
+## 9. Risks
+Blob without transactions (OK for 2–3 users); PIN = MVP (JWT in Phase 5).
