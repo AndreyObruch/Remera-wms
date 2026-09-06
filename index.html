@@ -63,19 +63,7 @@
         .chat-menu a { display: block; padding: 10px 14px; color: var(--text); text-decoration: none; font-size: 13px; }
         .chat-menu a:hover { background: var(--accent); color: #fff; }
         .guide-wrap { position: relative; margin-left: auto; }
-        .guide-btn { background: #ffffff !important; color: #000 !important; border: 1px solid #cbd5e1 !important; font-weight: 600; }
-        .guide-menu { position: absolute; right: 0; top: calc(100% + 6px); width: min(500px, 92vw); max-height: 76vh; overflow-y: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
-        .g-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-        .g-lead { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.6; }
-        .g-sec { background: var(--panel-2); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
-        .g-sec-head { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
-        .g-sec ol { padding-left: 18px; margin: 0; }
-        .g-sec li { font-size: 12.5px; color: var(--text); margin: 5px 0; line-height: 1.55; }
-        .g-cmds { margin-top: 8px; background: var(--bg); border-radius: 6px; padding: 10px 12px; font-size: 12px; color: var(--muted); line-height: 2; }
-        .g-cmds code { background: none; color: var(--norm); font-weight: 700; padding: 0; }
-        .g-ok { color: var(--norm); }
-        .g-bad { color: var(--crit); }
-        .g-note { font-size: 12px; color: var(--muted); margin-top: 12px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 8px; }
+        .guide-btn { background: #ffffff !important; color: #000 !important; border: 1px solid #cbd5e1 !important; font-weight: 600; display: inline-block; text-decoration: none; }
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; background: var(--panel-2); border-left: 4px solid var(--accent); border-radius: 6px; max-width: 420px; z-index: 1000; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: slideIn 0.3s ease; }
         .toast.success { border-left-color: var(--norm); }
         .toast.error { border-left-color: var(--crit); }
@@ -106,7 +94,7 @@
             .toast { left: 10px; right: 10px; max-width: none; }
             .chat-wrap { margin-left: 0; }
             .guide-wrap { margin-left: 0; width: 100%; }
-            .guide-btn { width: 100%; }
+            .guide-btn { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -135,7 +123,7 @@
         <button class="secondary onec" onclick="download1CTemplate()">📋 Шаблон 1С</button>
 
         <div class="chat-wrap">
-            <button class="secondary chat-main" id="chatBtn">💬 Чат </button>
+            <button class="secondary chat-main" id="chatBtn">💬 Чат</button>
             <div class="chat-menu hide" id="chatMenu">
                 <a href="/chat.html?role=director">👔 Вход для директора</a>
                 <a href="/chat.html?role=accountant">📋 Вход для бухгалтера</a>
@@ -144,54 +132,7 @@
         </div>
 
         <div class="guide-wrap">
-            <button class="secondary guide-btn" id="guideBtn">❓ Руководство</button>
-            <div class="guide-menu hide" id="guideMenu">
-                <div class="g-title">❓ Руководство по WMS «Ремера»</div>
-                <div class="g-lead">Дашборд — учебная база для тренировок. Чат — живая отчётность цеха. У каждой роли свой PIN и свои возможности.</div>
-
-                <div class="g-sec">
-                    <div class="g-sec-head">👷 Работник — сдаёт рапорт</div>
-                    <ol>
-                        <li>Нажми <b>💬 Чат</b> → «Вход для работника» → введи свой PIN.</li>
-                        <li>Набери команду и нажми ➤. Ответ придёт мгновенно.</li>
-                    </ol>
-                    <div class="g-cmds">
-                        <code>/расход 5 PA-F</code> — выдал 5 бобин в производство<br>
-                        <code>/приход 10 PA-F</code> — принял 10 бобин от поставщика<br>
-                        <code>/отгрузка 3 PP-16</code> — отгрузил 3 клиенту<br>
-                        <code>/производство 20 STAT-10</code> — сплёл 20 готовой продукции<br>
-                        <code>/коды</code> — список кодов · <code>/список</code> — все команды
-                    </div>
-                </div>
-
-                <div class="g-sec">
-                    <div class="g-sec-head">👔 Директор — согласует проводки</div>
-                    <ol>
-                        <li>Нажми <b>💬 Чат</b> → «Вход для директора» → свой PIN.</li>
-                        <li>Жёлтая карточка сверху — рапорт работника, ждёт решения.</li>
-                        <li><b class="g-ok">Провести</b> — операция встанет в журнал, остатки изменятся.<br><b class="g-bad">Отклонить</b> — рапорт отменён, остатки не тронуты.</li>
-                        <li>Вкладки «Остатки» и «Журнал» — текущая картина склада.</li>
-                    </ol>
-                </div>
-
-                <div class="g-sec">
-                    <div class="g-sec-head">📋 Бухгалтер — сверяет с 1С</div>
-                    <ol>
-                        <li>Нажми <b>💬 Чат</b> → «Вход для бухгалтера» → свой PIN.</li>
-                        <li>Открыты «Остатки» и «Журнал» — только чтение, без поля ввода.</li>
-                    </ol>
-                </div>
-
-                <div class="g-sec">
-                    <div class="g-sec-head">📦 Обмен с 1С (учебная БД)</div>
-                    <ol>
-                        <li><b>📥 CSV: 1С (остатки)</b> — загрузить начальные остатки из 1С.</li>
-                        <li><b>📄 CSV: Склад / Движения</b> — выгрузить данные для бухгалтера.</li>
-                    </ol>
-                </div>
-
-                <div class="g-note">🔐 PIN выдаёт директор. Ошибся в PIN — система попросит ввести снова и не пустит в чужую роль.</div>
-            </div>
+            <a class="secondary guide-btn" href="/guide.html">❓ Руководство</a>
         </div>
     </div>
 
@@ -344,22 +285,17 @@
     </main>
 
     <script>
-        // Выпадающие меню «Чат» и «Руководство»: открываются по одному, закрываются кликом мимо
+        // Выпадающее меню «Чат»: закрывается кликом мимо
         function closeMenus() {
             document.getElementById('chatMenu').classList.add('hide');
-            document.getElementById('guideMenu').classList.add('hide');
         }
-        function bindMenu(btnId, menuId) {
-            document.getElementById(btnId).addEventListener('click', function (e) {
-                e.stopPropagation();
-                const m = document.getElementById(menuId);
-                const was = m.classList.contains('hide');
-                closeMenus();
-                if (was) m.classList.remove('hide');
-            });
-        }
-        bindMenu('chatBtn', 'chatMenu');
-        bindMenu('guideBtn', 'guideMenu');
+        document.getElementById('chatBtn').addEventListener('click', function (e) {
+            e.stopPropagation();
+            const m = document.getElementById('chatMenu');
+            const was = m.classList.contains('hide');
+            closeMenus();
+            if (was) m.classList.remove('hide');
+        });
         document.addEventListener('click', closeMenus);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
