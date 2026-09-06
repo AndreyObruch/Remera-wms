@@ -40,7 +40,7 @@
         .status.norm { background: rgba(16, 185, 129, 0.15); color: var(--norm); }
         .status.warn { background: rgba(245, 158, 11, 0.15); color: var(--warn); }
         .status.crit { background: rgba(239, 68, 68, 0.15); color: var(--crit); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+        .status-dot { width: 8px; height; 8px; border-radius: 50%; background: currentColor; }
         .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
         select, input, textarea, button { font-family: inherit; font-size: 13px; }
         select, input, textarea { padding: 8px 12px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); }
@@ -57,23 +57,27 @@
         .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
         .toolbar-sep { border-left: 1px solid var(--border); margin: 0 4px; }
         .hide { display: none !important; }
-        .chat-wrap { position: relative; }
-        .chat-main { background: var(--norm); color: #052e1a; border-color: #0ea371; font-weight: 700; }
+        .chat-wrap { position: relative; margin-left: 16px; }
+        .chat-main { background: var(--norm); color: #000; border-color: var(--norm); font-weight: 700; }
         .chat-main:hover { background: #0ea371; }
         .chat-menu { position: absolute; left: 0; top: calc(100% + 6px); background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; min-width: 230px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.4); overflow: hidden; }
         .chat-menu a { display: block; padding: 10px 14px; color: var(--text); text-decoration: none; font-size: 13px; }
         .chat-menu a:hover { background: var(--accent); color: #fff; }
         .guide-wrap { position: relative; margin-left: auto; }
-        .guide-btn { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-weight: 600; }
+        .guide-btn { background: #ffffff; color: #000; border: 1px solid #cbd5e1; font-weight: 600; }
         .guide-btn:hover { background: #e2e8f0; }
-        .guide-menu { position: absolute; right: 0; top: calc(100% + 6px); width: min(440px, 92vw); max-height: 72vh; overflow-y: auto; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-        .guide-menu h4 { font-size: 13px; margin: 12px 0 4px; color: var(--text); }
-        .guide-menu h4:first-child { margin-top: 0; }
-        .guide-menu p { font-size: 12px; color: var(--muted); margin: 4px 0; }
-        .guide-menu ul { padding-left: 16px; margin: 4px 0; }
-        .guide-menu li { font-size: 12px; color: var(--muted); margin: 3px 0; }
-        .guide-menu li b { color: var(--text); }
-        .guide-menu code { background: var(--bg); padding: 1px 5px; border-radius: 4px; color: var(--norm); font-size: 11px; }
+        .guide-menu { position: absolute; right: 0; top: calc(100% + 6px); width: min(500px, 92vw); max-height: 76vh; overflow-y: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+        .g-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .g-lead { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.6; }
+        .g-sec { background: var(--panel-2); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+        .g-sec-head { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+        .g-sec ol { padding-left: 18px; margin: 0; }
+        .g-sec li { font-size: 12.5px; color: var(--text); margin: 5px 0; line-height: 1.55; }
+        .g-cmds { margin-top: 8px; background: var(--bg); border-radius: 6px; padding: 10px 12px; font-size: 12px; color: var(--muted); line-height: 2; }
+        .g-cmds code { background: none; color: var(--norm); font-weight: 700; padding: 0; }
+        .g-ok { color: var(--norm); }
+        .g-bad { color: var(--crit); }
+        .g-note { font-size: 12px; color: var(--muted); margin-top: 12px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 8px; }
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; background: var(--panel-2); border-left: 4px solid var(--accent); border-radius: 6px; max-width: 420px; z-index: 1000; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: slideIn 0.3s ease; }
         .toast.success { border-left-color: var(--norm); }
         .toast.error { border-left-color: var(--crit); }
@@ -102,6 +106,7 @@
             table { font-size: 12px; }
             th, td { padding: 6px 8px; white-space: nowrap; }
             .toast { left: 10px; right: 10px; max-width: none; }
+            .chat-wrap { margin-left: 0; }
             .guide-wrap { margin-left: 0; width: 100%; }
             .guide-btn { width: 100%; }
         }
@@ -143,38 +148,51 @@
         <div class="guide-wrap">
             <button class="secondary guide-btn" id="guideBtn">❓ Руководство</button>
             <div class="guide-menu hide" id="guideMenu">
-                <h4>❓ Как работает WMS «Ремера»</h4>
-                <p>Здесь два контура: <b>учебная БД</b> (этот дашборд) и <b>внутренний чат</b> — живая отчётность с пола цеха.</p>
+                <div class="g-title">❓ Руководство по WMS «Ремера»</div>
+                <div class="g-lead">Дашборд — учебная база для тренировок. Чат — живая отчётность цеха. У каждой роли свой PIN и свои возможности.</div>
 
-                <h4>👷 Работник: рапорт за 10 секунд</h4>
-                <ul>
-                    <li>Дашборд → <b>💬 Чат</b> → «Вход для работника» → свой PIN.</li>
-                    <li>Набери команду, например <code>/расход 5 PA-F</code> — и отправь.</li>
-                    <li>Команды: <code>/расход</code> <code>/приход</code> <code>/отгрузка</code> <code>/производство</code>; <code>/коды</code> — список кодов, <code>/список</code> — справка.</li>
-                </ul>
+                <div class="g-sec">
+                    <div class="g-sec-head">👷 Работник — сдаёт рапорт</div>
+                    <ol>
+                        <li>Нажми <b>💬 Чат</b> → «Вход для работника» → введи свой PIN.</li>
+                        <li>Набери команду и нажми ➤. Ответ придёт мгновенно.</li>
+                    </ol>
+                    <div class="g-cmds">
+                        <code>/расход 5 PA-F</code> — выдал 5 бобин в производство<br>
+                        <code>/приход 10 PA-F</code> — принял 10 бобин от поставщика<br>
+                        <code>/отгрузка 3 PP-16</code> — отгрузил 3 клиенту<br>
+                        <code>/производство 20 STAT-10</code> — сплёл 20 готовой продукции<br>
+                        <code>/коды</code> — список кодов · <code>/список</code> — все команды
+                    </div>
+                </div>
 
-                <h4>👔 Директор: согласование проводок</h4>
-                <ul>
-                    <li>«Вход для директора» → свой PIN.</li>
-                    <li>Жёлтая карточка сверху — рапорт, ждущий решения.</li>
-                    <li><b>Провести</b> — операция попадёт в журнал, остатки изменятся. <b>Отклонить</b> — рапорт отменён.</li>
-                    <li>Вкладки «Остатки» и «Журнал» — текущая картина склада.</li>
-                </ul>
+                <div class="g-sec">
+                    <div class="g-sec-head">👔 Директор — согласует проводки</div>
+                    <ol>
+                        <li>Нажми <b>💬 Чат</b> → «Вход для директора» → свой PIN.</li>
+                        <li>Жёлтая карточка сверху — рапорт работника, ждёт решения.</li>
+                        <li><b class="g-ok">Провести</b> — операция встанет в журнал, остатки изменятся.<br><b class="g-bad">Отклонить</b> — рапорт отменён, остатки не тронуты.</li>
+                        <li>Вкладки «Остатки» и «Журнал» — текущая картина склада.</li>
+                    </ol>
+                </div>
 
-                <h4>📋 Бухгалтер: только чтение</h4>
-                <ul>
-                    <li>«Вход для бухгалтера» → свой PIN.</li>
-                    <li>Доступны «Остатки» и «Журнал» для сверки с 1С, поля ввода нет.</li>
-                </ul>
+                <div class="g-sec">
+                    <div class="g-sec-head">📋 Бухгалтер — сверяет с 1С</div>
+                    <ol>
+                        <li>Нажми <b>💬 Чат</b> → «Вход для бухгалтера» → свой PIN.</li>
+                        <li>Открыты «Остатки» и «Журнал» — только чтение, без поля ввода.</li>
+                    </ol>
+                </div>
 
-                <h4>📦 Обмен с 1С</h4>
-                <ul>
-                    <li><b>📥 CSV: 1С (остатки)</b> — загрузить начальные остатки в учебную БД.</li>
-                    <li><b>📄 CSV: Склад / Движения</b> — выгрузка данных для бухгалтера.</li>
-                </ul>
+                <div class="g-sec">
+                    <div class="g-sec-head">📦 Обмен с 1С (учебная БД)</div>
+                    <ol>
+                        <li><b>📥 CSV: 1С (остатки)</b> — загрузить начальные остатки из 1С.</li>
+                        <li><b>📄 CSV: Склад / Движения</b> — выгрузить данные для бухгалтера.</li>
+                    </ol>
+                </div>
 
-                <h4>🔐 Доступ</h4>
-                <p>PIN выдаёт директор. Ошибся в PIN — система попросит ввести снова и не пустит в чужую роль.</p>
+                <div class="g-note">🔐 PIN выдаёт директор. Ошибся в PIN — система попросит ввести снова и не пустит в чужую роль.</div>
             </div>
         </div>
     </div>
