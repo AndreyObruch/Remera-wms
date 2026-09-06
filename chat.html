@@ -33,7 +33,9 @@
   th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
   th{color:var(--muted);font-weight:500}
   #impBtn{background:var(--warn);border:none;color:#3b2503;font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px}
-  #impInfo{color:var(--muted);font-size:12px;margin-left:8px}
+  .expBtn{background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+  .expBtn:hover{border-color:var(--acc)}
+  #impInfo{color:var(--muted);font-size:12px}
   #bar{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:8px;z-index:30}
   #builder,#freeRow{display:flex;gap:6px;width:100%}
   #builder{flex-wrap:wrap}
@@ -91,15 +93,21 @@
     </div>
     <div id="view-stock" class="hide">
       <h3>Остатки (только чтение)</h3>
-      <div id="importRow" class="hide" style="margin:6px 0 10px">
-        <button id="impBtn">📥 Импорт CSV (1С)</button>
-        <input type="file" id="impFile" accept=".csv,.txt" class="hide">
-        <span id="impInfo">формат: КОД;КОЛИЧЕСТВО, по строке на позицию</span>
+      <div style="margin:6px 0 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span id="importRow" class="hide" style="display:contents">
+          <button id="impBtn">📥 Импорт CSV (1С)</button>
+          <input type="file" id="impFile" accept=".csv,.txt" class="hide">
+          <span id="impInfo">формат: КОД;КОЛИЧЕСТВО, по строке на позицию</span>
+        </span>
+        <button id="expStock" class="expBtn">📄 CSV: Остатки</button>
       </div>
       <table><thead><tr><th>Код</th><th>Остаток</th></tr></thead><tbody id="stockBody"></tbody></table>
     </div>
     <div id="view-journal" class="hide">
       <h3>Журнал движений (только чтение)</h3>
+      <div style="margin:6px 0 10px">
+        <button id="expMov" class="expBtn">📄 CSV: Журнал</button>
+      </div>
       <table><thead><tr><th>Время</th><th>Операция</th><th>Кол-во</th><th>Код</th><th>Остаток после</th><th>Кто</th></tr></thead><tbody id="movBody"></tbody></table>
     </div>
   </main>
@@ -336,6 +344,10 @@ $('impFile').onchange=async(e)=>{
     poll();
   }catch(err){ alert(err.message); }
 };
+
+// --- Выгрузка CSV (директор и бухгалтер) ---
+$('expStock').onclick=()=>{ location.href='/api/export?pin='+encodeURIComponent(session.pin)+'&kind=stock'; };
+$('expMov').onclick=()=>{ location.href='/api/export?pin='+encodeURIComponent(session.pin)+'&kind=movements'; };
 
 $('tabs').onclick=e=>{
   const t=e.target.closest('.tab');
