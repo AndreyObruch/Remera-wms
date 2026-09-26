@@ -1,8 +1,13 @@
 {
   "name": "remera-wms",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "@vercel/blob": "latest"
+    "@vercel/blob": "latest",
+    "express": "^4.22.3"
   }
 }
