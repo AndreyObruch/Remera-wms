@@ -1,0 +1,16 @@
+meta:
+  environment: nodejs
+  toolchain:
+    name: npm
+    version: "20"
+build:
+  skip: false
+  additionalCommands: null
+  artifacts:
+    "*": /
+run:
+  command: npm start
+  persistenceMount: /data
+  containerPort: "80"
+  singleton: false
+  zeroDowntime: true
