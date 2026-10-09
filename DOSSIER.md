@@ -1,5 +1,5 @@
-# ДОСЬЕ · Интеллектуальная система управления складом (WMS) v2.1
-Обновлено: 09.10.2026. Закрыт этап: миграция Vercel → Amvera (файловое хранилище, Express-сервер).
+# ДОСЬЕ · Интеллектуальная система управления складом (WMS) v2.2
+Обновлено: 26.09.2026. Закрыт этап: миграция Vercel → Amvera; многостраничный сайт website/; ИАР (iar/, печатная версия).
 
 ## 0. ПРАВИЛА ЧАТА (ВШИТЫ КАЛЁНЫМ ЖЕЛЕЗОМ, ИЗМЕНЕНИЮ НЕ ПОДЛЕЖАТ)
 - Qwen присылает ровно одну команду или один файл за сообщение, затем ждёт ответ «готово».
@@ -17,20 +17,20 @@
 ## 1. ЦЕЛЬ — ДОСТИГНУТА (ядро + боевой контур + 1С + прогноз + упаковка к защите)
 Работник: телефон → PIN → рапорт. Директор: липкая очередь → «Провести/Отклонить» → остатки.
 Бухгалтер: только чтение. CSV ↔ 1С двусторонний. Аналитика: точка заказа (запас < 7 дней расхода).
-Упаковано к защите: питч 20 блоков, Agile-план (спринты/KPI/Гант/канбан), схема TO-BE с ИИ (Задание 4, сдано в LMS 21.09).
+Упаковано к защите: питч 20 блоков, Agile-план (спринты/KPI/Гант/канбан), схема TO-BE с ИИ (Задание 4, сдано в LMS 21.09),
+многостраничный сайт-презентация website/, ИАР по критериям LMS Odin (iar/).
 
 ## 2. АРХИТЕКТУРА
 **Прод:** https://remera-wms-andrey-obruch.amvera.io
-**Хостинг:** Amvera (российское облако, контейнер Node.js 20, npm)
-**Запуск:** `npm start` → `node server.js` (Express, порт 80)
-**Хранилище:** файловая система `/data` (persistence mount) → `blob-fs.js` (обёртка вместо Vercel Blob)
-**Статус:** `wms2/state.json` — JSON-стейт, идемпотентность проводок, защита от отрицательных остатков
-
-chat.html → /api/{auth,chat,approve,stock,import,export,analytics} →
-lib/core.js (108 поз., DAILY_NORM) + lib/store.js v17 → blob-fs.js → /data/wms2/state.json
+**Хостинг:** Amvera (российское облако, контейнер Node.js 20, npm); запуск `npm start` → `node server.js` (Express, порт 80).
+**Хранилище:** файловая система /data (persistenceMount) → lib/blob-fs.js (обёртка вместо Vercel Blob) → wms2/state.json.
+chat.html → /api/{auth,chat,approve,stock,import,export,analytics} + /api/health →
+lib/core.js (108 поз., DAILY_NORM) + lib/store.js v17 → blob-fs.js → /data.
 index.html (учебная БД v1, SQLite-WASM) — тренажёр; guide.html — руководство.
-
-**ЛОКАЛЬНО:** C:\Users\user\Projects\REMERA\Remera-wms (переезд 24.09.2026; аудит путей в скриптах!)
+**Сайт-презентация:** website/{index,app,presentation,about}.html (статика того же хостинга, путь /website/);
+presentation.html встраивает prezentaciya-wms-agile.html через iframe.
+**ИАР:** iar/{title,index}.html → make_iar.py → iar/iar-print.html → печать в PDF → LMS Odin (локально, не деплоится).
+ЛОКАЛЬНО: C:\Users\user\Projects\REMERA\Remera-wms.
 
 ## 3. ДАННЫЕ И ПРИНЦИПЫ КОДА
 State: {version, stock, pending, movements, messages}; approve по sign; идемпотентность; защита от минуса;
@@ -38,14 +38,15 @@ import ≤ 2000 строк; export CSV (BOM \uFEFF); analytics: daysLeft=stock/n
 Принципы исходного плана (действуют): Data-first; Security by default (try-catch на всех узлах); Zero-downtime fallback.
 
 ## 4. ENV (эталон)
-WORKER_PIN=2222, DIRECTOR_PIN=1111, ACCOUNTANT_PIN=3333 (тестовые; боевые в Amvera env)
+Amvera env (секреты, этап «Запуск»): DIRECTOR_PIN, WORKER_PIN, ACCOUNTANT_PIN (сейчас тестовые 1111/2222/3333 — заменить на боевые до защиты).
+PRIV_READ_WRITE_TOKEN / PRIV_STORE_ID больше не нужны (файловое хранилище).
 Секреты — только Amvera env (секрет) и блокнот Product Owner (раздел 0).
 
 ## 5. ФАЙЛЫ (текущие версии)
-lib/store.js v17 · lib/blob-fs.js · lib/core.js · 
+server.js · amvera.yaml · lib/store.js v17 · lib/blob-fs.js · lib/core.js ·
 api/{auth,chat,approve,stock,import,export,analytics}.js ·
-server.js · amvera.yaml ·
-chat.html · index.html · guide.html ·
+chat.html · index.html · guide.html · website/{index,app,presentation,about}.html ·
+iar/{title,index,iar-print}.html · make_iar.py ·
 AGILE.md · make_agile.py · WMS_REMERA_Agile.xlsx · prezentaciya-wms-agile.html ·
 питч 20 блоков (текст; войдёт в питч-дек) · DOSSIER.md.
 
@@ -54,14 +55,15 @@ AGILE.md · make_agile.py · WMS_REMERA_Agile.xlsx · prezentaciya-wms-agile.htm
 UI-пакет → словарь 108 поз. → Фаза 4 (импорт CSV) → Фаза 4b (экспорт CSV) → Фаза 5a (точка заказа) →
 21.09: Задание 4 (схема TO-BE + docx в LMS), практика Agile (Яндекс-таблицы, канбан) →
 24.09: питч 20 блоков, xlsx-план (make_agile.py, openpyxl), переезд репо, разбор архива плана →
-09.10: миграция Vercel → Amvera (Express + файловое хранилище /data, удаление vercel.json, amvera.yaml).
+26.09: миграция Vercel → Amvera (Express + /data, vercel.json удалён, amvera.yaml, домен amvera.io, PIN в env) →
+26.09: сайт website/ (4 страницы), ИАР iar/ (титул + 10 разделов по критериям LMS) + сборщик make_iar.py.
 
 ## 7. ИСТОКИ: ПЛАН → ФАКТ (архив: «Промпт РЕМЕРА2.0», «ПЛАН-СЦЕНАРИЙ v2.0»)
 БД: Turso (облачный SQLite) → Vercel Blob private → Amvera /data (файловое, бесплатно, хватает на 2–3 пользователей).
 Telegram-шлюз (резерв по плану) → отклонён: внешних мессенджеров в основной цепи нет (критерий v2 выполнен).
 Словарь: 102 позиции по плану → 108 (синхронизация с db.js учебной БД).
 Роли: работник/директор по плану → + бухгалтер (только чтение).
-API: 5 эндпоинтов по плану → 7 (+import, +export, +analytics).
+API: 5 эндпоинтов по плану → 7 (+import, +export, +analytics) + /api/health (Amvera).
 CSV ↔ 1С: в исходном плане отсутствовал → реализован (Фазы 4/4b).
 Фаза 5 плана («надёжность поставщиков», «мёртвый груз») → частично опережена: точка заказа (5a); ABC-XYZ — Sprint 3.
 JWT «позже» → Sprint 3; Resend (Фаза 3 плана) → Sprint 1, в работе.
@@ -75,16 +77,20 @@ SDK latest + Redeploy without cache; Push после commit; NOT_FOUND = ком�
 TSV в Яндекс-таблицу — один раз (дубли = лишние колонки справа); Яндекс Документы открывают .md/.txt;
 xlsx — только генерацией (openpyxl), скрипт держать в репо; VS Code: trust → Open, repos picker → выбрать репо;
 после переезда репо — аудит путей; CSV для Excel → BOM \uFEFF; «Импорт БД» (v1) ≠ «Импорт CSV» (v2);
-Vercel → Amvera: serverless-функции переписать в Express + server.js, Blob заменить на blob-fs.js (файловое хранилище);
-Amvera: `scriptName`/`scriptArguments` в yaml не нужны при `command: npm start`; PIN только в runtime env (не build).
+Vercel → Amvera: serverless переписать в Express + server.js, Blob заменить blob-fs.js; в amvera.yaml при toolchain npm
+не указывать scriptName/scriptArguments (хватает command: npm start); PIN — только runtime-env (этап «Запуск», не «Сборка»);
+SIGTERM в логах Amvera = штатный перезапуск контейнера; Excel-локи ~$* — в .gitignore;
+проверка «тот ли файл сохранён» — Get-Content <файл> -TotalCount 2 до запуска.
 
 ## 9. ДОРОЖНАЯ КАРТА (осталось)
-**СЕЙЧАС (до 12.10):** многостраничный сайт-презентация (главная + ссылки на приложение + презентация); подготовка ИАР (PDF/PPTX для LMS).
+**СЕЙЧАС (до 12.10):** ИАР → PDF: открыть iar/iar-print.html в браузере → Ctrl+P → «Сохранить как PDF» → загрузить в LMS Odin;
+заменить тестовые PIN на боевые (Amvera env → ↻); коммит website/ + iar/ + make_iar.py + DOSSIER v2.2.
 **Защита ~11.10:** демо-стенд, 3 репетиции с секундомером, фриз кода, план Б (видео + скриншоты).
-**Sprint 1 (до 28.10):** guide.html под актуальный UI; email-сервис + верификация; api/notify.js (Фаза 3 плана).
+**Sprint 1 (до 28.09 → сдвиг по факту):** guide.html под актуальный UI; email-сервис + верификация; api/notify.js (Фаза 3 плана).
 **Sprint 2:** QR-инвентаризация. **Sprint 3:** JWT + автопроводки + ABC-XYZ. **Sprint 4:** пилот и приёмка.
 
 ## 10. РИСКИ
 Файловое хранилище без транзакций (ок для 2–3 пользователей); PIN = MVP (JWT в Sprint 3); v1 и v2 — разные миры;
 демо на защите зависит от сети → план Б; переезд репо → старые пути (аудит перед защитой);
+дедлайн ИАР 12.10 жёсткий → PDF собрать и загрузить заранее, не в последний день;
 Turso/Resend — зарубежные облака (из исходного плана): канал работает, держать fallback.
