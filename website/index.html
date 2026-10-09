@@ -3,143 +3,289 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WMS Ремера — Интеллектуальная система управления складом</title>
+  <title>WMS «Ремера» — Интеллектуальная система управления складом</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      line-height: 1.6; color: #1a1a1a; background: #f5f5f7;
+    :root{
+      --bg:#012032;
+      --panel:#062a40;
+      --text:#e6edf7;
+      --muted:#9fb0c7;
+      --accent:#2dd4ea;
+      --gold:#f0b429;
+      --border:rgba(255,255,255,.08);
+      --navy:#002140;
     }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white; padding: 80px 0 60px; text-align: center;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:1040px;margin:0 auto;padding:0 20px}
+
+    /* Навигация */
+    nav.top{position:sticky;top:0;z-index:20;background:rgba(0,33,64,.96);backdrop-filter:blur(8px);border-bottom:1px solid rgba(240,180,41,.25)}
+    nav.top .container{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 20px;flex-wrap:wrap}
+    .logo{color:var(--gold);font-weight:700;font-size:18px;text-decoration:none;letter-spacing:.04em}
+    .logo span{color:var(--accent)}
+    .nav-links{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+    .nav-links a{
+      color:var(--muted);text-decoration:none;font-size:14px;
+      padding:8px 16px;border:1px solid rgba(240,180,41,.55);
+      border-radius:999px;box-shadow:0 0 10px rgba(240,180,41,.28);
+      transition:color .15s,border-color .15s,box-shadow .15s;
     }
-    header h1 { font-size: 3rem; margin-bottom: 16px; font-weight: 700; }
-    header p { font-size: 1.25rem; opacity: 0.95; max-width: 700px; margin: 0 auto; }
-    nav {
-      background: white; padding: 16px 0; position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .nav-links a:hover{color:var(--accent);border-color:rgba(240,180,41,.9);box-shadow:0 0 14px rgba(240,180,41,.45)}
+    .nav-links a.active{color:var(--accent);font-weight:600;border-color:rgba(240,180,41,.9);box-shadow:0 0 14px rgba(240,180,41,.45)}
+
+    /* Hero */
+    header.hero{
+      position:relative;overflow:hidden;
+      min-height:92vh;display:flex;align-items:center;justify-content:center;
+      text-align:center;padding:96px 0 90px;background:var(--bg);
     }
-    nav ul { list-style: none; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
-    nav a {
-      color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.05rem;
-      transition: color 0.3s;
+    .hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+    .hero-bg img{
+      width:100%;height:100%;object-fit:cover;object-position:center;opacity:.3;
+      animation:imgReveal 4s ease-in-out forwards;
+      -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
+      mask-image:linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
     }
-    nav a:hover { color: #764ba2; }
-    .hero {
-      background: white; padding: 60px 0; margin-top: 40px; border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    .hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(900px 500px at 50% 40%, rgba(1,32,50,.35), rgba(1,32,50,.80));}
+    .hero-content{position:relative;z-index:2;max-width:920px;padding:0 20px}
+
+    @keyframes imgReveal{0%{opacity:.3}50%{opacity:1}100%{opacity:.5}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+    .hero-content .eyebrow,
+    .hero-content h1,
+    .hero-content .tagline,
+    .hero-content .lead{opacity:0;animation:fadeUp .8s ease forwards}
+    .eyebrow{letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-size:13px;margin-bottom:18px;animation-delay:1s}
+    h1{font-size:clamp(36px,6vw,68px);color:var(--gold);font-weight:700;line-height:1.08;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,.6);animation-delay:2.5s}
+    .tagline{font-size:clamp(16px,2vw,20px);color:var(--accent);margin-bottom:20px;font-weight:600;text-shadow:0 1px 14px rgba(0,0,0,.6);animation-delay:4s}
+    .lead{max-width:780px;margin:0 auto 34px;color:var(--text);font-size:17px;line-height:1.55;text-shadow:0 1px 12px rgba(0,0,0,.8);animation-delay:5.5s}
+    .hero-cta{opacity:0;animation:fadeUp .8s ease forwards;animation-delay:7s;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+    .btn{display:inline-block;padding:15px 34px;border-radius:10px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;border:none;transition:transform .15s ease, box-shadow .15s ease}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#041018;box-shadow:0 6px 24px rgba(45,212,234,.25)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(45,212,234,.35)}
+    .btn-ghost{background:transparent;color:var(--gold);border:1px solid rgba(240,180,41,.7);box-shadow:0 0 12px rgba(240,180,41,.25)}
+    .btn-ghost:hover{transform:translateY(-2px);color:var(--accent);border-color:var(--accent);box-shadow:0 0 16px rgba(45,212,234,.35)}
+
+    /* Секции */
+    section{padding:80px 0;position:relative}
+    section::before{content:"";position:absolute;left:0;right:0;top:-40px;height:80px;z-index:2;pointer-events:none;border-radius:50%;backdrop-filter:blur(50px);-webkit-backdrop-filter:blur(50px)}
+    h2{color:var(--gold);font-size:clamp(26px,4vw,36px);margin-bottom:14px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+    .section-sub{color:var(--muted);max-width:720px;margin-bottom:40px}
+    .section-head{text-align:center;margin-bottom:50px}
+    .section-head .section-sub{margin:14px auto 0}
+
+    /* Карточки возможностей */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px;transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease}
+    .card:hover{transform:translateY(-4px);border-color:rgba(45,212,234,.35);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .card .icon{font-size:32px;margin-bottom:14px;display:block}
+    .card h3{color:var(--accent);font-size:18px;margin-bottom:10px}
+    .card p{color:var(--muted);font-size:15px;line-height:1.55}
+
+    /* Цифры / метрики */
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-top:40px}
+    .metric{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px 20px;text-align:center}
+    .metric .num{color:var(--gold);font-size:clamp(28px,4vw,38px);font-weight:700;line-height:1}
+    .metric .lbl{color:var(--muted);font-size:14px;margin-top:8px;line-height:1.3}
+
+    /* Цитата */
+    blockquote.manifest{
+      margin:50px auto 0;max-width:780px;padding:30px 34px;
+      background:var(--panel);border-left:3px solid var(--gold);border-radius:10px;
+      color:var(--text);font-size:17px;line-height:1.6;font-style:italic;text-align:center;
     }
-    .hero-content { text-align: center; }
-    .hero h2 { font-size: 2.5rem; margin-bottom: 24px; color: #667eea; }
-    .hero p { font-size: 1.2rem; color: #555; max-width: 800px; margin: 0 auto 32px; }
-    .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .btn {
-      display: inline-block; padding: 16px 32px; border-radius: 8px;
-      text-decoration: none; font-weight: 600; font-size: 1.1rem;
-      transition: transform 0.3s, box-shadow 0.3s;
+    blockquote.manifest strong{color:var(--gold);font-style:normal}
+
+    /* Футер */
+    footer{padding:40px 0;border-top:1px solid rgba(240,180,41,.25);color:var(--muted);text-align:center;font-size:14px;background:var(--navy);margin-top:40px}
+    footer .container{display:flex;flex-direction:column;align-items:center;gap:10px}
+    footer a{color:var(--accent);text-decoration:none}
+    footer a:hover{color:var(--gold)}
+
+    /* Reveal на скролл */
+    .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    @media(max-width:640px){
+      nav.top .container{justify-content:center}
+      .hero{min-height:80vh;padding:60px 0 50px}
     }
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white; box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4); }
-    .btn-secondary {
-      background: white; color: #667eea; border: 2px solid #667eea;
-    }
-    .btn-secondary:hover { background: #f5f5f7; }
-    .features {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 32px; margin-top: 60px;
-    }
-    .feature {
-      background: white; padding: 32px; border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform 0.3s;
-    }
-    .feature:hover { transform: translateY(-4px); }
-    .feature-icon { font-size: 3rem; margin-bottom: 16px; }
-    .feature h3 { font-size: 1.5rem; margin-bottom: 12px; color: #667eea; }
-    .feature p { color: #666; }
-    footer {
-      background: #1a1a1a; color: white; padding: 40px 0; margin-top: 80px; text-align: center;
-    }
-    footer p { opacity: 0.8; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <h1>🏭 WMS «Ремера»</h1>
-      <p>Интеллектуальная система управления складом для производства технических канатов</p>
-    </div>
-  </header>
 
-  <nav>
-    <div class="container">
-      <ul>
-        <li><a href="index.html">Главная</a></li>
-        <li><a href="app.html">Приложение</a></li>
-        <li><a href="presentation.html">Презентация</a></li>
-        <li><a href="pdf.html">ИАР (PDF)</a></li>
-        <li><a href="about.html">О проекте</a></li>
-      </ul>
-    </div>
-  </nav>
-
+<nav class="top">
   <div class="container">
-    <section class="hero">
-      <div class="hero-content">
-        <h2>Склад, который заказывает сам</h2>
-        <p>
-          Мобильные рапорты работников за 15 секунд, контрольная точка директора в одну кнопку,
-          ML-прогноз точки заказа. От движения материала до заявки поставщику — 30 минут вместо 3 дней.
-        </p>
-        <div class="cta-group">
-          <a href="app.html" class="btn btn-primary">Открыть приложение</a>
-          <a href="presentation.html" class="btn btn-secondary">Смотреть презентацию</a>
-        </div>
-      </div>
-    </section>
+    <a href="index.html" class="logo">WMS <span>«Ремера»</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Главная</a>
+      <a href="app.html">Приложение</a>
+      <a href="presentation.html">Презентация</a>
+      <a href="pdf.html">ИАР (PDF)</a>
+      <a href="about.html">О проекте</a>
+    </div>
+  </div>
+</nav>
 
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">📱</div>
-        <h3>Для работников</h3>
-        <p>Рапорт с телефона за 15 секунд. Поиск по 108 позициям, QR-скан, конструктор команд.</p>
+<header class="hero" id="top">
+  <div class="hero-bg"><img src="hero.jpg" alt="Интеллектуальный склад"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="eyebrow">Интеллектуальный склад</p>
+    <h1>Интеллектуальная система<br>управления складом (WMS)</h1>
+    <p class="tagline">Внутренний контур оперативного учёта и прогноза закупок для любого производства — на примере действующего ООО «Ремера»</p>
+    <p class="lead">Мобильные рапорты работников, контрольная точка директора, ML-прогноз точки заказа, внутренний чат компании без внешних чат-ботов. ИИ рекомендует — человек решает.</p>
+    <div class="hero-cta">
+      <a href="app.html" class="btn btn-primary">Открыть приложение →</a>
+      <a href="presentation.html" class="btn btn-ghost">Смотреть презентацию</a>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Что это такое</h2>
+      <p class="section-sub">Боевая система, которая уже работает в производстве технических канатов с 07.09.2026. Не учебный макет — а рабочий контур, закрывающий цикл от движения материала до заявки поставщику за 30 минут вместо 3 дней.</p>
+    </div>
+
+    <div class="metrics reveal">
+      <div class="metric"><div class="num">15 сек</div><div class="lbl">рапорт работника<br>с телефона</div></div>
+      <div class="metric"><div class="num">30 мин</div><div class="lbl">от сигнала<br>до заказа поставщику</div></div>
+      <div class="metric"><div class="num">108</div><div class="lbl">позиций<br>номенклатуры</div></div>
+      <div class="metric"><div class="num">0 ₽</div><div class="lbl">бюджет<br>разработки</div></div>
+    </div>
+
+    <blockquote class="manifest reveal">
+      «Дефицит — это не судьба, а отсутствие данных.<br>
+      Мы дали складу голос — и он начал <strong>заказывать сам</strong>.»
+    </blockquote>
+  </div>
+</section>
+
+<section id="roles">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Для кого</h2>
+      <p class="section-sub">Три роли с разными правами: каждая получает ровно тот инструмент, который ей нужен в течение смены.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal">
+        <span class="icon">📱</span>
+        <h3>Работник</h3>
+        <p>Конструктор команд с поиском по 108 позициям. Скан QR-наклейки. Рапорт за 15 секунд — без обучения и установки приложения.</p>
       </div>
-      <div class="feature">
-        <div class="feature-icon">👔</div>
-        <h3>Для директора</h3>
-        <p>Липкая очередь рапортов. Одна кнопка «Провести». Аналитика с точкой заказа.</p>
+      <div class="card reveal">
+        <span class="icon">👔</span>
+        <h3>Директор</h3>
+        <p>Липкая очередь рапортов сверху чата. Одна кнопка «Провести». Аналитика с точкой заказа и ML-рекомендацией.</p>
       </div>
-      <div class="feature">
-        <div class="feature-icon">📊</div>
-        <h3>Для бухгалтера</h3>
-        <p>Только чтение остатков и журнала. Выгрузка CSV для сверки с 1С в 2 клика.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🤖</div>
-        <h3>ML-прогноз</h3>
-        <p>Градиентный бустинг по временным рядам. Прогноз расхода на 14 дней с human-in-the-loop.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔒</div>
-        <h3>Безопасность</h3>
-        <p>Роли и PIN (MVP) → JWT (Sprint 3). Идемпотентность проводок, полный аудит-след.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⚡</div>
-        <h3>Быстрый старт</h3>
-        <p>Внедрение за недели, бюджет 0 рублей. Боевой MVP с 07.09.2026.</p>
+      <div class="card reveal">
+        <span class="icon">📊</span>
+        <h3>Бухгалтер</h3>
+        <p>Только чтение остатков и журнала. Выгрузка CSV для сверки с 1С в два клика. BOM \uFEFF для корректного открытия в Excel.</p>
       </div>
     </div>
   </div>
+</section>
 
-  <footer>
-    <div class="container">
-      <p>© 2026 WMS «Ремера» · Андрей · группа СИИ-1/2026 · MVP в производстве</p>
+<section id="tech">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Как это работает</h2>
+      <p class="section-sub">Российское облако Amvera, Express-сервер, файловое хранилище /data. Полный аудит-след с первого дня.</p>
     </div>
-  </footer>
+
+    <div class="grid">
+      <div class="card reveal">
+        <span class="icon">🤖</span>
+        <h3>ML-прогноз</h3>
+        <p>Точка заказа: запас &lt; 7 дней расхода. Рекомендация заказа = норма × 14 − запас. В Sprint 3 — градиентный бустинг.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">🔗</span>
+        <h3>CSV ↔ 1С</h3>
+        <p>Двусторонний обмен без доработки 1С. Импорт до 2000 строк, экспорт с BOM для Excel. Работает с любой версией 1С.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">🔒</span>
+        <h3>Безопасность</h3>
+        <p>PIN (MVP) → JWT в Sprint 3. Идемпотентность проводок. Защита от отрицательных остатков. 100% аудит-след: автор + утвердитель + время.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">💬</span>
+        <h3>Внутренний чат</h3>
+        <p>Команды, рапорты, диалог — всё внутри контура компании. Без Telegram, WhatsApp и внешних чат-ботов.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">🇷🇺</span>
+        <h3>152-ФЗ</h3>
+        <p>Хостинг Amvera — данные хранятся на территории РФ. Соответствие требованиям к хранению персональных данных.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">⚡</span>
+        <h3>Быстрый старт</h3>
+        <p>Внедрение за недели. Команда: 2 человека (разработчик + ИИ-ассистент Qwen). Бюджет 0 рублей — всё на бесплатных тарифах.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="next">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Что дальше</h2>
+      <p class="section-sub">Четыре спринта до передачи в эксплуатацию 02.11.2026.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal">
+        <span class="icon">📧</span>
+        <h3>Sprint 1 · Уведомления</h3>
+        <p>Email-сервис при недоступности чата. Сигнал о дефиците директору ≤ 5 минут.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">📷</span>
+        <h3>Sprint 2 · QR</h3>
+        <p>Генератор наклеек + сканер камеры. Рапорт без ручного ввода кода.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">🛡</span>
+        <h3>Sprint 3 · Безопасность</h3>
+        <p>JWT, автопроводки по порогу, ABC-XYZ анализ запасов.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon">🚀</span>
+        <h3>Sprint 4 · Пилот</h3>
+        <p>Приёмка, демо-стенд, передача в эксплуатацию, тиражирование на другие площадки.</p>
+      </div>
+    </div>
+
+    <div class="hero-cta reveal" style="margin-top:50px;opacity:1;animation:none">
+      <a href="app.html" class="btn btn-primary">Открыть приложение →</a>
+      <a href="pdf.html" class="btn btn-ghost">Скачать ИАР (PDF)</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 WMS «Ремера» · Обруч А.Г. · группа СИИ-1/2026</p>
+    <p>Команда: разработчик + ИИ-ассистент Qwen · MVP в производстве с 07.09.2026</p>
+    <p><a href="https://github.com/AndreyObruch/Remera-wms" target="_blank" rel="noopener">Репозиторий на GitHub</a></p>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target);} });
+  },{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
 </body>
 </html>
