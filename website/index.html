@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WMS Ремера — Интеллектуальная система управления складом</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6; color: #1a1a1a; background: #f5f5f7;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; padding: 80px 0 60px; text-align: center;
+    }
+    header h1 { font-size: 3rem; margin-bottom: 16px; font-weight: 700; }
+    header p { font-size: 1.25rem; opacity: 0.95; max-width: 700px; margin: 0 auto; }
+    nav {
+      background: white; padding: 16px 0; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    nav ul { list-style: none; display: flex; justify-content: center; gap: 32px; }
+    nav a {
+      color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.1rem;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #764ba2; }
+    .hero {
+      background: white; padding: 60px 0; margin-top: 40px; border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .hero-content { text-align: center; }
+    .hero h2 { font-size: 2.5rem; margin-bottom: 24px; color: #667eea; }
+    .hero p { font-size: 1.2rem; color: #555; max-width: 800px; margin: 0 auto 32px; }
+    .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: 16px 32px; border-radius: 8px;
+      text-decoration: none; font-weight: 600; font-size: 1.1rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4); }
+    .btn-secondary {
+      background: white; color: #667eea; border: 2px solid #667eea;
+    }
+    .btn-secondary:hover { background: #f5f5f7; }
+    .features {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px; margin-top: 60px;
+    }
+    .feature {
+      background: white; padding: 32px; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform 0.3s;
+    }
+    .feature:hover { transform: translateY(-4px); }
+    .feature-icon { font-size: 3rem; margin-bottom: 16px; }
+    .feature h3 { font-size: 1.5rem; margin-bottom: 12px; color: #667eea; }
+    .feature p { color: #666; }
+    footer {
+      background: #1a1a1a; color: white; padding: 40px 0; margin-top: 80px; text-align: center;
+    }
+    footer p { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>🏭 WMS «Ремера»</h1>
+      <p>Интеллектуальная система управления складом для производства технических канатов</p>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="app.html">Приложение</a></li>
+        <li><a href="presentation.html">Презентация</a></li>
+        <li><a href="about.html">О проекте</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <h2>Склад, который заказывает сам</h2>
+        <p>
+          Мобильные рапорты работников за 15 секунд, контрольная точка директора в одну кнопку,
+          ML-прогноз точки заказа. От движения материала до заявки поставщику — 30 минут вместо 3 дней.
+        </p>
+        <div class="cta-group">
+          <a href="app.html" class="btn btn-primary">Открыть приложение</a>
+          <a href="presentation.html" class="btn btn-secondary">Смотреть презентацию</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📱</div>
+        <h3>Для работников</h3>
+        <p>Рапорт с телефона за 15 секунд. Поиск по 108 позициям, QR-скан, конструктор команд.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">👔</div>
+        <h3>Для директора</h3>
+        <p>Липкая очередь рапортов. Одна кнопка «Провести». Аналитика с точкой заказа.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Для бухгалтера</h3>
+        <p>Только чтение остатков и журнала. Выгрузка CSV для сверки с 1С в 2 клика.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <h3>ML-прогноз</h3>
+        <p>Градиентный бустинг по временным рядам. Прогноз расхода на 14 дней с human-in-the-loop.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <h3>Безопасность</h3>
+        <p>Роли и PIN (MVP) → JWT (Sprint 3). Идемпотентность проводок, полный аудит-след.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Быстрый старт</h3>
+        <p>Внедрение за недели, бюджет 0 рублей. Боевой MVP с 07.09.2026.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 WMS «Ремера» · Андрей · группа СИИ-1/2026 · MVP в производстве</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Приложение — WMS Ремера</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; background: #f5f5f7; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    nav { background: white; padding: 16px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    nav ul { list-style: none; display: flex; justify-content: center; gap: 32px; }
+    nav a { color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.1rem; }
+    nav a:hover { color: #764ba2; }
+    header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 12px; }
+    header p { font-size: 1.15rem; opacity: 0.95; }
+    .card { background: white; border-radius: 16px; padding: 40px; margin-top: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
+    .btn { display: inline-block; padding: 18px 40px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 16px rgba(102,126,234,0.3); margin: 16px 0; }
+    .btn:hover { transform: translateY(-2px); }
+    .url { font-family: monospace; background: #f0f0f5; padding: 8px 16px; border-radius: 6px; display: inline-block; color: #555; }
+    .roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 40px; }
+    .role { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .role h3 { color: #667eea; margin-bottom: 10px; font-size: 1.3rem; }
+    .role p { color: #666; }
+    .note { margin-top: 32px; padding: 20px; background: #fff8e6; border-left: 4px solid #f5a623; border-radius: 8px; text-align: left; color: #6b5310; }
+    footer { background: #1a1a1a; color: white; padding: 32px 0; margin-top: 80px; text-align: center; }
+    footer p { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="app.html">Приложение</a></li>
+        <li><a href="presentation.html">Презентация</a></li>
+        <li><a href="about.html">О проекте</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header>
+    <div class="container">
+      <h1>📱 Боевое приложение</h1>
+      <p>WMS «Ремера» в производстве с 07.09.2026</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="card">
+      <h2>Вход в систему</h2>
+      <p style="margin: 16px 0; color: #666;">Работает в браузере любого смартфона, установка не требуется.</p>
+      <span class="url">https://remera-wms-andrey-obruch.amvera.io</span><br>
+      <a class="btn" href="https://remera-wms-andrey-obruch.amvera.io/chat.html" target="_blank" rel="noopener">Открыть чат-рапорт →</a>
+      <p style="color: #888; font-size: 0.95rem;">PIN выдаёт директор производства. PIN не публикуется на сайте.</p>
+    </section>
+
+    <div class="roles">
+      <div class="role">
+        <h3>📱 Работник</h3>
+        <p>Рапорт за 15 секунд: расход, приход, отгрузка, производство. Поиск по 108 позициям, подсказки кодов.</p>
+      </div>
+      <div class="role">
+        <h3>👔 Директор</h3>
+        <p>Очередь рапортов, одна кнопка «Провести», остатки, журнал, аналитика с точкой заказа.</p>
+      </div>
+      <div class="role">
+        <h3>📊 Бухгалтер</h3>
+        <p>Только чтение: остатки и журнал. Выгрузка CSV для сверки с 1С в два клика.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Учебный тренажёр (v1):</strong> <a href="https://remera-wms-andrey-obruch.amvera.io/index.html" target="_blank" rel="noopener">index.html</a> — демонстрационная база SQLite-WASM, без боевых данных.
+      <br><strong>Руководство:</strong> <a href="https://remera-wms-andrey-obruch.amvera.io/guide.html" target="_blank" rel="noopener">guide.html</a> — инструкции по ролям.
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 WMS «Ремера» · Андрей · группа СИИ-1/2026</p>
+    </div>
+  </footer>
+</body>
+</html>
