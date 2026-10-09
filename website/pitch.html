@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Питч · Интеллектуальная WMS «Ремера»</title>
+<style>
+  :root{--bg:#0b1020;--panel:#141b30;--panel2:#1b2440;--line:#263252;--text:#eef2fb;--muted:#93a0bf;
+    --acc:#3b82f6;--acc2:#22d3ee;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;
+    --grad:linear-gradient(120deg,#3b82f6,#22d3ee);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font:16px/1.6 system-ui,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--acc);color:#fff}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,16,32,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:18px;height:58px;overflow-x:auto}
+  .logo{font-weight:800;font-size:15px;letter-spacing:.3px;white-space:nowrap}
+  .logo b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-links{display:flex;gap:4px;margin-left:auto;flex-wrap:nowrap}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:8px;white-space:nowrap}
+  .nav-links a:hover{color:var(--text);background:var(--panel2)}
+  #prog{position:fixed;top:58px;left:0;height:2px;background:var(--grad);z-index:51;width:0}
+  header{position:relative;overflow:hidden;padding:150px 0 90px}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;pointer-events:none}
+  .b1{width:520px;height:520px;background:#1d4ed8;top:-160px;right:-120px}
+  .b2{width:420px;height:420px;background:#0e7490;bottom:-180px;left:-140px}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--muted);font-size:12.5px;margin-bottom:26px}
+  .badge i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  .slogan{font-size:clamp(22px,3vw,28px);font-weight:700;color:var(--acc2);margin-bottom:10px;letter-spacing:-.3px}
+  h1{font-size:clamp(42px,7vw,74px);line-height:1.05;font-weight:800;letter-spacing:-1.2px;margin-bottom:22px}
+  h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:18px;max-width:760px;margin-bottom:34px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:38px}
+  .chip{padding:9px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:13.5px;font-weight:600}
+  .chip em{font-style:normal;color:var(--acc2)}
+  section{padding:84px 0;border-top:1px solid var(--line)}
+  .n{display:inline-block;padding:4px 10px;border-radius:8px;background:rgba(59,130,246,.15);color:var(--acc2);font-size:12px;font-weight:800;letter-spacing:1px;margin-right:10px}
+  h2{font-size:clamp(26px,3.6vw,38px);font-weight:800;letter-spacing:-.5px;margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+  .sub{color:var(--muted);max-width:820px;margin-bottom:38px}
+  .grid{display:grid;gap:16px}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .card h4{font-size:15.5px;margin-bottom:8px}
+  .card p,.card li{color:var(--muted);font-size:14px}
+  .card .ico{font-size:22px;margin-bottom:10px;display:block}
+  .card.red{border-left:3px solid var(--bad)}
+  .card.ok{border-left:3px solid var(--ok)}
+  .card.acc{border-left:3px solid var(--acc)}
+  .card.warn{border-left:3px solid var(--warn)}
+  ul.clean{list-style:none}
+  ul.clean li{padding:10px 0 10px 28px;position:relative;font-size:14.5px;color:var(--muted);border-top:1px solid var(--line)}
+  ul.clean li:first-child{border-top:none}
+  ul.clean li::before{content:'▸';position:absolute;left:6px;color:var(--acc2);font-weight:800}
+  ul.clean li b{color:var(--text)}
+  .example{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;counter-reset:ex}
+  .step{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line);counter-increment:ex}
+  .step:first-child{border-top:none}
+  .step .num{font-weight:800;color:var(--acc2);font-size:18px}
+  .step .num::before{content:counter(ex)'.'}
+  .step .t{font-size:15px;color:var(--text)}
+  .step .muted{font-size:13px;color:var(--muted);margin-top:4px}
+  .smart{background:linear-gradient(135deg,#1e3a8a,#0e7490);border-radius:16px;padding:30px;margin-bottom:26px}
+  .smart h3{font-size:22px;margin-bottom:14px;color:#fff}
+  .smart ul li{color:#dbeafe}
+  .smart ul li::before{color:var(--acc2)}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+  th,td{padding:14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;background:var(--panel2)}
+  td b{color:var(--ok);font-weight:700}
+  .tl{position:relative;padding-left:34px}
+  .tl::before{content:'';position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--acc),var(--acc2))}
+  .sp{position:relative;margin-bottom:26px}
+  .sp::before{content:'';position:absolute;left:-30px;top:8px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--acc)}
+  .sp-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .sp-head h3{font-size:20px;font-weight:800}
+  .sp-date{color:var(--acc2);font-size:13px;font-weight:700;letter-spacing:.5px}
+  .dod{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:10px}
+  .dod .item{padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px;display:flex;align-items:flex-start;gap:10px}
+  .dod .done{color:var(--ok)}
+  .dod .todo{color:var(--muted)}
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .role b{display:block;font-size:16px;margin-bottom:4px;color:var(--text)}
+  .role em{display:block;font-size:12.5px;color:var(--acc2);font-style:normal;margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .role p{color:var(--muted);font-size:13px}
+  .kpi-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;position:relative;overflow:hidden}
+  .kpi-card::after{content:'';position:absolute;inset:auto -40px -60px auto;width:140px;height:140px;border-radius:50%;background:var(--grad);opacity:.12}
+  .kpi-card b{display:block;font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+  .kpi-card b s{color:var(--muted);font-weight:600;font-size:18px;text-decoration-color:var(--bad)}
+  .kpi-card b i{font-style:normal;color:var(--acc2);margin:0 6px}
+  .kpi-card span{color:var(--muted);font-size:13px}
+  .gantt{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;overflow-x:auto}
+  .g-row{display:grid;grid-template-columns:240px repeat(7,minmax(52px,1fr));gap:6px;align-items:center;margin-bottom:10px}
+  .g-head b{color:var(--muted);font-size:12px;text-align:center;font-weight:700}
+  .g-label{font-size:13.5px;font-weight:600;padding-right:10px}
+  .g-track{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;grid-column:2/-1}
+  .bar{height:26px;border-radius:8px;background:var(--grad);opacity:.9}
+  .bar.s2{background:linear-gradient(120deg,#0ea5e9,#22c55e)}
+  .bar.s3{background:linear-gradient(120deg,#8b5cf6,#3b82f6)}
+  .bar.ac{background:linear-gradient(120deg,#f59e0b,#ef4444)}
+  .ms{width:14px;height:14px;background:var(--warn);transform:rotate(45deg);border-radius:3px;justify-self:center;box-shadow:0 0 12px rgba(245,158,11,.6)}
+  .kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+  .kb{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;min-height:86px}
+  .kb b{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+  .kb i{display:block;font-style:normal;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:11px;margin-bottom:6px}
+  .kb.wip{border-color:var(--warn)}
+  .final{background:linear-gradient(135deg,#1e3a8a,#0e7490);border-radius:20px;padding:60px 40px;text-align:center;position:relative;overflow:hidden}
+  .final::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 40%,rgba(34,211,238,.2),transparent 60%);pointer-events:none}
+  .final blockquote{font-size:clamp(22px,3.2vw,32px);font-weight:800;letter-spacing:-.5px;line-height:1.25;color:#fff;position:relative;max-width:820px;margin:0 auto}
+  .final .sm{color:#dbeafe;font-size:14px;margin-top:20px;position:relative}
+  .ask{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:20px}
+  .ask .item{background:var(--panel);border:2px solid var(--acc);border-radius:14px;padding:20px;text-align:center}
+  .ask .item .ic{font-size:28px;margin-bottom:8px}
+  .ask .item b{display:block;font-size:15px;margin-bottom:4px}
+  .ask .item p{color:var(--muted);font-size:13px}
+  footer{padding:40px 0 46px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
+  footer a{color:var(--acc2);text-decoration:none}
+  .rv{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
+  .rv.vis{opacity:1;transform:none}
+  @media(max-width:760px){
+    .g-row{grid-template-columns:150px repeat(7,minmax(34px,1fr))}
+    .kanban{grid-template-columns:repeat(2,1fr)}
+    header{padding:120px 0 70px}
+    .final{padding:40px 22px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="logo">🏭 <b>Интеллектуальная WMS</b></div>
+    <div class="nav-links">
+      <a href="#about">Проблема</a>
+      <a href="#solution">Решение</a>
+      <a href="#example">Пример</a>
+      <a href="#kpi">KPI</a>
+      <a href="#tech">Технологии</a>
+      <a href="#roadmap">План</a>
+      <a href="#team">Команда</a>
+      <a href="#ask">Запрос</a>
+    </div>
+  </div>
+</nav>
+<div id="prog"></div>
+
+<!-- 1. ТИТУЛЬНЫЙ БЛОК -->
+<header>
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap">
+    <div class="badge"><i></i>MVP в бою с 07.09.2026 · защита 11.10.2026</div>
+    <div class="slogan">«Склад, который заказывает сам»</div>
+    <h1>Интеллектуальная<br><span>система управления<br>складом (WMS)</span></h1>
+    <p class="lead">Внутренний контур оперативного учёта и прогноза закупок производства технических канатов «Ремера». Мобильные рапорты, контрольная точка директора, ML-прогноз точки заказа.</p>
+    <div class="chips">
+      <div class="chip">🗓 Срок: <em>7 недель</em></div>
+      <div class="chip">👥 Команда: <em>2 человека</em> (разработчик + ИИ)</div>
+      <div class="chip">💰 Бюджет: <em>0 руб.</em></div>
+      <div class="chip">🚀 MVP: <em>в производстве</em></div>
+    </div>
+  </div>
+</header>
+
+<!-- 2. ПРОБЛЕМА -->
+<section id="about">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">02</span>Проблема</h2>
+    <p class="sub rv">Движения ТМЦ фиксируются бумагой и звонками → в 1С попадают с задержкой до 3 дней. Решения о закупках — «по опыту». Результат: дефицит, простои, замороженные деньги.</p>
+    <div class="grid g4">
+      <div class="card red rv"><span class="ico">📄</span><h4>Бумажные рапорты</h4><p>Работник пишет от руки или звонит мастеру в конце смены.</p></div>
+      <div class="card red rv"><span class="ico">🕐</span><h4>Задержка 1–3 дня</h4><p>Бухгалтер разносит данные в 1С только через несколько суток.</p></div>
+      <div class="card red rv"><span class="ico">🎲</span><h4>Закупки «на глаз»</h4><p>Директор принимает решения по опыту, без данных о реальном расходе.</p></div>
+      <div class="card red rv"><span class="ico">⚠️</span><h4>Нет аудит-следа</h4><p>Кто, когда и сколько выдал — не восстановить постфактум.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. РЕШЕНИЕ -->
+<section id="solution">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">03</span>Решение</h2>
+    <p class="sub rv">Рапорт с телефона за 15 секунд → подтверждение директора одной кнопкой → остатки в реальном времени → ML-прогноз расхода и готовая рекомендация «что и сколько заказать». ИИ рекомендует, человек решает.</p>
+    <div class="grid g3">
+      <div class="card ok rv"><span class="ico">📱</span><h4>Работник</h4><p>Конструктор команд с поиском по 108 позициям номенклатуры. Рапорт за 15 сек, скан QR-наклейки.</p></div>
+      <div class="card ok rv"><span class="ico">👔</span><h4>Директор</h4><p>Липкая очередь рапортов. Одна кнопка «Провести» — остаток меняется. Аналитика с точкой заказа.</p></div>
+      <div class="card ok rv"><span class="ico">📊</span><h4>Бухгалтер</h4><p>Только чтение остатков и журнала. Выгрузка CSV для сверки с 1С в 2 клика.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. КАК ЭТО РАБОТАЕТ -->
+<section id="example">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">04</span>Живой пример: рапорт работника</h2>
+    <p class="sub rv">Семь шагов от движения материала до заявки поставщику — весь цикл в одной системе.</p>
+    <div class="example rv">
+      <div class="step"><div class="num"></div><div><div class="t">Работник открывает чат на телефоне, вводит PIN</div><div class="muted">Доступ с любого смартфона без установки</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">Выбирает «Расход», печатает «капрон»</div><div class="muted">Система подсказывает код PA-F из 108 позиций</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">Количество 5 → отправка</div><div class="muted">Рапорт ушёл директору в очередь</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">Директор видит жёлтую карточку, жмёт «Провести»</div><div class="muted">Одна кнопка подтверждения</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">Остаток обновлён 10 → 5</div><div class="muted">Запись в журнале с подписями автора и утвердителя</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">ML видит: запаса на 0.8 дня</div><div class="muted">Письмо директору: «Закажите PA-F, рекомендовано 1980»</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">Директор утверждает рекомендацию → заявка поставщику</div><div class="muted">Весь цикл: от движения до заказа — 30 минут</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. SMART-ЦЕЛЬ -->
+<section id="smart">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">05</span>SMART-цель</h2>
+    <p class="sub rv">Внедрить систему в эксплуатацию до 02.11.2026. Достичь трёх измеримых результатов:</p>
+    <div class="smart rv">
+      <ul class="clean">
+        <li><b>0 простоев</b> из-за дефицита сырья за 3 месяца после запуска</li>
+        <li><b>Время «сигнал → заказ»</b> сокращается с 3 дней до 30 минут</li>
+        <li><b>Рапорт работника:</b> 40 секунд → 15 секунд (−62%)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6. KPI -->
+<section id="kpi">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">06</span>Ключевые метрики успеха</h2>
+    <p class="sub rv">Формат «базлайн AS-IS → цель TO-BE»: каждая метрика измерима и проверяема по логам системы.</p>
+    <div class="grid g3">
+      <div class="kpi-card rv"><b><s>до 2</s><i>→</i>0</b><span>простои из-за дефицита сырья за 3 месяца</span></div>
+      <div class="kpi-card rv"><b><s>40 сек</s><i>→</i>15 сек</b><span>время рапорта работника (−62%)</span></div>
+      <div class="kpi-card rv"><b><s>3 дня</s><i>→</i>30 мин</b><span>от сигнала о дефиците до заявки</span></div>
+      <div class="kpi-card rv"><b>−15–20%</b><span>замороженных денег в запасах</span></div>
+      <div class="kpi-card rv"><b><s>100%</s><i>→</i>−90%</b><span>ошибки ввода против бумажного AS-IS</span></div>
+      <div class="kpi-card rv"><b>≥ 99%</b><span>доступность + 100% аудит-след</span></div>
+    </div>
+    <table style="margin-top:24px">
+      <thead><tr><th>Категория</th><th>KPI</th><th>Целевое значение</th><th>Как измеряем</th></tr></thead>
+      <tbody>
+        <tr><td>Продуктовые</td><td>Время рапорта</td><td><b>15 сек</b></td><td>Лог системы</td></tr>
+        <tr><td>Продуктовые</td><td>Доля рапортов через WMS</td><td><b>≥ 70%</b></td><td>Журнал за пилот</td></tr>
+        <tr><td>Операционные</td><td>«Сигнал → заказ»</td><td><b>30 мин</b></td><td>Журнал + лог заявок</td></tr>
+        <tr><td>Технические</td><td>Распознавание QR</td><td><b>≤ 2 сек, ≥ 95%</b></td><td>20 тест-сканов</td></tr>
+        <tr><td>Экономические</td><td>Запасы</td><td><b>−15–20%</b></td><td>Оценка запасов</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7. ТЕХНОЛОГИИ -->
+<section id="tech">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">07</span>Технологическая основа</h2>
+    <div class="grid g2">
+      <div class="card rv">
+        <h4>🏗 Backend (serverless)</h4>
+        <ul class="clean">
+          <li><b>Vercel Functions</b> — 7 API-эндпоинтов: auth, chat, approve, stock, import, export, analytics, notify</li>
+          <li><b>Blob-хранилище</b> — JSON-стейт, идемпотентность проводок, защита от отрицательных остатков</li>
+          <li><b>ML-модель</b> — градиентный бустинг по временным рядам: прогноз расхода на 14 дней</li>
+          <li><b>CSV ↔ 1С</b> — двусторонний обмен с BOM для Excel</li>
+        </ul>
+      </div>
+      <div class="card rv">
+        <h4>🛡 Безопасность и устойчивость</h4>
+        <ul class="clean">
+          <li><b>Роли и PIN</b> (MVP) → JWT с TTL 8 часов (Sprint 3)</li>
+          <li><b>Идемпотентность</b> — двойной клик не делает двойной проводки</li>
+          <li><b>Fallback</b> — при недоступности Blob: in-memory + лог + ретрай</li>
+          <li><b>Anti-fraud</b> — порог подтверждения аномальных количеств</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. UX -->
+<section id="ux">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">08</span>Интерфейс и UX</h2>
+    <div class="grid g3">
+      <div class="card rv"><span class="ico">📱</span><h4>Работник</h4><p>Конструктор команд с поиском по группам: сырьё, расходники, канаты. Скан QR-наклейки заполняет поле кода автоматически. Fallback: ручной ввод команды.</p></div>
+      <div class="card rv"><span class="ico">👔</span><h4>Директор</h4><p>Липкая очередь рапортов сверху чата. Вкладки: Остатки, Журнал, Аналитика (точка заказа). Одна кнопка «Провести».</p></div>
+      <div class="card rv"><span class="ico">📊</span><h4>Бухгалтер</h4><p>Только чтение всех вкладок. Кнопки выгрузки CSV остатков и журнала для сверки с 1С.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. СООТВЕТСТВИЕ -->
+<section id="comply">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">09</span>Соответствие требованиям</h2>
+    <table class="rv">
+      <thead><tr><th>Требование</th><th>Как учитываем</th></tr></thead>
+      <tbody>
+        <tr><td>Учётная политика</td><td>Каждая проводка с автором и утвердителем, аудит-след 100%</td></tr>
+        <tr><td>1С не подменяется</td><td>Дополняется CSV-обменом в согласованном формате</td></tr>
+        <tr><td>Доступы по ролям</td><td>PIN (MVP) → JWT (Sprint 3), раздельные права на чтение/запись</td></tr>
+        <tr><td>Контроль рутины</td><td>Пороги автопроводок настраивает директор</td></tr>
+        <tr><td>Резервный канал</td><td>Email-уведомления при недоступности чата</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 10. ДОСТУПНОСТЬ -->
+<section id="access">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">10</span>Доступность для работников</h2>
+    <div class="grid g3">
+      <div class="card ok rv"><span class="ico">🎓</span><h4>Без обучения</h4><p>Всего 4 операции в конструкторе. Подсказки на каждом шаге.</p></div>
+      <div class="card ok rv"><span class="ico">📲</span><h4>Любой смартфон</h4><p>Работает в браузере без установки приложения.</p></div>
+      <div class="card ok rv"><span class="ico">🔄</span><h4>Fallback ручной ввод</h4><p>При отсутствии камеры или плохом свете — ввод кода через поиск.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. ИНТЕГРАЦИЯ -->
+<section id="integ">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">11</span>Стратегия интеграции</h2>
+    <table class="rv">
+      <thead><tr><th>Сценарий</th><th>Решение</th></tr></thead>
+      <tbody>
+        <tr><td>Нет автоматизации 1С</td><td>Ручной CSV в 2 клика (уже работает)</td></tr>
+        <tr><td>Есть 1С:ЭДО</td><td>Выгрузка по API (Фаза 3)</td></tr>
+        <tr><td>Уведомления</td><td>Resend/Mailgun: сигналы дефицита на email</td></tr>
+        <tr><td>Перспектива</td><td>REST-интеграция с ERP</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 12. БИЗНЕС-МОДЕЛЬ -->
+<section id="biz">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">12</span>Бизнес-модель</h2>
+    <div class="grid g3">
+      <div class="card acc rv"><span class="ico">💼</span><h4>Внутренний эффект</h4><p>Снижение потерь от простоев и замороженных средств: запасы −15–20%.</p></div>
+      <div class="card acc rv"><span class="ico">🚀</span><h4>Масштабирование</h4><p>Тиражируемый контур для производственных SME: лицензия или SaaS.</p></div>
+      <div class="card acc rv"><span class="ico">💰</span><h4>Бюджет MVP</h4><p>0 рублей — бесплатные тарифы Vercel, Blob, email-сервиса.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. ДОРОЖНАЯ КАРТА -->
+<section id="roadmap">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">13</span>Дорожная карта и Гант</h2>
+    <div class="tl rv">
+      <div class="sp">
+        <div class="sp-head"><h3>Sprint 1 · Уведомления</h3><span class="sp-date">НЕДЕЛИ 1–2 · 15.09–28.09</span></div>
+        <p style="color:var(--muted);font-size:14px">guide.html + email-сервис + api/notify.js. Директор узнаёт о дефиците ≤ 5 минут.</p>
+      </div>
+      <div class="sp">
+        <div class="sp-head"><h3>Sprint 2 · QR-инвентаризация</h3><span class="sp-date">НЕДЕЛИ 3–4 · 29.09–12.10</span></div>
+        <p style="color:var(--muted);font-size:14px">Генератор наклеек + сканер камеры. Рапорт 15 секунд.</p>
+      </div>
+      <div class="sp">
+        <div class="sp-head"><h3>Sprint 3 · Безопасность</h3><span class="sp-date">НЕДЕЛИ 5–6 · 13.10–26.10</span></div>
+        <p style="color:var(--muted);font-size:14px">JWT, автопроводки, ABC-XYZ. Время директора на рутину −70%.</p>
+      </div>
+      <div class="sp">
+        <div class="sp-head"><h3>Sprint 4 · Пилот</h3><span class="sp-date">НЕДЕЛЯ 7 · 27.10–02.11</span></div>
+        <p style="color:var(--muted);font-size:14px">Приёмка, демо-стенд, передача в эксплуатацию.</p>
+      </div>
+    </div>
+    <div class="gantt rv" style="margin-top:30px">
+      <div class="g-row g-head"><div class="g-label">Недели →</div><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b><b>7</b></div>
+      <div class="g-row"><div class="g-label">Sprint 1 · Уведомления</div><div class="g-track"><i class="bar" style="grid-column:1/3"></i></div></div>
+      <div class="g-row"><div class="g-label">Sprint 2 · QR-инвентаризация</div><div class="g-track"><i class="bar s2" style="grid-column:3/5"></i></div></div>
+      <div class="g-row"><div class="g-label">Sprint 3 · Безопасность</div><div class="g-track"><i class="bar s3" style="grid-column:5/7"></i></div></div>
+      <div class="g-row"><div class="g-label">Приёмка</div><div class="g-track"><i class="bar ac" style="grid-column:7/8"></i></div></div>
+      <div class="g-row"><div class="g-label" style="color:var(--muted)">Веха: первое письмо</div><div class="g-track"><i class="ms" style="grid-column:2/3"></i></div></div>
+      <div class="g-row"><div class="g-label" style="color:var(--muted)">Веха: первый скан</div><div class="g-track"><i class="ms" style="grid-column:4/5"></i></div></div>
+      <div class="g-row"><div class="g-label" style="color:var(--muted)">Веха: приёмка</div><div class="g-track"><i class="ms" style="grid-column:7/8"></i></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. DOD -->
+<section id="dod">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">14</span>Критерии приёмки MVP</h2>
+    <div class="dod rv">
+      <div class="item"><span class="done">✓</span><span>Роли и PIN, рапорт с телефона</span></div>
+      <div class="item"><span class="done">✓</span><span>Проводки директора, остатки, журнал</span></div>
+      <div class="item"><span class="done">✓</span><span>CSV ↔ 1С в обе стороны</span></div>
+      <div class="item"><span class="done">✓</span><span>Точка заказа и прогноз расхода</span></div>
+      <div class="item"><span class="done">✓</span><span>Руководство и вход по ролям</span></div>
+      <div class="item"><span class="todo">○</span><span>Email-уведомления о дефиците</span></div>
+      <div class="item"><span class="todo">○</span><span>QR-скан наклейки</span></div>
+      <div class="item"><span class="todo">○</span><span>JWT-сессии</span></div>
+      <div class="item"><span class="todo">○</span><span>Акт приёмки</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. КОМАНДА -->
+<section id="team">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">15</span>Команда</h2>
+    <div class="team-grid rv">
+      <div class="role"><b>Андрей</b><em>Разработчик, технический директор</em><p>Код, интеграции, демо-стенд, фронтенд (HTML/CSS/JS)</p></div>
+      <div class="role"><b>Qwen</b><em>ИИ-ассистент</em><p>Архитектура, тесты, документация, промпт-цепочки, UX</p></div>
+      <div class="role"><b>Директор</b><em>Заказчик</em><p>Приёмка, утверждение порогов, пилот, решения по закупкам</p></div>
+      <div class="role"><b>Бухгалтер</b><em>Пилот-пользователь</em><p>Сверка с 1С, валидация выгрузок CSV</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. РИСКИ -->
+<section id="risks">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">16</span>Реестр рисков</h2>
+    <table class="rv">
+      <thead><tr><th>Риск</th><th>Влияние</th><th>Митигация</th></tr></thead>
+      <tbody>
+        <tr><td>Ошибка прогноза расхода</td><td>Высокое</td><td>Человек утверждает каждую рекомендацию</td></tr>
+        <tr><td>Директор не примет автопроводки</td><td>Среднее</td><td>Порог настраиваемый; первые 2 недели всё вручную</td></tr>
+        <tr><td>QR не читается при свете цеха</td><td>Среднее</td><td>Контрастные наклейки + fallback ручной ввод</td></tr>
+        <tr><td>Vercel Blob недоступен</td><td>Высокое</td><td>In-memory fallback + ретрай при следующем запросе</td></tr>
+        <tr><td>Bus-factor (Андрей)</td><td>Высокое</td><td>DOSSIER.md и AGILE.md как страховка контекста</td></tr>
+        <tr><td>Email-сервис не верифицирует домен</td><td>Среднее</td><td>Запасной Mailgun; SPF/DKIM по регламенту</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 17. АНАЛОГИ -->
+<section id="comp">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">17</span>Аналоги и преимущество</h2>
+    <div class="grid g2">
+      <div class="card rv">
+        <h4>🏢 Российские аналоги</h4>
+        <ul class="clean">
+          <li><b>1C:WMS, Axelot</b> — дорого, месяцы внедрения, у работника цеха нет инструмента в телефоне</li>
+          <li><b>МойСклад</b> — ориентирован на розницу, не производство</li>
+        </ul>
+      </div>
+      <div class="card rv">
+        <h4>🌍 Зарубежные аналоги</h4>
+        <ul class="clean">
+          <li><b>SAP EWM, Manhattan</b> — энтерпрайз, недоступно для SME</li>
+          <li><b>Бумага / Excel</b> — бесплатно, но нет реального времени и контроля</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card acc rv" style="margin-top:16px">
+      <h4>🎯 Наше преимущество</h4>
+      <p>Внедрение за недели, бюджет 0 рублей, рапорт за 15 секунд, ML-прогноз с human-in-the-loop, полный аудит-след с первого дня. Работник цеха получает инструмент в телефоне — чего нет у российских и зарубежных аналогов.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 18. ЧТО СДЕЛАНО -->
+<section id="done">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">18</span>Что уже сделано</h2>
+    <div class="grid g3 rv">
+      <div class="card"><span class="ico">✅</span><h4>MVP в бою</h4><p>Боевая ссылка работает, 108 позиций номенклатуры, словарь синхронизирован</p></div>
+      <div class="card"><span class="ico">✅</span><h4>CSV ↔ 1С</h4><p>Импорт и экспорт в обе стороны протестированы</p></div>
+      <div class="card"><span class="ico">✅</span><h4>Аналитика</h4><p>Точка заказа и прогноз закупок работают</p></div>
+      <div class="card"><span class="ico">✅</span><h4>Вход по ролям</h4><p>Дашборд, guide.html, три роли (работник / директор / бухгалтер)</p></div>
+      <div class="card"><span class="ico">✅</span><h4>Agile-план</h4><p>4 спринта, KPI, дорожная карта, Гант, канбан-доска</p></div>
+      <div class="card"><span class="ico">✅</span><h4>Задание 4</h4><p>Блок-схема TO-BE с ИИ сдано в LMS</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 19. ЧТО ЗАПРАШИВАЕМ -->
+<section id="ask">
+  <div class="wrap">
+    <h2 class="rv"><span class="n">19</span>Что запрашиваем</h2>
+    <div class="ask rv">
+      <div class="item"><div class="ic">🏭</div><b>Пилот 2 недели</b><p>На производстве с 5 работниками, директором и бухгалтером</p></div>
+      <div class="item"><div class="ic">⚙️</div><b>Порог автопроводок</b><p>Утверждение директор порога для автоматических списаний</p></div>
+      <div class="item"><div class="ic">📧</div><b>Email-сервис</b><p>Решение по Resend / Mailgun и верификации домена</p></div>
+      <div class="item"><div class="ic">🚀</div><b>Тиражирование</b><p>После пилота — решение о развёртывании на остальных площадках</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 20. ФИНАЛ -->
+<section id="final" style="border-top:none">
+  <div class="wrap">
+    <div class="final rv">
+      <blockquote>«Дефицит — это не судьба,<br>а отсутствие данных.<br>Мы дали складу голос —<br>и он начал заказывать сам».</blockquote>
+      <div class="sm">Интеллектуальная система управления складом (WMS) «Ремера» · защита 11.10.2026</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>Интеллектуальная WMS «Ремера»</b> · MVP: <a href="https://remera-wms-bvii.vercel.app">remera-wms-bvii.vercel.app</a><br>
+    Выполнил: Андрей · группа СИИ-1/2026 · команда: разработчик + ИИ-ассистент
+  </div>
+</footer>
+
+<script>
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+  addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    document.getElementById('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  });
+</script>
+</body>
+</html>
