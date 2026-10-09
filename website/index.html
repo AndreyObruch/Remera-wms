@@ -43,26 +43,25 @@
     }
     .hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
     .hero-bg img{
-      width:100%;height:100%;object-fit:cover;object-position:center;opacity:.3;
-      animation:imgReveal 4s ease-in-out forwards;
+      width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;
+      animation:imgReveal 3s ease-in-out forwards;
       -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
       mask-image:linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
     }
     .hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(900px 500px at 50% 40%, rgba(1,32,50,.35), rgba(1,32,50,.80));}
     .hero-content{position:relative;z-index:2;max-width:920px;padding:0 20px}
 
-    @keyframes imgReveal{0%{opacity:.3}50%{opacity:1}100%{opacity:.5}}
+    /* заставка: 0% → 100% → 50% за 3 секунды */
+    @keyframes imgReveal{0%{opacity:0}50%{opacity:1}100%{opacity:.5}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 
-    .hero-content .eyebrow,
     .hero-content h1,
     .hero-content .tagline,
     .hero-content .lead{opacity:0;animation:fadeUp .8s ease forwards}
-    .eyebrow{letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-size:13px;margin-bottom:18px;animation-delay:1s}
-    h1{font-size:clamp(36px,6vw,68px);color:var(--gold);font-weight:700;line-height:1.08;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,.6);animation-delay:2.5s}
-    .tagline{font-size:clamp(16px,2vw,20px);color:var(--accent);margin-bottom:20px;font-weight:600;text-shadow:0 1px 14px rgba(0,0,0,.6);animation-delay:4s}
-    .lead{max-width:780px;margin:0 auto 34px;color:var(--text);font-size:17px;line-height:1.55;text-shadow:0 1px 12px rgba(0,0,0,.8);animation-delay:5.5s}
-    .hero-cta{opacity:0;animation:fadeUp .8s ease forwards;animation-delay:7s;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+    h1{font-size:clamp(26px,3.6vw,44px);color:var(--gold);font-weight:700;line-height:1.15;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,.6);animation-delay:3s}
+    .tagline{font-size:clamp(15px,1.8vw,19px);color:var(--accent);margin-bottom:20px;font-weight:600;text-shadow:0 1px 14px rgba(0,0,0,.6);animation-delay:4.2s}
+    .lead{max-width:780px;margin:0 auto 34px;color:var(--text);font-size:16px;line-height:1.55;text-shadow:0 1px 12px rgba(0,0,0,.8);animation-delay:5.4s}
+    .hero-cta{opacity:0;animation:fadeUp .8s ease forwards;animation-delay:6.6s;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}
     .btn{display:inline-block;padding:15px 34px;border-radius:10px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;border:none;transition:transform .15s ease, box-shadow .15s ease}
     .btn-primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#041018;box-shadow:0 6px 24px rgba(45,212,234,.25)}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(45,212,234,.35)}
@@ -134,7 +133,6 @@
   <div class="hero-bg"><img src="hero.jpg" alt="Интеллектуальный склад"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <p class="eyebrow">Интеллектуальный склад</p>
     <h1>Интеллектуальная система<br>управления складом (WMS)</h1>
     <p class="tagline">Внутренний контур оперативного учёта и прогноза закупок для любого производства — на примере действующего ООО «Ремера»</p>
     <p class="lead">Мобильные рапорты работников, контрольная точка директора, ML-прогноз точки заказа, внутренний чат компании без внешних чат-ботов. ИИ рекомендует — человек решает.</p>
