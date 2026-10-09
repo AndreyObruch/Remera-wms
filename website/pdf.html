@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ИАР (PDF) — WMS Ремера</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; background: #f5f5f7; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    nav { background: white; padding: 16px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    nav ul { list-style: none; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+    nav a { color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.05rem; }
+    nav a:hover, nav a.active { color: #764ba2; }
+    header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 12px; }
+    header p { font-size: 1.15rem; opacity: 0.95; }
+    .card { background: white; border-radius: 16px; padding: 32px; margin-top: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
+    .btn { display: inline-block; padding: 16px 36px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 16px rgba(102,126,234,0.3); margin: 12px 6px; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.ghost { background: white; color: #667eea; border: 2px solid #667eea; box-shadow: none; }
+    .meta { color: #888; font-size: 0.95rem; margin-top: 8px; }
+    .preview { margin-top: 32px; }
+    .preview iframe { width: 100%; height: 75vh; border: 1px solid #e0e0e8; border-radius: 12px; background: #eee; }
+    footer { background: #1a1a1a; color: white; padding: 32px 0; margin-top: 60px; text-align: center; }
+    footer p { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="app.html">Приложение</a></li>
+        <li><a href="presentation.html">Презентация</a></li>
+        <li><a href="pdf.html" class="active">ИАР (PDF)</a></li>
+        <li><a href="about.html">О проекте</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header>
+    <div class="container">
+      <h1>📄 Итоговая аттестационная работа</h1>
+      <p>PDF-буклет A4: обложка, 10 разделов по критериям LMS Odin, 4 схемы (архитектура, TO-BE, ROI, Гант)</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="card">
+      <h2>Скачать или смотреть</h2>
+      <a class="btn" href="files/iar-obruch.pdf" download>⬇ Скачать PDF</a>
+      <a class="btn ghost" href="files/iar-obruch.pdf" target="_blank" rel="noopener">Открыть в новой вкладке ↗</a>
+      <p class="meta">ИАР_Обруч_WMS_Ремера · 11 страниц · формат для загрузки в LMS Odin</p>
+    </section>
+
+    <section class="card preview">
+      <h2 style="margin-bottom:16px;">Превью</h2>
+      <iframe src="files/iar-obruch.pdf" title="ИАР WMS Ремера (PDF)"></iframe>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 WMS «Ремера» · Обруч А.Г. · группа СИИ-1/2026</p>
+    </div>
+  </footer>
+</body>
+</html>
