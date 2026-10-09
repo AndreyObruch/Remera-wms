@@ -55,13 +55,16 @@
     @keyframes imgReveal{0%{opacity:0}50%{opacity:1}100%{opacity:.5}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 
-    .hero-content h1,
-    .hero-content .tagline,
-    .hero-content .lead{opacity:0;animation:fadeUp .8s ease forwards}
-    h1{font-size:clamp(26px,3.6vw,44px);color:var(--gold);font-weight:700;line-height:1.15;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,.6);animation-delay:3s}
-    .tagline{font-size:clamp(15px,1.8vw,19px);color:var(--accent);margin-bottom:20px;font-weight:600;text-shadow:0 1px 14px rgba(0,0,0,.6);animation-delay:4.2s}
-    .lead{max-width:780px;margin:0 auto 34px;color:var(--text);font-size:16px;line-height:1.55;text-shadow:0 1px 12px rgba(0,0,0,.8);animation-delay:5.4s}
-    .hero-cta{opacity:0;animation:fadeUp .8s ease forwards;animation-delay:6.6s;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+    /* надписи: последовательно, интервал 1 секунда, старт после заставки (3s) */
+    .hero-content h1{opacity:0;animation:fadeUp .8s ease 3s forwards}
+    .hero-content .tagline{opacity:0;animation:fadeUp .8s ease 4s forwards}
+    .hero-content .lead{opacity:0;animation:fadeUp .8s ease 5s forwards}
+    .hero-content .hero-cta{opacity:0;animation:fadeUp .8s ease 6s forwards}
+
+    h1{font-size:clamp(26px,3.6vw,44px);color:var(--gold);font-weight:700;line-height:1.15;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+    .tagline{font-size:clamp(15px,1.8vw,19px);color:var(--accent);margin-bottom:20px;font-weight:600;text-shadow:0 1px 14px rgba(0,0,0,.6)}
+    .lead{max-width:780px;margin:0 auto 34px;color:var(--text);font-size:16px;line-height:1.55;text-shadow:0 1px 12px rgba(0,0,0,.8)}
+    .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}
     .btn{display:inline-block;padding:15px 34px;border-radius:10px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;border:none;transition:transform .15s ease, box-shadow .15s ease}
     .btn-primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#041018;box-shadow:0 6px 24px rgba(45,212,234,.25)}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(45,212,234,.35)}
