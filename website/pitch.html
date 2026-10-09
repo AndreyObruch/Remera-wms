@@ -202,7 +202,7 @@
       <div class="step"><div class="num"></div><div><div class="t">Количество 5 → отправка</div><div class="muted">Рапорт ушёл директору в очередь</div></div></div>
       <div class="step"><div class="num"></div><div><div class="t">Директор видит жёлтую карточку, жмёт «Провести»</div><div class="muted">Одна кнопка подтверждения</div></div></div>
       <div class="step"><div class="num"></div><div><div class="t">Остаток обновлён 10 → 5</div><div class="muted">Запись в журнале с подписями автора и утвердителя</div></div></div>
-      <div class="step"><div class="num"></div><div><div class="t">ML видит: запаса на 0.8 дня</div><div class="muted">Письмо директору: «Закажите PA-F, рекомендовано 1980»</div></div></div>
+      <div class="step"><div class="num"></div><div><div class="t">ML видит: запаса на 0.8 дня</div><div class="muted">Сигнал дефицита в аналитике: «Закажите PA-F, рекомендовано 1980»</div></div></div>
       <div class="step"><div class="num"></div><div><div class="t">Директор утверждает рекомендацию → заявка поставщику</div><div class="muted">Весь цикл: от движения до заказа — 30 минут</div></div></div>
     </div>
   </div>
@@ -255,10 +255,10 @@
     <h2 class="rv"><span class="n">07</span>Технологическая основа</h2>
     <div class="grid g2">
       <div class="card rv">
-        <h4>🏗 Backend (serverless)</h4>
+        <h4>🏗 Backend (Amvera, контейнер)</h4>
         <ul class="clean">
-          <li><b>Vercel Functions</b> — 7 API-эндпоинтов: auth, chat, approve, stock, import, export, analytics, notify</li>
-          <li><b>Blob-хранилище</b> — JSON-стейт, идемпотентность проводок, защита от отрицательных остатков</li>
+          <li><b>Node.js 20 + Express</b> — единый server.js: 7 API-эндпоинтов (auth, chat, approve, stock, import, export, analytics) + /api/health</li>
+          <li><b>Файловое хранилище /data</b> — JSON-стейт wms2/state.json, идемпотентность проводок, защита от отрицательных остатков</li>
           <li><b>ML-модель</b> — градиентный бустинг по временным рядам: прогноз расхода на 14 дней</li>
           <li><b>CSV ↔ 1С</b> — двусторонний обмен с BOM для Excel</li>
         </ul>
@@ -268,7 +268,7 @@
         <ul class="clean">
           <li><b>Роли и PIN</b> (MVP) → JWT с TTL 8 часов (Sprint 3)</li>
           <li><b>Идемпотентность</b> — двойной клик не делает двойной проводки</li>
-          <li><b>Fallback</b> — при недоступности Blob: in-memory + лог + ретрай</li>
+          <li><b>Fallback</b> — при недоступности /data: in-memory + лог + ретрай</li>
           <li><b>Anti-fraud</b> — порог подтверждения аномальных количеств</li>
         </ul>
       </div>
@@ -340,7 +340,7 @@
     <div class="grid g3">
       <div class="card acc rv"><span class="ico">💼</span><h4>Внутренний эффект</h4><p>Снижение потерь от простоев и замороженных средств: запасы −15–20%.</p></div>
       <div class="card acc rv"><span class="ico">🚀</span><h4>Масштабирование</h4><p>Тиражируемый контур для производственных SME: лицензия или SaaS.</p></div>
-      <div class="card acc rv"><span class="ico">💰</span><h4>Бюджет MVP</h4><p>0 рублей — бесплатные тарифы Vercel, Blob, email-сервиса.</p></div>
+      <div class="card acc rv"><span class="ico">💰</span><h4>Бюджет MVP</h4><p>0 рублей — бесплатные тарифы Amvera, файловое хранилище, email-сервиса.</p></div>
     </div>
   </div>
 </section>
@@ -421,7 +421,7 @@
         <tr><td>Ошибка прогноза расхода</td><td>Высокое</td><td>Человек утверждает каждую рекомендацию</td></tr>
         <tr><td>Директор не примет автопроводки</td><td>Среднее</td><td>Порог настраиваемый; первые 2 недели всё вручную</td></tr>
         <tr><td>QR не читается при свете цеха</td><td>Среднее</td><td>Контрастные наклейки + fallback ручной ввод</td></tr>
-        <tr><td>Vercel Blob недоступен</td><td>Высокое</td><td>In-memory fallback + ретрай при следующем запросе</td></tr>
+        <tr><td>Хранилище /data недоступно</td><td>Высокое</td><td>In-memory fallback + ретрай при следующем запросе</td></tr>
         <tr><td>Bus-factor (Андрей)</td><td>Высокое</td><td>DOSSIER.md и AGILE.md как страховка контекста</td></tr>
         <tr><td>Email-сервис не верифицирует домен</td><td>Среднее</td><td>Запасной Mailgun; SPF/DKIM по регламенту</td></tr>
       </tbody>
@@ -496,7 +496,7 @@
 
 <footer>
   <div class="wrap">
-    <b>Интеллектуальная WMS «Ремера»</b> · MVP: <a href="https://remera-wms-bvii.vercel.app">remera-wms-bvii.vercel.app</a><br>
+    <b>Интеллектуальная WMS «Ремера»</b> · MVP: <a href="https://remera-wms-andrey-obruch.amvera.io">remera-wms-andrey-obruch.amvera.io</a><br>
     Выполнил: Андрей · группа СИИ-1/2026 · команда: разработчик + ИИ-ассистент
   </div>
 </footer>
