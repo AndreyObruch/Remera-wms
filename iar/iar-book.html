@@ -4,50 +4,52 @@
 <meta charset="UTF-8">
 <title>ИАР · Интеллектуальная WMS «Ремера»</title>
 <style>
-@page { size: A4; margin: 0; }
+@page { size: A4 landscape; margin: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color: #e6edf7; font-size: 10.5pt; line-height: 1.45; background: #012032; }
-.page { width: 210mm; height: 297mm; padding: 16mm 16mm 14mm; page-break-after: always; position: relative; background: #012032; overflow: hidden; }
-.pnum { position: absolute; bottom: 7mm; right: 16mm; color: #9fb0c7; font-size: 8.5pt; }
-.brand { position: absolute; top: 7mm; left: 16mm; color: #2dd4ea; font-size: 8.5pt; font-weight: 600; letter-spacing: .5px; }
-h1 { font-size: 19pt; color: #f0b429; margin: 6mm 0 4mm; }
-h2 { font-size: 12.5pt; color: #2dd4ea; margin: 5mm 0 2mm; }
-p, li { margin-bottom: 2mm; text-align: justify; color: #e6edf7; }
-ul, ol { padding-left: 6mm; }
+body { font-family: 'Segoe UI', Arial, sans-serif; color: #e6edf7; font-size: 9pt; line-height: 1.4; background: #012032; }
+.page { width: 297mm; height: 210mm; padding: 10mm 12mm 9mm; page-break-after: always; position: relative; background: #012032; overflow: hidden; }
+.pnum { position: absolute; bottom: 5mm; right: 12mm; color: #9fb0c7; font-size: 8pt; }
+.brand { position: absolute; top: 5mm; left: 12mm; color: #2dd4ea; font-size: 8pt; font-weight: 600; letter-spacing: .5px; }
+h1 { font-size: 16pt; color: #f0b429; margin: 3mm 0 2mm; }
+h2 { font-size: 11pt; color: #2dd4ea; margin: 3mm 0 1.5mm; }
+p, li { margin-bottom: 1.2mm; text-align: justify; color: #e6edf7; }
+ul, ol { padding-left: 5mm; }
 a { color: #2dd4ea; text-decoration: underline; word-break: break-all; }
-table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9pt; }
-th, td { border: 1px solid #263252; padding: 2mm 2.5mm; text-align: left; vertical-align: top; color: #e6edf7; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0; font-size: 8pt; }
+th, td { border: 1px solid #263252; padding: 1.2mm 1.8mm; text-align: left; vertical-align: top; color: #e6edf7; }
 th { background: #062a40; color: #f0b429; }
 td b { color: #22c55e; font-weight: 700; }
-.cards { display: flex; gap: 4mm; margin: 3mm 0; }
-.card { flex: 1; background: #062a40; border-left: 3px solid #2dd4ea; border-radius: 2mm; padding: 3mm; font-size: 9.5pt; }
-.card b { color: #2dd4ea; display: block; margin-bottom: 1mm; }
-.svgbox { margin: 3mm 0; text-align: center; }
+.cols { display: flex; gap: 6mm; }
+.cols > div { flex: 1; min-width: 0; }
+.cards { display: flex; gap: 3mm; margin: 2mm 0; }
+.card { flex: 1; background: #062a40; border-left: 3px solid #2dd4ea; border-radius: 2mm; padding: 2mm 2.5mm; font-size: 8.5pt; }
+.card b { color: #2dd4ea; display: block; margin-bottom: .8mm; }
+.svgbox { margin: 2mm 0; text-align: center; }
 .svgbox svg { width: 100%; height: auto; }
-.cap { font-size: 8.5pt; color: #9fb0c7; margin-top: 1mm; }
-pre { background: #062a40; border: 1px solid #263252; border-radius: 2mm; padding: 3mm; font-size: 8pt; font-family: Consolas, monospace; overflow: hidden; color: #e6edf7; }
+.cap { font-size: 7.5pt; color: #9fb0c7; margin-top: .8mm; }
+pre { background: #062a40; border: 1px solid #263252; border-radius: 2mm; padding: 2mm; font-size: 7pt; font-family: Consolas, monospace; overflow: hidden; color: #e6edf7; line-height: 1.35; }
+blockquote { margin: 2mm 0; padding: 2mm 3mm; background: #062a40; border-left: 3px solid #f0b429; border-radius: 2mm; font-style: italic; }
 /* обложка */
-.cover { background: linear-gradient(135deg, #012032 0%, #062a40 55%, #0e7490 130%); color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-.cover .top { font-size: 10pt; opacity: .95; line-height: 1.5; color: #9fb0c7; }
+.cover { background: linear-gradient(135deg, #012032 0%, #062a40 55%, #0e7490 130%); display: flex; flex-direction: column; justify-content: space-between; }
+.cover .top { font-size: 9.5pt; color: #9fb0c7; line-height: 1.5; }
 .cover .top b { color: #e6edf7; }
-.cover .mid h1 { color: #f0b429; font-size: 26pt; line-height: 1.2; margin: 0 0 6mm; }
-.cover .mid h2 { color: #2dd4ea; font-size: 14pt; font-weight: 400; margin: 0; }
-.cover .badges { display: flex; gap: 3mm; margin-top: 8mm; flex-wrap: wrap; }
-.badge { background: rgba(6,42,64,.8); border: 1px solid #263252; border-radius: 6mm; padding: 2mm 5mm; font-size: 9.5pt; color: #e6edf7; }
-.cover .bot { font-size: 10.5pt; line-height: 1.7; border-top: 1px solid #263252; padding-top: 5mm; color: #e6edf7; }
-.toc li { margin-bottom: 2.5mm; font-size: 11pt; }
+.cover .mid h1 { color: #f0b429; font-size: 24pt; line-height: 1.2; margin: 0 0 3mm; }
+.cover .mid h2 { color: #2dd4ea; font-size: 13pt; font-weight: 400; margin: 0 0 4mm; }
+.cover .badges { display: flex; gap: 3mm; flex-wrap: wrap; }
+.badge { background: rgba(6,42,64,.8); border: 1px solid #263252; border-radius: 6mm; padding: 1.5mm 4mm; font-size: 9pt; color: #e6edf7; }
+.cover .bot { font-size: 9.5pt; line-height: 1.6; border-top: 1px solid #263252; padding-top: 3mm; color: #e6edf7; }
+.toc { columns: 2; column-gap: 8mm; font-size: 9.5pt; }
+.toc li { margin-bottom: 1.2mm; }
 </style>
 </head>
 <body>
 
-<!-- СТРАНИЦА 1 · ОБЛОЖКА -->
+<!-- 1 · ОБЛОЖКА -->
 <div class="page cover">
   <div class="top">
-    АНО ДПО «Академия цифровых технологий»<br>
-    Программа профессиональной переподготовки<br>
-    <b>«Азбука цифры. Специалист по внедрению искусственного интеллекта (ИИ)»</b><br>
-    Поток СИИ-1, подгруппа 3
+    АНО ДПО «Академия цифровых технологий» · Программа профессиональной переподготовки<br>
+    <b>«Азбука цифры. Специалист по внедрению искусственного интеллекта (ИИ)»</b> · Поток СИИ-1, подгруппа 3
   </div>
   <div class="mid">
     <h1>Итоговая аттестационная работа</h1>
@@ -60,339 +62,337 @@ pre { background: #062a40; border: 1px solid #263252; border-radius: 2mm; paddin
     </div>
   </div>
   <div class="bot">
-    <b>Выполнил:</b> Обруч Андрей Геннадьевич<br>
-    <b>Преподаватель:</b> Кулешова Елена Анатольевна<br>
-    <b>Год:</b> 2026
+    <b>Выполнил:</b> Обруч Андрей Геннадьевич · <b>Преподаватель:</b> Кулешова Елена Анатольевна · <b>Год:</b> 2026<br>
+    <b>Сайт:</b> <a href="https://remera-wms-andrey-obruch.amvera.io/website/">remera-wms-andrey-obruch.amvera.io/website/</a> · <b>Приложение:</b> <a href="https://remera-wms-andrey-obruch.amvera.io/index.html">/index.html</a> · <b>Репозиторий:</b> <a href="https://github.com/AndreyObruch/Remera-wms">github.com/AndreyObruch/Remera-wms</a>
   </div>
+  <div class="pnum">1</div>
 </div>
 
-<!-- СТРАНИЦА 2 · СОДЕРЖАНИЕ + ВВЕДЕНИЕ -->
+<!-- 2 · СОДЕРЖАНИЕ + ВВЕДЕНИЕ -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
-  <h1>Содержание</h1>
-  <ol class="toc">
-    <li>Введение: актуальность, цели, обзор практик и методологии</li>
-    <li>Теория предмета в прикладном использовании</li>
-    <li>Описание использованных инструментов</li>
-    <li>Экономика проекта и ROI</li>
-    <li>Маркетинговая стратегия и схема управления проектом</li>
-    <li>MVP и сценарии использования</li>
-    <li>Протоколы кибербезопасности</li>
-    <li>Проект масштабирования ИИ-проекта</li>
-    <li>Структура базы данных и источники данных</li>
-    <li>Выводы об оптимальности выбранной стратегии</li>
-  </ol>
-  <h1>1. Введение</h1>
-  <h2>Актуальность</h2>
-  <p>Малые производства РФ ведут оперативный учёт ТМЦ на бумаге: данные попадают в 1С с задержкой 1–3 дня, закупки планируются «по опыту». Следствие — дефицит сырья, простои линий (до 50 000 ₽/час) и замороженные оборотные средства. Коробочные WMS (1C:WMS, Axelot, SAP EWM) недоступны SME: внедрение от 5 млн ₽ и месяцы работ.</p>
-  <h2>Цель</h2>
-  <p>Разработать и внедрить интеллектуальную WMS с ИИ-прогнозом закупок: время «сигнал → заказ» с 3 дней до 30 минут; 0 простоев из-за дефицита; запасы −15–20%; 100% аудит-след.</p>
-  <h2>Обзор практик и методология</h2>
-  <p>Практики: облачные SaaS (МойСклад — розница, не производство), serverless-платформы, ИИ-ассистенты в разработке (code generation, документация, отладка), Agile/Scrum для ИИ-проектов. Методология: Design Thinking (эмпатия к работнику цеха), итеративное прототипирование, human-in-the-loop для критических решений («ИИ рекомендует — человек решает»).</p>
+  <div class="cols">
+    <div>
+      <h1>Содержание</h1>
+      <ol class="toc">
+        <li>Введение: актуальность, цели, методология</li>
+        <li>Теория предмета в прикладном использовании</li>
+        <li>Описание использованных инструментов</li>
+        <li>Экономика проекта и ROI</li>
+        <li>Маркетинг и схема управления проектом</li>
+        <li>MVP, сценарии, кибербезопасность</li>
+        <li>Масштабирование и база данных</li>
+        <li>Выводы об оптимальности стратегии</li>
+      </ol>
+      <h2>1. Введение · Актуальность</h2>
+      <p>Малые производства РФ ведут учёт ТМЦ на бумаге: данные в 1С с задержкой 1–3 дня, закупки «по опыту». Следствие — дефицит сырья, простои линий (до 50 000 ₽/час), замороженные оборотные средства. Коробочные WMS (1C:WMS, Axelot, SAP EWM) недоступны SME: от 5 млн ₽ и месяцы работ.</p>
+    </div>
+    <div>
+      <h2>Цель</h2>
+      <p>Разработать и внедрить интеллектуальную WMS с ИИ-прогнозом закупок: время «сигнал → заказ» с 3 дней до 30 минут; 0 простоев из-за дефицита; запасы −15–20%; 100% аудит-след.</p>
+      <h2>Обзор практик и методология</h2>
+      <p>Практики: облачные SaaS (МойСклад — розница), serverless-платформы, ИИ-ассистенты в разработке (code generation, документация, отладка), Agile/Scrum для ИИ-проектов. Методология: Design Thinking (эмпатия к работнику цеха), итеративное прототипирование, human-in-the-loop для критических решений («ИИ рекомендует — человек решает»).</p>
+      <div class="cards">
+        <div class="card"><b>15 сек</b>рапорт работника с телефона</div>
+        <div class="card"><b>30 мин</b>сигнал → заказ поставщику</div>
+        <div class="card"><b>108</b>позиций номенклатуры</div>
+        <div class="card"><b>0 ₽</b>бюджет разработки</div>
+      </div>
+    </div>
+  </div>
   <div class="pnum">2</div>
 </div>
 
-<!-- СТРАНИЦА 3 · ТЕОРИЯ -->
+<!-- 3 · ТЕОРИЯ -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
   <h1>2. Теория предмета в прикладном использовании</h1>
-  <h2>WMS-системы</h2>
-  <p>Warehouse Management System автоматизирует приёмку, хранение, перемещение и отгрузку ТМЦ: учёт остатков в реальном времени, партии и сроки, интеграция с ERP, аналитика спроса. В прикладном контуре «Ремеры» WMS не подменяет 1С, а дополняет её оперативным контуром движений с двусторонним CSV-обменом.</p>
-  <h2>Прогнозирование временных рядов</h2>
-  <ul>
-    <li>скользящее среднее — стабильный спрос;</li>
-    <li>экспоненциальное сглаживание (Holt–Winters) — тренд и сезонность;</li>
-    <li>градиентный бустинг (XGBoost/CatBoost) — нелинейности и внешние факторы.</li>
-  </ul>
-  <p>В MVP применён детерминированный базис: точка заказа = запас &lt; норма × 7 дней; рекомендация = норма × 14 − запас. ML-надстройка (бустинг, 14 дней) — Sprint 3/4: сначала накоплен журнал движений (источник обучающей выборки).</p>
-  <h2>Human-in-the-loop</h2>
-  <p>Каждая рекомендация ИИ и каждый рапорт проходят утверждение человеком (директор). Обоснование: цена ошибки автопроводки на производстве — остановка линии; HITL даёт контроль, доверие пользователей и размеченные данные для дообучения модели.</p>
-  <h2>Agile в ИИ-проектах</h2>
-  <p>Waterfall неприменим из-за неопределённости качества моделей и требований. Scrum с двухнедельными спринтами: бэклог (AGILE.md), канбан (Яндекс-таблицы), демо заказчику каждый спринт, KPI «базлайн AS-IS → цель TO-BE».</p>
-  <div class="cards">
-    <div class="card"><b>Принцип Data-first</b>Сначала журнал движений и справочник — потом модели и автоматизация.</div>
-    <div class="card"><b>Security by default</b>try-catch и fallback на каждом узле; валидация всех входов.</div>
-    <div class="card"><b>Zero-downtime</b>Деградация хранилища не роняет приём рапортов (in-memory + ретрай).</div>
+  <div class="cols">
+    <div>
+      <h2>WMS-системы</h2>
+      <p>Warehouse Management System автоматизирует приёмку, хранение, перемещение и отгрузку ТМЦ: учёт остатков в реальном времени, партии и сроки, интеграция с ERP, аналитика спроса. В контуре «Ремеры» WMS не подменяет 1С, а дополняет её оперативным контуром движений с двусторонним CSV-обменом.</p>
+      <h2>Прогнозирование временных рядов</h2>
+      <ul>
+        <li>скользящее среднее — стабильный спрос;</li>
+        <li>экспоненциальное сглаживание (Holt–Winters) — тренд и сезонность;</li>
+        <li>градиентный бустинг (XGBoost/CatBoost) — нелинейности и внешние факторы.</li>
+      </ul>
+      <p>В MVP применён детерминированный базис: точка заказа = запас &lt; норма × 7 дней; рекомендация = норма × 14 − запас. ML-надстройка (бустинг, 14 дней) — Sprint 3/4: сначала накоплен журнал движений (источник обучающей выборки).</p>
+    </div>
+    <div>
+      <h2>Human-in-the-loop</h2>
+      <p>Каждая рекомендация ИИ и каждый рапорт проходят утверждение человеком (директор). Обоснование: цена ошибки автопроводки на производстве — остановка линии; HITL даёт контроль, доверие пользователей и размеченные данные для дообучения модели.</p>
+      <h2>Agile в ИИ-проектах</h2>
+      <p>Waterfall неприменим из-за неопределённости качества моделей и требований. Scrum с двухнедельными спринтами: бэклог (AGILE.md), канбан (Яндекс-таблицы), демо заказчику каждый спринт, KPI «базлайн AS-IS → цель TO-BE».</p>
+      <div class="cards" style="flex-direction:column">
+        <div class="card"><b>Принцип Data-first</b>Сначала журнал движений и справочник — потом модели и автоматизация.</div>
+        <div class="card"><b>Security by default</b>try-catch и fallback на каждом узле; валидация всех входов.</div>
+        <div class="card"><b>Zero-downtime</b>Деградация хранилища не роняет приём рапортов (in-memory + ретрай).</div>
+      </div>
+    </div>
   </div>
   <div class="pnum">3</div>
 </div>
 
-<!-- СТРАНИЦА 4 · ИНСТРУМЕНТЫ + СХЕМА АРХИТЕКТУРЫ -->
+<!-- 4 · ИНСТРУМЕНТЫ + СХЕМА -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
   <h1>3. Использованные инструменты</h1>
-  <table>
-    <tr><th>Компонент</th><th>Технология</th><th>Обоснование</th></tr>
-    <tr><td>Backend</td><td>Node.js 20 + Express</td><td>Единый язык с frontend, скорость разработки</td></tr>
-    <tr><td>Хостинг</td><td>Amvera (РФ-облако)</td><td>152-ФЗ, контейнеры, persistence mount /data</td></tr>
-    <tr><td>Хранилище</td><td>ФС /data, JSON-стейт</td><td>Простота, отладка, версионирование; без внешних зависимостей</td></tr>
-    <tr><td>Frontend</td><td>HTML/CSS/JS (без фреймворков)</td><td>Работа в браузере смартфона без установки</td></tr>
-    <tr><td>ИИ-ассистент</td><td>Qwen (контекст 128k)</td><td>Архитектура, код, тесты, документация, UX</td></tr>
-    <tr><td>Обмен с 1С</td><td>CSV (BOM \uFEFF)</td><td>Совместимость с любой версией 1С без доработок</td></tr>
-    <tr><td>Версионирование</td><td>GitHub + git</td><td>CI-деплой на Amvera по push</td></tr>
-  </table>
-  <h2>Схема архитектуры (факт, Amvera)</h2>
-  <div class="svgbox">
-  <svg viewBox="0 0 660 300" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="12">
-    <defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#2dd4ea"/></marker></defs>
-    <rect x="10" y="20" width="150" height="52" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="85" y="42" text-anchor="middle" fill="#f0b429" font-weight="bold">chat.html</text><text x="85" y="58" text-anchor="middle" fill="#9fb0c7">работник · директор</text>
-    <rect x="10" y="92" width="150" height="52" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="85" y="114" text-anchor="middle" fill="#f0b429" font-weight="bold">index.html</text><text x="85" y="130" text-anchor="middle" fill="#9fb0c7">дашборд · бухгалтер</text>
-    <rect x="230" y="55" width="170" height="60" rx="8" fill="#0e7490"/><text x="315" y="80" text-anchor="middle" fill="#fff" font-weight="bold">server.js (Express)</text><text x="315" y="97" text-anchor="middle" fill="#e8e4ff">7 × /api/* + /health</text>
-    <rect x="470" y="20" width="170" height="52" rx="8" fill="#062a40" stroke="#f0b429"/><text x="555" y="42" text-anchor="middle" fill="#f0b429" font-weight="bold">lib/core.js</text><text x="555" y="58" text-anchor="middle" fill="#9fb0c7">108 поз. · нормы · аналитика</text>
-    <rect x="470" y="92" width="170" height="52" rx="8" fill="#062a40" stroke="#f0b429"/><text x="555" y="114" text-anchor="middle" fill="#f0b429" font-weight="bold">lib/store.js v17</text><text x="555" y="130" text-anchor="middle" fill="#9fb0c7">идемпотентность · защита минуса</text>
-    <rect x="470" y="170" width="170" height="52" rx="8" fill="#062a40" stroke="#22c55e"/><text x="555" y="192" text-anchor="middle" fill="#22c55e" font-weight="bold">/data (ФС Amvera)</text><text x="555" y="208" text-anchor="middle" fill="#9fb0c7">wms2/state.json</text>
-    <rect x="230" y="170" width="170" height="52" rx="8" fill="#062a40" stroke="#f59e0b"/><text x="315" y="192" text-anchor="middle" fill="#f59e0b" font-weight="bold">1С:Предприятие</text><text x="315" y="208" text-anchor="middle" fill="#9fb0c7">CSV ↔ (импорт/экспорт)</text>
-    <line x1="160" y1="46" x2="225" y2="70" stroke="#2dd4ea" stroke-width="2" marker-end="url(#a)"/>
-    <line x1="160" y1="118" x2="225" y2="95" stroke="#2dd4ea" stroke-width="2" marker-end="url(#a)"/>
-    <line x1="400" y1="72" x2="465" y2="48" stroke="#f0b429" stroke-width="2" marker-end="url(#a)"/>
-    <line x1="400" y1="95" x2="465" y2="116" stroke="#f0b429" stroke-width="2" marker-end="url(#a)"/>
-    <line x1="555" y1="144" x2="555" y2="165" stroke="#22c55e" stroke-width="2" marker-end="url(#a)"/>
-    <line x1="315" y1="115" x2="315" y2="165" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a)"/>
-    <text x="330" y="145" fill="#f59e0b" font-size="10">BOM \uFEFF, ≤ 2000 строк</text>
-  </svg>
-  <div class="cap">Рис. 1 — Архитектура боевого контура (Amvera, Node.js + Express, файловое хранилище /data)</div>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Компонент</th><th>Технология</th><th>Обоснование</th></tr>
+        <tr><td>Backend</td><td>Node.js 20 + Express</td><td>Единый язык с frontend, скорость разработки</td></tr>
+        <tr><td>Хостинг</td><td>Amvera (РФ-облако)</td><td>152-ФЗ, контейнеры, persistence mount /data</td></tr>
+        <tr><td>Хранилище</td><td>ФС /data, JSON-стейт</td><td>Простота, отладка, версионирование</td></tr>
+        <tr><td>Frontend</td><td>HTML/CSS/JS без фреймворков</td><td>Браузер смартфона без установки</td></tr>
+        <tr><td>ИИ-ассистент</td><td>Qwen (контекст 128k)</td><td>Архитектура, код, тесты, документация, UX</td></tr>
+        <tr><td>Обмен с 1С</td><td>CSV (BOM \uFEFF)</td><td>Совместимость с любой версией 1С</td></tr>
+        <tr><td>Версионирование</td><td>GitHub + git</td><td>CI-деплой на Amvera по push</td></tr>
+      </table>
+      <p>Инструменты разработки: VS Code, git/GitHub, npm, Browser DevTools; генерация xlsx-артефактов — Python + openpyxl; сборка печатных артефактов — headless Chrome (--print-to-pdf).</p>
+    </div>
+    <div>
+      <div class="svgbox">
+      <svg viewBox="0 0 660 300" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="12">
+        <defs><marker id="a" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#2dd4ea"/></marker></defs>
+        <rect x="10" y="20" width="150" height="52" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="85" y="42" text-anchor="middle" fill="#f0b429" font-weight="bold">chat.html</text><text x="85" y="58" text-anchor="middle" fill="#9fb0c7">работник · директор</text>
+        <rect x="10" y="92" width="150" height="52" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="85" y="114" text-anchor="middle" fill="#f0b429" font-weight="bold">index.html</text><text x="85" y="130" text-anchor="middle" fill="#9fb0c7">дашборд · бухгалтер</text>
+        <rect x="230" y="55" width="170" height="60" rx="8" fill="#0e7490"/><text x="315" y="80" text-anchor="middle" fill="#fff" font-weight="bold">server.js (Express)</text><text x="315" y="97" text-anchor="middle" fill="#e8e4ff">7 × /api/* + /health</text>
+        <rect x="470" y="20" width="170" height="52" rx="8" fill="#062a40" stroke="#f0b429"/><text x="555" y="42" text-anchor="middle" fill="#f0b429" font-weight="bold">lib/core.js</text><text x="555" y="58" text-anchor="middle" fill="#9fb0c7">108 поз. · нормы · аналитика</text>
+        <rect x="470" y="92" width="170" height="52" rx="8" fill="#062a40" stroke="#f0b429"/><text x="555" y="114" text-anchor="middle" fill="#f0b429" font-weight="bold">lib/store.js v17</text><text x="555" y="130" text-anchor="middle" fill="#9fb0c7">идемпотентность · защита минуса</text>
+        <rect x="470" y="170" width="170" height="52" rx="8" fill="#062a40" stroke="#22c55e"/><text x="555" y="192" text-anchor="middle" fill="#22c55e" font-weight="bold">/data (ФС Amvera)</text><text x="555" y="208" text-anchor="middle" fill="#9fb0c7">wms2/state.json</text>
+        <rect x="230" y="170" width="170" height="52" rx="8" fill="#062a40" stroke="#f59e0b"/><text x="315" y="192" text-anchor="middle" fill="#f59e0b" font-weight="bold">1С:Предприятие</text><text x="315" y="208" text-anchor="middle" fill="#9fb0c7">CSV ↔ (импорт/экспорт)</text>
+        <line x1="160" y1="46" x2="225" y2="70" stroke="#2dd4ea" stroke-width="2" marker-end="url(#a)"/>
+        <line x1="160" y1="118" x2="225" y2="95" stroke="#2dd4ea" stroke-width="2" marker-end="url(#a)"/>
+        <line x1="400" y1="72" x2="465" y2="48" stroke="#f0b429" stroke-width="2" marker-end="url(#a)"/>
+        <line x1="400" y1="95" x2="465" y2="116" stroke="#f0b429" stroke-width="2" marker-end="url(#a)"/>
+        <line x1="555" y1="144" x2="555" y2="165" stroke="#22c55e" stroke-width="2" marker-end="url(#a)"/>
+        <line x1="315" y1="115" x2="315" y2="165" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a)"/>
+        <text x="330" y="145" fill="#f59e0b" font-size="10">BOM \uFEFF, ≤ 2000 строк</text>
+      </svg>
+      <div class="cap">Рис. 1 — Архитектура боевого контура (Amvera, Node.js + Express, файловое хранилище /data)</div>
+      </div>
+    </div>
   </div>
-  <p>Инструменты разработки: VS Code, git/GitHub, npm, Browser DevTools; генерация xlsx-артефактов — Python + openpyxl (make_agile.py); сборка печатных артефактов — Python (make_iar.py) и headless Chrome.</p>
   <div class="pnum">4</div>
 </div>
 
-<!-- СТРАНИЦА 5 · ЭКОНОМИКА + ROI -->
+<!-- 5 · ЭКОНОМИКА -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
   <h1>4. Экономика проекта и ROI</h1>
-  <h2>Затраты</h2>
-  <p>Разработка — собственные ресурсы в рамках обучения; ИИ-ассистент, хостинг Amvera, поддомен, email-сервис — бесплатные тарифы. <b>Итого инвестиций: 0 ₽.</b></p>
-  <h2>Годовой эффект (оценка по данным производства)</h2>
-  <table>
-    <tr><th>Статья</th><th>Расчёт</th><th>Эффект, ₽/год</th></tr>
-    <tr><td>Простои из-за дефицита</td><td>2 простоя/мес × 4 ч × 50 000 ₽/час × 12</td><td>4 800 000</td></tr>
-    <tr><td>Замороженные запасы</td><td>5 000 000 ₽ × 15% × ставка капитала 15%</td><td>112 500</td></tr>
-    <tr><td>Трудозатраты учёта</td><td>(528 − 132) ч × 500 ₽/час</td><td>198 000</td></tr>
-    <tr><th>Итого</th><th></th><th>5 110 500</th></tr>
-  </table>
-  <div class="svgbox">
-  <svg viewBox="0 0 660 190" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
-    <text x="20" y="30" fill="#f0b429" font-weight="bold">Простои</text><rect x="130" y="16" width="470" height="22" rx="4" fill="#2dd4ea"/><text x="608" y="31" fill="#e6edf7">4 800 000</text>
-    <text x="20" y="70" fill="#f0b429" font-weight="bold">Запасы</text><rect x="130" y="56" width="11" height="22" rx="4" fill="#f0b429"/><text x="149" y="71" fill="#e6edf7">112 500</text>
-    <text x="20" y="110" fill="#f0b429" font-weight="bold">Учёт</text><rect x="130" y="96" width="19" height="22" rx="4" fill="#8b5cf6"/><text x="157" y="111" fill="#e6edf7">198 000</text>
-    <text x="20" y="150" fill="#22c55e" font-weight="bold">Инвестиции</text><rect x="130" y="136" width="2" height="22" rx="1" fill="#22c55e"/><text x="140" y="151" fill="#e6edf7">0 ₽ → ROI первого года формально ∞, окупаемость мгновенная</text>
-  </svg>
-  <div class="cap">Рис. 2 — Структура годового экономического эффекта</div>
+  <div class="cols">
+    <div>
+      <h2>Затраты</h2>
+      <p>Разработка — собственные ресурсы в рамках обучения; ИИ-ассистент, хостинг Amvera, поддомен, email-сервис — бесплатные тарифы. <b>Итого инвестиций: 0 ₽.</b></p>
+      <h2>Годовой эффект (оценка по данным производства)</h2>
+      <table>
+        <tr><th>Статья</th><th>Расчёт</th><th>₽/год</th></tr>
+        <tr><td>Простои из-за дефицита</td><td>2/мес × 4 ч × 50 000 ₽/ч × 12</td><td>4 800 000</td></tr>
+        <tr><td>Замороженные запасы</td><td>5 000 000 × 15% × ставка 15%</td><td>112 500</td></tr>
+        <tr><td>Трудозатраты учёта</td><td>(528 − 132) ч × 500 ₽/ч</td><td>198 000</td></tr>
+        <tr><th>Итого</th><th></th><th>5 110 500</th></tr>
+      </table>
+      <h2>Обоснование прогнозов</h2>
+      <p>Стоимость простоя и объём запасов — оценки заказчика (директора); трудозатраты — хронометраж бухгалтера до/после. Прогноз консервативен: не учтены эффекты от снижения ошибок ввода и ускорения сверки с 1С.</p>
+    </div>
+    <div>
+      <div class="svgbox">
+      <svg viewBox="0 0 660 190" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+        <text x="20" y="30" fill="#f0b429" font-weight="bold">Простои</text><rect x="130" y="16" width="470" height="22" rx="4" fill="#2dd4ea"/><text x="608" y="31" fill="#e6edf7">4 800 000</text>
+        <text x="20" y="70" fill="#f0b429" font-weight="bold">Запасы</text><rect x="130" y="56" width="11" height="22" rx="4" fill="#f0b429"/><text x="149" y="71" fill="#e6edf7">112 500</text>
+        <text x="20" y="110" fill="#f0b429" font-weight="bold">Учёт</text><rect x="130" y="96" width="19" height="22" rx="4" fill="#8b5cf6"/><text x="157" y="111" fill="#e6edf7">198 000</text>
+        <text x="20" y="150" fill="#22c55e" font-weight="bold">Инвестиции</text><rect x="130" y="136" width="2" height="22" rx="1" fill="#22c55e"/><text x="140" y="151" fill="#e6edf7">0 ₽ → ROI ∞, окупаемость мгновенная</text>
+      </svg>
+      <div class="cap">Рис. 2 — Структура годового экономического эффекта</div>
+      </div>
+      <h2>Качественные эффекты</h2>
+      <ul>
+        <li>100% аудит-след: автор + утвердитель + время по каждой проводке;</li>
+        <li>дисциплина учёта и планирования закупок по данным, а не «по опыту»;</li>
+        <li>фундамент цифровой трансформации: журнал движений = обучающая выборка ML.</li>
+      </ul>
+    </div>
   </div>
-  <h2>Качественные эффекты</h2>
-  <ul>
-    <li>100% аудит-след: автор + утвердитель + время по каждой проводке;</li>
-    <li>дисциплина учёта и планирования закупок по данным, а не «по опыту»;</li>
-    <li>фундамент цифровой трансформации: журнал движений = обучающая выборка ML.</li>
-  </ul>
-  <h2>Обоснование прогнозов</h2>
-  <p>Стоимость простоя и объём запасов — оценки заказчика (директора производства); трудозатраты — хронометраж бухгалтера до/после. Прогноз консервативен: не учтены эффекты от снижения ошибок ввода и ускорения сверки с 1С.</p>
   <div class="pnum">5</div>
 </div>
 
-<!-- СТРАНИЦА 6 · МАРКЕТИНГ + УПРАВЛЕНИЕ -->
+<!-- 6 · МАРКЕТИНГ + УПРАВЛЕНИЕ -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
   <h1>5. Маркетинговая стратегия и управление</h1>
-  <h2>Целевая аудитория и ценностное предложение</h2>
-  <p>Первичная: производства SME (10–100 сотрудников) с бумажным учётом. Вторичная: средние производства с устаревшими WMS. Предложение: «Склад, который заказывает сам» — внедрение за недели, бюджет 0 ₽, рапорт за 15 секунд.</p>
-  <table>
-    <tr><th>Канал</th><th>Формат</th><th>Целевая метрика</th></tr>
-    <tr><td>Отраслевые конференции</td><td>доклад + живое демо</td><td>5 пилотов</td></tr>
-    <tr><td>Профсообщества, кейсы</td><td>статьи, сайт-презентация</td><td>охват 1000+</td></tr>
-    <tr><td>Прямые продажи</td><td>демо директору производства</td><td>конверсия в пилот 20%</td></tr>
-    <tr><td>1С-франчайзи</td><td>дополнение к 1С (CSV-контур)</td><td>3 партнёра</td></tr>
-  </table>
-  <h2>Схема управления (Scrum)</h2>
-  <table>
-    <tr><th>Роль</th><th>Ответственность</th><th>Кто</th></tr>
-    <tr><td>Product Owner</td><td>бэклог, приёмка, секреты</td><td>Андрей</td></tr>
-    <tr><td>Scrum Master / аналитик</td><td>фасилитация, архитектура, промпты</td><td>Qwen (ИИ)</td></tr>
-    <tr><td>Разработчик</td><td>код, тесты, деплой</td><td>Андрей</td></tr>
-    <tr><td>Заказчик / пилот-пользователь</td><td>валидация, пороги, пилот</td><td>директор, бухгалтер</td></tr>
-  </table>
-  <p>Артефакты: Product Backlog (AGILE.md), Sprint Backlog и канбан (Яндекс-таблицы), демо и ретроспектива каждый спринт, досье проекта (DOSSIER.md) как страховка контекста ИИ-ассистента.</p>
-  <h2>KPI успеха</h2>
-  <table>
-    <tr><th>Категория</th><th>KPI</th><th>Цель</th><th>Измерение</th></tr>
-    <tr><td>Продуктовые</td><td>время рапорта</td><td><b>15 сек</b></td><td>лог системы</td></tr>
-    <tr><td>Продуктовые</td><td>доля рапортов через WMS</td><td><b>≥ 70%</b></td><td>журнал пилота</td></tr>
-    <tr><td>Операционные</td><td>«сигнал → заказ»</td><td><b>30 мин</b></td><td>журнал + лог заявок</td></tr>
-    <tr><td>Технические</td><td>распознавание QR</td><td><b>≤ 2 сек, ≥ 95%</b></td><td>20 тест-сканов</td></tr>
-    <tr><td>Экономические</td><td>запасы</td><td><b>−15–20%</b></td><td>оценка запасов</td></tr>
-  </table>
+  <div class="cols">
+    <div>
+      <h2>Целевая аудитория и ценностное предложение</h2>
+      <p>Первичная: производства SME (10–100 сотрудников) с бумажным учётом. Вторичная: средние с устаревшими WMS. Предложение: «Склад, который заказывает сам» — внедрение за недели, бюджет 0 ₽, рапорт за 15 секунд.</p>
+      <table>
+        <tr><th>Канал</th><th>Формат</th><th>Метрика</th></tr>
+        <tr><td>Отраслевые конференции</td><td>доклад + живое демо</td><td>5 пилотов</td></tr>
+        <tr><td>Профсообщества, кейсы</td><td>статьи, сайт-презентация</td><td>охват 1000+</td></tr>
+        <tr><td>Прямые продажи</td><td>демо директору</td><td>конверсия 20%</td></tr>
+        <tr><td>1С-франчайзи</td><td>дополнение к 1С (CSV)</td><td>3 партнёра</td></tr>
+      </table>
+      <h2>Схема управления (Scrum)</h2>
+      <table>
+        <tr><th>Роль</th><th>Ответственность</th><th>Кто</th></tr>
+        <tr><td>Product Owner</td><td>бэклог, приёмка, секреты</td><td>Андрей</td></tr>
+        <tr><td>Scrum Master / аналитик</td><td>фасилитация, архитектура, промпты</td><td>Qwen (ИИ)</td></tr>
+        <tr><td>Разработчик</td><td>код, тесты, деплой</td><td>Андрей</td></tr>
+        <tr><td>Заказчик / пилот</td><td>валидация, пороги, пилот</td><td>директор, бухгалтер</td></tr>
+      </table>
+      <p>Артефакты: Product Backlog (AGILE.md), канбан (Яндекс-таблицы), демо и ретроспектива каждый спринт, досье (DOSSIER.md) как страховка контекста ИИ-ассистента.</p>
+    </div>
+    <div>
+      <h2>KPI успеха (AS-IS → TO-BE)</h2>
+      <table>
+        <tr><th>Категория</th><th>KPI</th><th>Цель</th><th>Измерение</th></tr>
+        <tr><td>Продуктовые</td><td>время рапорта</td><td><b>15 сек</b></td><td>лог системы</td></tr>
+        <tr><td>Продуктовые</td><td>доля рапортов через WMS</td><td><b>≥ 70%</b></td><td>журнал пилота</td></tr>
+        <tr><td>Операционные</td><td>«сигнал → заказ»</td><td><b>30 мин</b></td><td>журнал + заявки</td></tr>
+        <tr><td>Операционные</td><td>простои из-за дефицита</td><td><b>0</b> за 3 мес</td><td>акты простоев</td></tr>
+        <tr><td>Технические</td><td>распознавание QR</td><td><b>≤ 2 сек, ≥ 95%</b></td><td>20 тест-сканов</td></tr>
+        <tr><td>Экономические</td><td>запасы</td><td><b>−15–20%</b></td><td>оценка запасов</td></tr>
+      </table>
+      <blockquote>«Дефицит — это не судьба, а отсутствие данных. Мы дали складу голос — и он начал заказывать сам».</blockquote>
+    </div>
+  </div>
   <div class="pnum">6</div>
 </div>
 
-<!-- СТРАНИЦА 7 · MVP + TO-BE + СЦЕНАРИИ -->
+<!-- 7 · MVP + СЦЕНАРИИ + БЕЗОПАСНОСТЬ -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
-  <h1>6. MVP и сценарии использования</h1>
-  <h2>План создания MVP (7 недель)</h2>
-  <p>Нед. 1–2 ядро (авторизация, рапорты, проводки) → нед. 3 CSV ↔ 1С → нед. 4 аналитика точки заказа → нед. 5 руководство → нед. 6 тесты → нед. 7 пилот. MVP в бою с 07.09.2026.</p>
-  <h2>Матрица интеграции в бизнес-процессы</h2>
-  <table>
-    <tr><th>Процесс</th><th>AS-IS</th><th>TO-BE</th></tr>
-    <tr><td>Расход сырья</td><td>бумага → звонок → бухгалтер → 1С (1–3 дня)</td><td>телефон → очередь → кнопка «Провести» (15 сек)</td></tr>
-    <tr><td>Приход от поставщика</td><td>накладная → бухгалтер (1 день)</td><td>CSV-импорт с валидацией (5 мин)</td></tr>
-    <tr><td>Сверка с 1С</td><td>ручная выгрузка (2 часа)</td><td>CSV-экспорт с BOM (5 мин)</td></tr>
-    <tr><td>Закупки</td><td>«по опыту»</td><td>точка заказа: запас &lt; 7 дней нормы + рекомендация</td></tr>
-  </table>
-  <div class="svgbox">
-  <svg viewBox="0 0 660 120" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
-    <defs><marker id="b" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#f0b429"/></marker></defs>
-    <rect x="5" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="52" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">Рапорт</text><text x="52" y="72" text-anchor="middle" fill="#9fb0c7">15 сек</text>
-    <rect x="120" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="167" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">Очередь</text><text x="167" y="72" text-anchor="middle" fill="#9fb0c7">директора</text>
-    <rect x="235" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="282" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">«Провести»</text><text x="282" y="72" text-anchor="middle" fill="#9fb0c7">1 кнопка</text>
-    <rect x="350" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#22c55e"/><text x="397" y="56" text-anchor="middle" fill="#22c55e" font-weight="bold">Остатки</text><text x="397" y="72" text-anchor="middle" fill="#9fb0c7">реал. время</text>
-    <rect x="465" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#f0b429"/><text x="512" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">ML-сигнал</text><text x="512" y="72" text-anchor="middle" fill="#9fb0c7">&lt; 7 дней</text>
-    <rect x="580" y="35" width="75" height="50" rx="8" fill="#062a40" stroke="#f59e0b"/><text x="617" y="56" text-anchor="middle" fill="#f59e0b" font-weight="bold">Заказ</text><text x="617" y="72" text-anchor="middle" fill="#9fb0c7">30 мин</text>
-    <line x1="100" y1="60" x2="115" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
-    <line x1="215" y1="60" x2="230" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
-    <line x1="330" y1="60" x2="345" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
-    <line x1="445" y1="60" x2="460" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
-    <line x1="560" y1="60" x2="575" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
-  </svg>
-  <div class="cap">Рис. 3 — Поток TO-BE: от движения материала до заявки поставщику</div>
+  <h1>6. MVP, сценарии и кибербезопасность</h1>
+  <div class="cols">
+    <div>
+      <h2>Матрица интеграции (AS-IS → TO-BE)</h2>
+      <table>
+        <tr><th>Процесс</th><th>AS-IS</th><th>TO-BE</th></tr>
+        <tr><td>Расход сырья</td><td>бумага → 1С (1–3 дня)</td><td>телефон → «Провести» (15 сек)</td></tr>
+        <tr><td>Приход</td><td>накладная → бухгалтер (1 день)</td><td>CSV-импорт с валидацией (5 мин)</td></tr>
+        <tr><td>Сверка с 1С</td><td>ручная выгрузка (2 часа)</td><td>CSV-экспорт с BOM (5 мин)</td></tr>
+        <tr><td>Закупки</td><td>«по опыту»</td><td>точка заказа + рекомендация</td></tr>
+      </table>
+      <div class="svgbox">
+      <svg viewBox="0 0 660 120" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+        <defs><marker id="b" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#f0b429"/></marker></defs>
+        <rect x="5" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="52" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">Рапорт</text><text x="52" y="72" text-anchor="middle" fill="#9fb0c7">15 сек</text>
+        <rect x="120" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="167" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">Очередь</text><text x="167" y="72" text-anchor="middle" fill="#9fb0c7">директора</text>
+        <rect x="235" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#2dd4ea"/><text x="282" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">«Провести»</text><text x="282" y="72" text-anchor="middle" fill="#9fb0c7">1 кнопка</text>
+        <rect x="350" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#22c55e"/><text x="397" y="56" text-anchor="middle" fill="#22c55e" font-weight="bold">Остатки</text><text x="397" y="72" text-anchor="middle" fill="#9fb0c7">реал. время</text>
+        <rect x="465" y="35" width="95" height="50" rx="8" fill="#062a40" stroke="#f0b429"/><text x="512" y="56" text-anchor="middle" fill="#f0b429" font-weight="bold">ML-сигнал</text><text x="512" y="72" text-anchor="middle" fill="#9fb0c7">&lt; 7 дней</text>
+        <rect x="580" y="35" width="75" height="50" rx="8" fill="#062a40" stroke="#f59e0b"/><text x="617" y="56" text-anchor="middle" fill="#f59e0b" font-weight="bold">Заказ</text><text x="617" y="72" text-anchor="middle" fill="#9fb0c7">30 мин</text>
+        <line x1="100" y1="60" x2="115" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
+        <line x1="215" y1="60" x2="230" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
+        <line x1="330" y1="60" x2="345" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
+        <line x1="445" y1="60" x2="460" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
+        <line x1="560" y1="60" x2="575" y2="60" stroke="#f0b429" stroke-width="2" marker-end="url(#b)"/>
+      </svg>
+      <div class="cap">Рис. 3 — Поток TO-BE: от движения материала до заявки поставщику</div>
+      </div>
+      <h2>Сценарий: рапорт работника (основной поток)</h2>
+      <ol>
+        <li>Открывает chat.html, вводит PIN → роль «worker» (/api/auth).</li>
+        <li>«Расход» → конструктор команд: «капрон» → подсказка PA-F из 108 позиций.</li>
+        <li>Количество 5 → валидация (код из справочника; 0 &lt; qty ≤ 1 000 000).</li>
+        <li>Порог аномалии: 5 ≤ норма×10 → подтверждение не требуется.</li>
+        <li>/api/chat → очередь pending; работник видит «Принято: 5 × PA-F».</li>
+        <li>Директор «Провести» → /api/approve: идемпотентность, stock −= 5, запись в movements с автором и утвердителем.</li>
+      </ol>
+      <p><b>Альтернативные потоки:</b> аномальное qty (&gt; норма×10) → запрос подтверждения «!»; отклонение директором → удаление из pending без проводки; бухгалтер → только чтение и CSV-экспорт.</p>
+    </div>
+    <div>
+      <h2>7. Протоколы кибербезопасности</h2>
+      <p>MVP: PIN (4 цифры) из переменных окружения Amvera (секреты); проверка PIN и роли на каждом из 7 эндпоинтов. Роли: работник (запись рапортов), директор (проводки + чтение), бухгалтер (только чтение + экспорт). Sprint 3: JWT с TTL 8 ч, refresh, blacklist отзыва.</p>
+      <table>
+        <tr><th>Угроза</th><th>Митигация</th></tr>
+        <tr><td>Подбор PIN (brute force)</td><td>rate limiting; PIN только в env, не в коде и логах</td></tr>
+        <tr><td>XSS</td><td>экранирование ввода при рендеринге чата и журнала</td></tr>
+        <tr><td>CSRF / подмена запроса</td><td>проверка Origin, SameSite; с JWT — заголовок Authorization</td></tr>
+        <tr><td>DoS / переполнение</td><td>лимит тела 5 МБ, импорт ≤ 2000 строк, messages ≤ 500</td></tr>
+        <tr><td>MitM</td><td>HTTPS с валидным сертификатом (TLS на Amvera)</td></tr>
+        <tr><td>Потеря данных</td><td>persistence /data, идемпотентность, защита от минуса</td></tr>
+        <tr><td>Двойная проводка</td><td>идемпотентность по id/sign рапорта</td></tr>
+      </table>
+      <h2>Аудит и этика</h2>
+      <ul>
+        <li>аудит-след 100%: автор, утвердитель, метка времени, id;</li>
+        <li>152-ФЗ: данные на территории РФ (Amvera);</li>
+        <li>этика ИИ: human-in-the-loop — ИИ не проводит операции сам; рекомендации объяснимы (формула точки заказа прозрачна);</li>
+        <li>bias/privacy: персональные данные не собираются (имя + роль), обучение ML только на обезличенных движениях ТМЦ.</li>
+      </ul>
+    </div>
   </div>
-  <h2>Сценарий использования: рапорт работника (основной поток)</h2>
-  <ol>
-    <li>Работник открывает chat.html на смартфоне, вводит PIN → роль «worker» (/api/auth).</li>
-    <li>Кнопка «Расход» → конструктор команд: ввод «капрон» → подсказка кода PA-F из 108 позиций.</li>
-    <li>Количество 5 → валидация (код из справочника; 0 &lt; qty ≤ 1 000 000).</li>
-    <li>Порог аномалии: 5 ≤ норма×10 (150×10) → подтверждение не требуется.</li>
-    <li>/api/chat кладёт рапорт в очередь pending; работник видит «Принято: 5 × PA-F».</li>
-    <li>Директор жмёт «Провести» → /api/approve: идемпотентность, stock −= 5, запись в movements с автором и утвердителем.</li>
-  </ol>
-  <p><b>Альтернативные потоки:</b> аномальное qty (&gt; норма×10) → запрос подтверждения «!»; отклонение директором → удаление из pending без проводки; бухгалтер → только чтение и CSV-экспорт.</p>
   <div class="pnum">7</div>
 </div>
 
-<!-- СТРАНИЦА 8 · БЕЗОПАСНОСТЬ -->
+<!-- 8 · МАСШТАБИРОВАНИЕ + БД + ВЫВОДЫ -->
 <div class="page">
   <div class="brand">ИАР · WMS «Ремера» · 2026</div>
-  <h1>7. Протоколы кибербезопасности</h1>
-  <h2>Аутентификация и роли</h2>
-  <p>MVP: PIN (4 цифры) из переменных окружения Amvera (секреты); проверка PIN и роли на каждом из 7 эндпоинтов. Роли: работник (запись рапортов), директор (проводки + чтение), бухгалтер (только чтение + экспорт). Sprint 3: JWT с TTL 8 ч, refresh, blacklist отзыва.</p>
-  <h2>Меры по классам угроз</h2>
-  <table>
-    <tr><th>Угроза</th><th>Митигация</th></tr>
-    <tr><td>Подбор PIN (brute force)</td><td>rate limiting на уровне платформы; PIN только в env, не в коде и логах</td></tr>
-    <tr><td>XSS</td><td>экранирование пользовательского ввода при рендеринге чата и журнала</td></tr>
-    <tr><td>CSRF / подмена запроса</td><td>проверка Origin, SameSite для сессий (с JWT — заголовок Authorization)</td></tr>
-    <tr><td>DoS / переполнение</td><td>лимит тела запроса 5 МБ, импорт ≤ 2000 строк, messages ≤ 500</td></tr>
-    <tr><td>MitM</td><td>HTTPS с валидным сертификатом (Terminator TLS на Amvera)</td></tr>
-    <tr><td>Потеря данных</td><td>persistence mount /data, идемпотентность проводок, защита от отрицательных остатков</td></tr>
-    <tr><td>Двойная проводка (двойной клик)</td><td>идемпотентность по id/sign рапорта</td></tr>
-  </table>
-  <h2>Аудит и этика</h2>
-  <ul>
-    <li>аудит-след 100%: автор, утвердитель, метка времени, id по каждой проводке;</li>
-    <li>152-ФЗ: данные хранятся на территории РФ (Amvera);</li>
-    <li>этика ИИ: human-in-the-loop — ИИ не проводит операции самостоятельно; рекомендации объяснимы (формула точки заказа прозрачна);</li>
-    <li>bias/privacy: персональные данные работников не собираются (имя + роль), обучение ML только на обезличенных движениях ТМЦ.</li>
-  </ul>
-  <div class="pnum">8</div>
-</div>
-
-<!-- СТРАНИЦА 9 · МАСШТАБИРОВАНИЕ + ГАНТ -->
-<div class="page">
-  <div class="brand">ИАР · WMS «Ремера» · 2026</div>
-  <h1>8. Масштабирование ИИ-проекта</h1>
-  <table>
-    <tr><th>Этап</th><th>Горизонт</th><th>Содержание</th></tr>
-    <tr><td>1. Тиражирование</td><td>Sprint 4</td><td>инстансы на другие площадки, единая номенклатура, сводная аналитика</td></tr>
-    <tr><td>2. Вертикальное</td><td>6 мес</td><td>PostgreSQL + Redis, индексация, &gt; 100 000 проводок</td></tr>
-    <tr><td>3. Горизонтальное</td><td>12 мес</td><td>микросервисы (API / аналитика), load balancer, auto-scaling</td></tr>
-    <tr><td>4. ML</td><td>12 мес</td><td>бустинг: прогноз 14 дней, сезонность; ABC-XYZ; рекомендации закупок</td></tr>
-    <tr><td>5. SaaS</td><td>18 мес</td><td>multi-tenant, self-service, подписка 5 000 ₽/мес за площадку</td></tr>
-  </table>
-  <h2>Дорожная карта спринтов (Гант)</h2>
-  <div class="svgbox">
-  <svg viewBox="0 0 660 170" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
-    <g fill="#9fb0c7" font-size="10">
-      <text x="180" y="18">н1</text><text x="245" y="18">н2</text><text x="310" y="18">н3</text><text x="375" y="18">н4</text><text x="440" y="18">н5</text><text x="505" y="18">н6</text><text x="570" y="18">н7</text>
-    </g>
-    <g stroke="#263252"><line x1="180" y1="24" x2="180" y2="160"/><line x1="245" y1="24" x2="245" y2="160"/><line x1="310" y1="24" x2="310" y2="160"/><line x1="375" y1="24" x2="375" y2="160"/><line x1="440" y1="24" x2="440" y2="160"/><line x1="505" y1="24" x2="505" y2="160"/><line x1="570" y1="24" x2="570" y2="160"/><line x1="635" y1="24" x2="635" y2="160"/></g>
-    <text x="5" y="45" fill="#f0b429" font-weight="bold">S1 · Уведомления</text><rect x="180" y="32" width="130" height="20" rx="4" fill="#2dd4ea"/>
-    <text x="5" y="80" fill="#f0b429" font-weight="bold">S2 · QR-инвентариз.</text><rect x="310" y="67" width="130" height="20" rx="4" fill="#22c55e"/>
-    <text x="5" y="115" fill="#f0b429" font-weight="bold">S3 · Безопасность</text><rect x="440" y="102" width="130" height="20" rx="4" fill="#8b5cf6"/>
-    <text x="5" y="150" fill="#f0b429" font-weight="bold">S4 · Пилот</text><rect x="570" y="137" width="65" height="20" rx="4" fill="#f59e0b"/>
-    <g fill="#f0b429"><polygon points="310,26 316,32 310,38 304,32"/><polygon points="440,61 446,67 440,73 434,67"/><polygon points="635,131 641,137 635,143 629,137"/></g>
-    <text x="320" y="26" fill="#f0b429" font-size="9">веха: первое письмо</text>
-    <text x="450" y="61" fill="#f0b429" font-size="9">веха: первый скан</text>
-    <text x="560" y="126" fill="#f0b429" font-size="9">веха: приёмка</text>
-  </svg>
-  <div class="cap">Рис. 4 — Гант спринтов до передачи в эксплуатацию (02.11.2026)</div>
-  </div>
-  <h2>Бизнес-модель масштабирования</h2>
-  <p>Лицензия: 50 000 ₽ разово + поддержка 10 000 ₽/мес; SaaS: 5 000 ₽/мес за площадку; кастомные интеграции от 100 000 ₽. Целевой сегмент — производственные SME РФ, не охваченные коробочными WMS.</p>
-  <div class="pnum">9</div>
-</div>
-
-<!-- СТРАНИЦА 10 · БАЗА ДАННЫХ -->
-<div class="page">
-  <div class="brand">ИАР · WMS «Ремера» · 2026</div>
-  <h1>9. База данных и источники данных</h1>
-  <h2>Структура состояния (/data/wms2/state.json)</h2>
-  <pre>{
+  <h1>8–10. Масштабирование, база данных, выводы</h1>
+  <div class="cols">
+    <div>
+      <h2>8. Проект масштабирования ИИ-проекта</h2>
+      <table>
+        <tr><th>Этап</th><th>Горизонт</th><th>Содержание</th></tr>
+        <tr><td>1. Тиражирование</td><td>Sprint 4</td><td>инстансы на площадки, единая номенклатура, сводная аналитика</td></tr>
+        <tr><td>2. Вертикальное</td><td>6 мес</td><td>PostgreSQL + Redis, индексация, &gt; 100 000 проводок</td></tr>
+        <tr><td>3. Горизонтальное</td><td>12 мес</td><td>микросервисы (API / аналитика), load balancer, auto-scaling</td></tr>
+        <tr><td>4. ML</td><td>12 мес</td><td>бустинг: прогноз 14 дней, сезонность; ABC-XYZ; рекомендации</td></tr>
+        <tr><td>5. SaaS</td><td>18 мес</td><td>multi-tenant, self-service, подписка 5 000 ₽/мес за площадку</td></tr>
+      </table>
+      <div class="svgbox">
+      <svg viewBox="0 0 660 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+        <g fill="#9fb0c7" font-size="10">
+          <text x="180" y="16">н1</text><text x="245" y="16">н2</text><text x="310" y="16">н3</text><text x="375" y="16">н4</text><text x="440" y="16">н5</text><text x="505" y="16">н6</text><text x="570" y="16">н7</text>
+        </g>
+        <g stroke="#263252"><line x1="180" y1="22" x2="180" y2="140"/><line x1="245" y1="22" x2="245" y2="140"/><line x1="310" y1="22" x2="310" y2="140"/><line x1="375" y1="22" x2="375" y2="140"/><line x1="440" y1="22" x2="440" y2="140"/><line x1="505" y1="22" x2="505" y2="140"/><line x1="570" y1="22" x2="570" y2="140"/><line x1="635" y1="22" x2="635" y2="140"/></g>
+        <text x="5" y="40" fill="#f0b429" font-weight="bold">S1 · Уведомления</text><rect x="180" y="28" width="130" height="18" rx="4" fill="#2dd4ea"/>
+        <text x="5" y="72" fill="#f0b429" font-weight="bold">S2 · QR-инвентариз.</text><rect x="310" y="60" width="130" height="18" rx="4" fill="#22c55e"/>
+        <text x="5" y="104" fill="#f0b429" font-weight="bold">S3 · Безопасность</text><rect x="440" y="92" width="130" height="18" rx="4" fill="#8b5cf6"/>
+        <text x="5" y="136" fill="#f0b429" font-weight="bold">S4 · Пилот</text><rect x="570" y="124" width="65" height="18" rx="4" fill="#f59e0b"/>
+        <g fill="#f0b429"><polygon points="310,22 316,28 310,34 304,28"/><polygon points="440,54 446,60 440,66 434,60"/><polygon points="635,118 641,124 635,130 629,124"/></g>
+        <text x="320" y="22" fill="#f0b429" font-size="9">веха: первое письмо</text>
+        <text x="450" y="54" fill="#f0b429" font-size="9">веха: первый скан</text>
+        <text x="560" y="118" fill="#f0b429" font-size="9">веха: приёмка</text>
+      </svg>
+      <div class="cap">Рис. 4 — Гант спринтов до передачи в эксплуатацию (02.11.2026)</div>
+      </div>
+      <p><b>Бизнес-модель:</b> лицензия 50 000 ₽ + поддержка 10 000 ₽/мес; SaaS 5 000 ₽/мес за площадку; кастомные интеграции от 100 000 ₽. Сегмент — производственные SME РФ, не охваченные коробочными WMS.</p>
+    </div>
+    <div>
+      <h2>9. База данных и источники данных</h2>
+      <pre>{
   "version": 1,
-  "stock":     { "PA-F": 1500, "PES-F": 800, ... },        // остатки: код → qty
-  "pending":   [ { id, author, ts, op, code, qty } ],       // очередь рапортов
-  "movements": [ { id, author, approver, ts, op, code, qty } ], // журнал проводок
-  "messages":  [ { id, ts, role, text } ]                   // чат, последние 500
+  "stock":     { "PA-F": 1500, ... },            // остатки: код → qty
+  "pending":   [ { id, author, ts, op, code, qty } ],   // очередь рапортов
+  "movements": [ { id, author, approver, ts, op, code, qty } ], // аудит-след
+  "messages":  [ { id, ts, role, text } ]        // чат, последние 500
 }</pre>
-  <table>
-    <tr><th>Поле</th><th>Тип</th><th>Назначение</th></tr>
-    <tr><td>version</td><td>int</td><td>версия схемы для миграций</td></tr>
-    <tr><td>stock</td><td>object</td><td>оперативные остатки ТМЦ</td></tr>
-    <tr><td>pending</td><td>array</td><td>рапорты, ожидающие утверждения (human-in-the-loop)</td></tr>
-    <tr><td>movements</td><td>array</td><td>аудит-след: автор + утвердитель + время</td></tr>
-    <tr><td>messages</td><td>array</td><td>история чата (ограничение 500 записей)</td></tr>
-  </table>
-  <h2>Источники данных</h2>
-  <table>
-    <tr><th>Источник</th><th>Формат</th><th>Частота</th><th>Назначение</th></tr>
-    <tr><td>Рапорты работников</td><td>чат-команды</td><td>реальное время</td><td>движения ТМЦ</td></tr>
-    <tr><td>Накладные поставщиков</td><td>CSV</td><td>по поставке</td><td>приход</td></tr>
-    <tr><td>Выгрузка 1С</td><td>CSV</td><td>ежедневно</td><td>сверка остатков</td></tr>
-    <tr><td>Справочник номенклатуры</td><td>JS-константа (core.js)</td><td>статика</td><td>108 позиций + суточные нормы</td></tr>
-  </table>
-  <h2>Валидация и ограничения</h2>
-  <ul>
-    <li>коды — только из справочника NOMENCLATURE; qty: 0 &lt; qty ≤ 1 000 000;</li>
-    <li>защита от отрицательных остатков: проводка отклоняется при stock &lt; qty;</li>
-    <li>импорт ≤ 2000 строк; экспорт CSV с BOM \uFEFF для Excel;</li>
-    <li>нормализация при переходе на PostgreSQL (Sprint 3/4): items, stock, movements, users + индексы по item_id, ts, op.</li>
-  </ul>
-  <div class="pnum">10</div>
-</div>
-
-<!-- СТРАНИЦА 11 · ВЫВОДЫ -->
-<div class="page">
-  <div class="brand">ИАР · WMS «Ремера» · 2026</div>
-  <h1>10. Выводы об оптимальности стратегии</h1>
-  <table>
-    <tr><th>Решение</th><th>Альтернатива</th><th>Обоснование выбора</th></tr>
-    <tr><td>Node.js + Express</td><td>Python + FastAPI</td><td>единый язык fullstack; лучшая генерация кода ИИ-ассистентом; ML вынесен в отдельный этап</td></tr>
-    <tr><td>JSON-файл на /data</td><td>SQLite / PostgreSQL</td><td>отладка и версионирование просты; для 2–3 пользователей достаточно; БД — осознанный долг до масштабирования</td></tr>
-    <tr><td>Amvera (РФ)</td><td>Vercel</td><td>152-ФЗ, persistence mount, контейнер вместо serverless-ограничений</td></tr>
-    <tr><td>CSV ↔ 1С</td><td>прямое API 1С</td><td>совместимость с любой версией 1С без доработок (экономия 100 000+ ₽)</td></tr>
-    <tr><td>Agile/Scrum</td><td>Waterfall</td><td>неопределённость требований и моделей; обратная связь каждые 2 недели</td></tr>
-    <tr><td>ИИ-ассистент в команде</td><td>классическая разработка</td><td>ускорение в 3–5 раз: архитектура, код, тесты, документация</td></tr>
-  </table>
-  <h2>Оценка по критериям оптимальности</h2>
-  <ul>
-    <li><b>Time-to-market:</b> MVP за 7 недель вместо отраслевых 6–12 месяцев — отлично;</li>
-    <li><b>Стоимость:</b> 0 ₽ инвестиций — отлично;</li>
-    <li><b>Качество:</b> покрыты все критические процессы (рапорт, проводка, 1С, аналитика) — хорошо;</li>
-    <li><b>Масштабируемость:</b> архитектура допускает рост после рефакторинга БД — удовлетворительно (осознанный компромисс MVP);</li>
-    <li><b>Принятие пользователями:</b> заказчик и пилот-пользователь вовлечены с первого спринта — хорошо.</li>
-  </ul>
-  <h2>Итог</h2>
-  <p>Стратегия «low-code инфраструктура + ИИ-ассистент + Agile + human-in-the-loop» оптимальна для стадии MVP: минимальный бюджет и срок при полном аудит-следе и готовности к масштабированию. Технический долг (PIN, JSON-хранилище) зафиксирован в дорожной карте и не является скрытым. Следующий шаг — двухнедельный пилот на производстве: его метрики (время рапорта, доля рапортов через WMS, «сигнал → заказ») определят переход к тиражированию.</p>
-  <p><b>Контакты и артефакты:</b> боевое приложение <a href="https://remera-wms-andrey-obruch.amvera.io">remera-wms-andrey-obruch.amvera.io</a> · сайт-презентация <a href="https://remera-wms-andrey-obruch.amvera.io/website/">/website/</a> · репозиторий <a href="https://github.com/AndreyObruch/Remera-wms">github.com/AndreyObruch/Remera-wms</a> · DOSSIER.md, AGILE.md.</p>
-  <div class="pnum">11</div>
+      <table>
+        <tr><th>Источник</th><th>Формат</th><th>Частота</th></tr>
+        <tr><td>Рапорты работников</td><td>чат-команды</td><td>реальное время</td></tr>
+        <tr><td>Накладные поставщиков</td><td>CSV</td><td>по поставке</td></tr>
+        <tr><td>Выгрузка 1С</td><td>CSV</td><td>ежедневно</td></tr>
+        <tr><td>Номенклатура</td><td>JS-константа core.js</td><td>статика</td></tr>
+      </table>
+      <p><b>Валидация:</b> коды только из справочника; 0 &lt; qty ≤ 1 000 000; защита от отрицательных остатков; импорт ≤ 2000 строк; экспорт CSV с BOM \uFEFF. Нормализация на PostgreSQL (Sprint 3/4): items, stock, movements, users + индексы по item_id, ts, op.</p>
+      <h2>10. Выводы об оптимальности стратегии</h2>
+      <table>
+        <tr><th>Решение</th><th>Обоснование выбора</th></tr>
+        <tr><td>Node.js + Express</td><td>единый язык fullstack; лучшая генерация кода ИИ; ML вынесен в отдельный этап</td></tr>
+        <tr><td>JSON-файл на /data</td><td>отладка и версионирование просты; БД — осознанный долг до масштабирования</td></tr>
+        <tr><td>Amvera (РФ)</td><td>152-ФЗ, persistence mount, контейнер вместо serverless-ограничений</td></tr>
+        <tr><td>CSV ↔ 1С</td><td>совместимость с любой версией 1С без доработок (экономия 100 000+ ₽)</td></tr>
+        <tr><td>Agile/Scrum + ИИ-ассистент</td><td>неопределённость требований; ускорение в 3–5 раз</td></tr>
+      </table>
+      <p><b>Оценка:</b> Time-to-market — отлично (7 недель вместо 6–12 мес); стоимость — отлично (0 ₽); качество — хорошо (все критические процессы покрыты); масштабируемость — удовлетворительно (осознанный компромисс MVP); принятие пользователями — хорошо (заказчик вовлечён с первого спринта).</p>
+      <p><b>Итог:</b> стратегия «low-code инфраструктура + ИИ-ассистент + Agile + human-in-the-loop» оптимальна для стадии MVP: минимальные бюджет и срок при полном аудит-следе и готовности к масштабированию. Технический долг (PIN, JSON-хранилище) зафиксирован в дорожной карте. Следующий шаг — двухнедельный пилот: его метрики определят переход к тиражированию.</p>
+      <p style="color:#9fb0c7;font-size:8pt">Выполнил: Обруч А.Г., группа СИИ-1/2026 · <a href="https://remera-wms-andrey-obruch.amvera.io/website/">сайт</a> · <a href="https://remera-wms-andrey-obruch.amvera.io/index.html">приложение</a> · <a href="https://github.com/AndreyObruch/Remera-wms">репозиторий</a></p>
+    </div>
+  </div>
+  <div class="pnum">8</div>
 </div>
 
 </body>
