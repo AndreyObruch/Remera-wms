@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Паспорт проекта · WMS «Ремера» · 8 страниц</title>
+<style>
+@page { size: A4 landscape; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Segoe UI', Arial, sans-serif; color: #e6edf7; font-size: 10.5pt; line-height: 1.45; background: #012032; }
+.page { width: 297mm; height: 210mm; padding: 12mm 14mm 10mm; page-break-after: always; position: relative; background: #012032; overflow: hidden; }
+.pnum { position: absolute; bottom: 5mm; right: 14mm; color: #9fb0c7; font-size: 8.5pt; }
+.brand { position: absolute; top: 5mm; left: 14mm; color: #2dd4ea; font-size: 8.5pt; font-weight: 600; letter-spacing: .5px; }
+h1 { font-size: 17pt; color: #f0b429; margin: 4mm 0 3mm; }
+h2 { font-size: 11.5pt; color: #2dd4ea; margin: 3.5mm 0 1.5mm; }
+p, li { margin-bottom: 1.5mm; text-align: justify; color: #e6edf7; }
+ul, ol { padding-left: 6mm; }
+a { color: #2dd4ea; text-decoration: underline; word-break: break-all; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0; font-size: 8.5pt; }
+th, td { border: 1px solid #263252; padding: 1.5mm 2mm; text-align: left; vertical-align: top; color: #e6edf7; }
+th { background: #062a40; color: #f0b429; }
+.cards { display: flex; gap: 4mm; margin: 2.5mm 0; }
+.card { flex: 1; background: #062a40; border-left: 3px solid #2dd4ea; border-radius: 2mm; padding: 2.5mm 3mm; font-size: 9pt; }
+.card b { color: #2dd4ea; display: block; margin-bottom: 1mm; }
+.card.gold { border-left-color: #f0b429; }
+.card.gold b { color: #f0b429; }
+.metric { flex: 1; background: #062a40; border: 1px solid #263252; border-radius: 2mm; padding: 2.5mm; text-align: center; }
+.metric b { display: block; color: #f0b429; font-size: 15pt; }
+.metric span { color: #9fb0c7; font-size: 8pt; }
+blockquote { margin: 3mm 0; padding: 3mm 4mm; background: #062a40; border-left: 3px solid #f0b429; border-radius: 2mm; font-style: italic; color: #e6edf7; }
+.links { background: #062a40; border: 1px solid #263252; border-radius: 2mm; padding: 2.5mm 3.5mm; margin: 2.5mm 0; font-size: 9pt; }
+.links div { margin-bottom: 1.2mm; }
+.cols { display: flex; gap: 6mm; }
+.cols > div { flex: 1; }
+.grow { display: flex; align-items: center; gap: 2mm; margin-bottom: 1.8mm; font-size: 8.5pt; }
+.grow .lbl { width: 52mm; color: #e6edf7; }
+.grow .track { flex: 1; background: #062a40; border-radius: 1.5mm; height: 5.5mm; position: relative; }
+.grow .bar { position: absolute; top: 0; bottom: 0; border-radius: 1.5mm; background: linear-gradient(90deg, #2dd4ea, #3b82f6); }
+.grow .bar.s2 { background: linear-gradient(90deg, #0ea5e9, #22c55e); }
+.grow .bar.s3 { background: linear-gradient(90deg, #8b5cf6, #3b82f6); }
+.grow .bar.s4 { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+/* обложка */
+.cover { background: linear-gradient(135deg, #012032 0%, #062a40 55%, #0e7490 130%); display: flex; flex-direction: column; justify-content: space-between; }
+.cover .top { font-size: 10pt; color: #9fb0c7; line-height: 1.5; }
+.cover .top b { color: #e6edf7; }
+.cover .mid h1 { color: #f0b429; font-size: 26pt; line-height: 1.2; margin: 0 0 4mm; }
+.cover .mid h2 { color: #2dd4ea; font-size: 13pt; font-weight: 400; margin: 0 0 5mm; }
+.cover .badges { display: flex; gap: 3mm; flex-wrap: wrap; }
+.badge { background: rgba(6,42,64,.8); border: 1px solid #263252; border-radius: 6mm; padding: 2mm 5mm; font-size: 9.5pt; color: #e6edf7; }
+.cover .bot { font-size: 10pt; line-height: 1.6; border-top: 1px solid #263252; padding-top: 4mm; color: #e6edf7; }
+</style>
+</head>
+<body>
+
+<!-- СТРАНИЦА 1 · ОБЛОЖКА -->
+<div class="page cover">
+  <div class="top">
+    АНО ДПО «Академия цифровых технологий» · Программа профессиональной переподготовки<br>
+    <b>«Азбука цифры. Специалист по внедрению искусственного интеллекта (ИИ)»</b> · Поток СИИ-1, подгруппа 3
+  </div>
+  <div class="mid">
+    <h1>Интеллектуальная система управления складом (WMS) «Ремера»</h1>
+    <h2>Паспорт проекта · печатная версия официального сайта · 8 страниц</h2>
+    <div class="badges">
+      <span class="badge">🗓 7 недель разработки</span>
+      <span class="badge">👥 команда: 2 (человек + ИИ)</span>
+      <span class="badge">💰 бюджет 0 ₽</span>
+      <span class="badge">🚀 MVP в бою с 07.09.2026</span>
+    </div>
+  </div>
+  <div class="bot">
+    <b>Выполнил:</b> Обруч Андрей Геннадьевич · <b>Преподаватель:</b> Кулешова Елена Анатольевна<br>
+    <b>Сайт проекта:</b> <a href="https://remera-wms-andrey-obruch.amvera.io/website/">remera-wms-andrey-obruch.amvera.io/website/</a> · <b>Год:</b> 2026 · все ссылки кликабельны
+  </div>
+  <div class="pnum">1</div>
+</div>
+
+<!-- СТРАНИЦА 2 · СУТЬ -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>01 · Суть проекта</h1>
+  <div class="cols">
+    <div>
+      <p>Внутренний контур оперативного учёта и прогноза закупок производства технических канатов. WMS не подменяет 1С — она дополняет её оперативным контуром движений: мобильные рапорты работников, контрольная точка директора, ML-прогноз точки заказа. ИИ рекомендует — человек решает.</p>
+      <p>Проблема AS-IS: движения ТМЦ фиксируются бумагой и звонками, в 1С попадают с задержкой 1–3 дня, закупки — «по опыту». Следствие: дефицит сырья, простои линий (до 50 000 ₽/час), замороженные оборотные средства. Решение TO-BE: весь цикл «движение → заявка поставщику» за 30 минут.</p>
+      <blockquote>«Дефицит — это не судьба, а отсутствие данных. Мы дали складу голос — и он начал заказывать сам».</blockquote>
+    </div>
+    <div>
+      <div class="cards" style="flex-direction:column">
+        <div class="metric"><b>15 сек</b><span>рапорт работника с телефона</span></div>
+        <div class="metric"><b>30 мин</b><span>от сигнала до заказа поставщику</span></div>
+        <div class="metric"><b>108</b><span>позиций номенклатуры</span></div>
+        <div class="metric"><b>0 ₽</b><span>бюджет разработки</span></div>
+      </div>
+    </div>
+  </div>
+  <h2>Точки входа (кликабельно)</h2>
+  <div class="links">
+    <div>▸ Главная сайта-презентации: <a href="https://remera-wms-andrey-obruch.amvera.io/website/">https://remera-wms-andrey-obruch.amvera.io/website/</a></div>
+    <div>▸ Операционный дашборд (приложение): <a href="https://remera-wms-andrey-obruch.amvera.io/index.html">https://remera-wms-andrey-obruch.amvera.io/index.html</a></div>
+    <div>▸ Раздел «О проекте»: <a href="https://remera-wms-andrey-obruch.amvera.io/website/about.html">https://remera-wms-andrey-obruch.amvera.io/website/about.html</a></div>
+  </div>
+  <div class="pnum">2</div>
+</div>
+
+<!-- СТРАНИЦА 3 · РОЛИ И ПРИЛОЖЕНИЕ -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>02 · Роли и приложение</h1>
+  <p>Три роли с раздельными правами на уровне API. Каждая получает ровно тот инструмент, который нужен в течение смены; обучение не требуется — 4 операции в конструкторе команд.</p>
+  <div class="cards">
+    <div class="card"><b>📱 Работник</b>Рапорт за 15 секунд: расход, приход, отгрузка, производство. Поиск по 108 позициям, подсказки кодов, порог аномалии с подтверждением.</div>
+    <div class="card gold"><b>👔 Директор</b>Липкая очередь рапортов, одна кнопка «Провести», остатки и журнал в реальном времени, аналитика с точкой заказа и ML-рекомендацией.</div>
+    <div class="card"><b>📊 Бухгалтер</b>Только чтение остатков и журнала. Выгрузка CSV для сверки с 1С в два клика, файл с BOM открывается в Excel корректно.</div>
+  </div>
+  <h2>Экраны боевого приложения</h2>
+  <table>
+    <tr><th>Экран</th><th>Назначение</th><th>Ссылка</th></tr>
+    <tr><td>Дашборд LIVE</td><td>метрики: норма / внимание / дефицит / движения за 7 дней</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/index.html">index.html</a></td></tr>
+    <tr><td>Чат-рапорт</td><td>вход по PIN, конструктор команд, очередь директору</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/chat.html">chat.html</a></td></tr>
+    <tr><td>Руководство</td><td>инструкции работника, директора, бухгалтера</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/guide.html">guide.html</a></td></tr>
+    <tr><td>Раздел «Приложение»</td><td>описание ролей и возможностей на сайте</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/website/app.html">website/app.html</a></td></tr>
+  </table>
+  <p>PIN выдаёт директор производства; секреты хранятся в переменных окружения Amvera и не публикуются на сайте.</p>
+  <div class="pnum">3</div>
+</div>
+
+<!-- СТРАНИЦА 4 · ТЕХНОЛОГИИ -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>03 · Технологическая основа</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Компонент</th><th>Технология</th><th>Обоснование</th></tr>
+        <tr><td>Backend</td><td>Node.js 20 + Express (server.js)</td><td>единый язык fullstack, 7 API-эндпоинтов + /api/health</td></tr>
+        <tr><td>Хостинг</td><td>Amvera (российское облако)</td><td>152-ФЗ, контейнер, persistence mount /data</td></tr>
+        <tr><td>Хранилище</td><td>ФС /data, wms2/state.json</td><td>простота отладки и версионирования; идемпотентность проводок</td></tr>
+        <tr><td>Frontend</td><td>HTML/CSS/JS без фреймворков</td><td>работа в браузере смартфона без установки</td></tr>
+        <tr><td>Обмен с 1С</td><td>CSV двусторонний, BOM \uFEFF</td><td>совместимость с любой версией 1С без доработок</td></tr>
+        <tr><td>ИИ-ассистент</td><td>Qwen (контекст 128k)</td><td>архитектура, код, тесты, документация, UX</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Безопасность и устойчивость</h2>
+      <ul>
+        <li>роли и PIN (MVP) → JWT с TTL 8 часов (Sprint 3); раздельные права чтения/записи;</li>
+        <li>идемпотентность проводок: двойной клик не делает двойной проводки;</li>
+        <li>защита от отрицательных остатков и порог подтверждения аномальных количеств;</li>
+        <li>fallback при недоступности /data: in-memory + лог + ретрай; HTTPS с валидным сертификатом;</li>
+        <li>аудит-след 100%: автор + утвердитель + метка времени по каждой проводке.</li>
+      </ul>
+      <h2>Код и документация</h2>
+      <div class="links">
+        <div>▸ Репозиторий: <a href="https://github.com/AndreyObruch/Remera-wms">github.com/AndreyObruch/Remera-wms</a></div>
+        <div>▸ Досье: <a href="https://github.com/AndreyObruch/Remera-wms/blob/main/DOSSIER.md">DOSSIER.md</a> · План: <a href="https://github.com/AndreyObruch/Remera-wms/blob/main/AGILE.md">AGILE.md</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="pnum">4</div>
+</div>
+
+<!-- СТРАНИЦА 5 · KPI И ЭКОНОМИКА -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>04 · KPI и экономика</h1>
+  <div class="cols">
+    <div>
+      <p>Формат метрик «базлайн AS-IS → цель TO-BE»: каждая измерима и проверяема по логам системы.</p>
+      <table>
+        <tr><th>Категория</th><th>KPI</th><th>AS-IS → TO-BE</th><th>Измерение</th></tr>
+        <tr><td>Продуктовые</td><td>Время рапорта работника</td><td>40 сек → <b>15 сек</b> (−62%)</td><td>лог системы</td></tr>
+        <tr><td>Продуктовые</td><td>Доля рапортов через WMS</td><td>0% → <b>≥ 70%</b></td><td>журнал за пилот</td></tr>
+        <tr><td>Операционные</td><td>«Сигнал → заказ»</td><td>3 дня → <b>30 мин</b></td><td>журнал + лог заявок</td></tr>
+        <tr><td>Операционные</td><td>Простои из-за дефицита</td><td>до 2/мес → <b>0</b> за 3 мес</td><td>акты простоев</td></tr>
+        <tr><td>Технические</td><td>Распознавание QR</td><td>— → <b>≤ 2 сек, ≥ 95%</b></td><td>20 тест-сканов</td></tr>
+        <tr><td>Экономические</td><td>Замороженные запасы</td><td>— → <b>−15–20%</b></td><td>оценка запасов</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Годовой экономический эффект</h2>
+      <table>
+        <tr><th>Статья</th><th>Расчёт</th><th>Эффект, ₽/год</th></tr>
+        <tr><td>Простои из-за дефицита</td><td>2 простоя/мес × 4 ч × 50 000 ₽/час × 12</td><td>4 800 000</td></tr>
+        <tr><td>Замороженные запасы</td><td>5 000 000 ₽ × 15% × ставка капитала 15%</td><td>112 500</td></tr>
+        <tr><td>Трудозатраты учёта</td><td>(528 − 132) ч × 500 ₽/час</td><td>198 000</td></tr>
+        <tr><th>Итого при инвестициях 0 ₽</th><th></th><th>5 110 500</th></tr>
+      </table>
+      <div class="links">
+        <div>▸ Блок KPI в презентации: <a href="https://remera-wms-andrey-obruch.amvera.io/website/pitch.html#kpi">website/pitch.html#kpi</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="pnum">5</div>
+</div>
+
+<!-- СТРАНИЦА 6 · ДОРОЖНАЯ КАРТА -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>05 · Дорожная карта и Гант</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Этап</th><th>Сроки</th><th>Содержание и веха</th></tr>
+        <tr><td>Sprint 1 · Уведомления</td><td>15.09–28.09</td><td>guide.html, email-сервис, api/notify.js · веха: первое письмо</td></tr>
+        <tr><td>Sprint 2 · QR-инвентаризация</td><td>29.09–12.10</td><td>генератор наклеек + сканер камеры · веха: первый скан</td></tr>
+        <tr><td>Sprint 3 · Безопасность</td><td>13.10–26.10</td><td>JWT, автопроводки, ABC-XYZ анализ запасов</td></tr>
+        <tr><td>Sprint 4 · Пилот</td><td>27.10–02.11</td><td>приёмка, демо-стенд, передача в эксплуатацию · веха: приёмка</td></tr>
+      </table>
+      <h2>Гант (недели 1–7)</h2>
+      <div class="grow"><div class="lbl">Sprint 1 · Уведомления</div><div class="track"><div class="bar" style="left:0%;width:28.5%"></div></div></div>
+      <div class="grow"><div class="lbl">Sprint 2 · QR</div><div class="track"><div class="bar s2" style="left:28.5%;width:28.5%"></div></div></div>
+      <div class="grow"><div class="lbl">Sprint 3 · Безопасность</div><div class="track"><div class="bar s3" style="left:57%;width:28.5%"></div></div></div>
+      <div class="grow"><div class="lbl">Sprint 4 · Пилот</div><div class="track"><div class="bar s4" style="left:85.5%;width:14.5%"></div></div></div>
+    </div>
+    <div>
+      <h2>Критерии приёмки MVP (DoD)</h2>
+      <ul>
+        <li>✓ роли и PIN, рапорт с телефона; ✓ проводки директора, остатки, журнал;</li>
+        <li>✓ CSV ↔ 1С в обе стороны; ✓ точка заказа и прогноз расхода; ✓ руководство и вход по ролям;</li>
+        <li>○ email-уведомления о дефиците; ○ QR-скан наклейки; ○ JWT-сессии; ○ акт приёмки.</li>
+      </ul>
+      <div class="links">
+        <div>▸ План спринтов и KPI: <a href="https://github.com/AndreyObruch/Remera-wms/blob/main/AGILE.md">AGILE.md</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="pnum">6</div>
+</div>
+
+<!-- СТРАНИЦА 7 · ПРЕЗЕНТАЦИЯ И ДОКУМЕНТЫ -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>06 · Презентация и документы</h1>
+  <div class="cols">
+    <div>
+      <p>Питч-дек из 20 блоков и печатные артефакты проекта. Все ссылки кликабельны.</p>
+      <table>
+        <tr><th>Артефакт</th><th>Содержание</th><th>Ссылка</th></tr>
+        <tr><td>Презентация (раздел сайта)</td><td>питч-дек в iframe, кнопка fullscreen</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/website/presentation.html">website/presentation.html</a></td></tr>
+        <tr><td>Питч-дек на весь экран</td><td>20 блоков: проблема → решение → KPI → план → запрос</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/website/pitch.html">website/pitch.html</a></td></tr>
+        <tr><td>ИАР (PDF-буклет A4)</td><td>11 страниц, 10 разделов по критериям, 4 схемы</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/website/pdf.html">website/pdf.html</a></td></tr>
+        <tr><td>Файл буклета</td><td>прямая ссылка на PDF для печати</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/website/files/iar-obruch.pdf">files/iar-obruch.pdf</a></td></tr>
+        <tr><td>О проекте (раздел сайта)</td><td>команда, дорожная карта, документы</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/website/about.html">website/about.html</a></td></tr>
+        <tr><td>Руководство пользователя</td><td>инструкции по ролям</td><td><a href="https://remera-wms-andrey-obruch.amvera.io/guide.html">guide.html</a></td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Что уже сделано</h2>
+      <ul>
+        <li>MVP в бою с 07.09.2026: 108 позиций, словарь синхронизирован, боевая ссылка работает;</li>
+        <li>CSV ↔ 1С импортом и экспортом протестированы в обе стороны;</li>
+        <li>аналитика точки заказа и прогноз закупок работают;</li>
+        <li>сайт-презентация из 5 разделов в едином стиле развёрнут на Amvera;</li>
+        <li>Agile-контур: бэклог, 4 спринта, KPI, Гант, канбан-доска; блок-схема TO-BE сдана в LMS.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pnum">7</div>
+</div>
+
+<!-- СТРАНИЦА 8 · ВЫВОДЫ И КОНТАКТЫ -->
+<div class="page">
+  <div class="brand">WMS «Ремера» · паспорт проекта · 2026</div>
+  <h1>07 · Выводы и контакты</h1>
+  <div class="cols">
+    <div>
+      <p>Стратегия «low-code инфраструктура + ИИ-ассистент + Agile + human-in-the-loop» оптимальна для стадии MVP: минимальные бюджет и срок при полном аудит-следе и готовности к масштабированию. Технический долг (PIN, JSON-хранилище) зафиксирован в дорожной карте и не является скрытым. Следующий шаг — двухнедельный пилот на производстве: его метрики определят переход к тиражированию на другие площадки.</p>
+      <div class="cards" style="flex-direction:column">
+        <div class="card gold"><b>Time-to-market</b>MVP за 7 недель вместо отраслевых 6–12 месяцев.</div>
+        <div class="card"><b>Стоимость</b>0 ₽ инвестиций: бесплатные тарифы Amvera и email-сервиса.</div>
+        <div class="card gold"><b>Масштабируемость</b>Тиражируемый контур для производственных SME: лицензия или SaaS.</div>
+      </div>
+    </div>
+    <div>
+      <blockquote>«Дефицит — это не судьба, а отсутствие данных. Мы дали складу голос — и он начал заказывать сам».</blockquote>
+      <h2>Контакты и точки входа (кликабельно)</h2>
+      <div class="links">
+        <div>▸ Сайт-презентация: <a href="https://remera-wms-andrey-obruch.amvera.io/website/">remera-wms-andrey-obruch.amvera.io/website/</a></div>
+        <div>▸ Приложение (дашборд): <a href="https://remera-wms-andrey-obruch.amvera.io/index.html">remera-wms-andrey-obruch.amvera.io/index.html</a></div>
+        <div>▸ Чат-рапорт работника: <a href="https://remera-wms-andrey-obruch.amvera.io/chat.html">remera-wms-andrey-obruch.amvera.io/chat.html</a></div>
+        <div>▸ Руководство: <a href="https://remera-wms-andrey-obruch.amvera.io/guide.html">remera-wms-andrey-obruch.amvera.io/guide.html</a></div>
+        <div>▸ Репозиторий: <a href="https://github.com/AndreyObruch/Remera-wms">github.com/AndreyObruch/Remera-wms</a></div>
+      </div>
+      <p style="margin-top:3mm;color:#9fb0c7;font-size:9pt">Выполнил: Обруч А.Г., группа СИИ-1/2026 · команда: разработчик + ИИ-ассистент Qwen · защита 11.10.2026</p>
+    </div>
+  </div>
+  <div class="pnum">8</div>
+</div>
+
+</body>
+</html>
