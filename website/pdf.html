@@ -3,67 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ИАР (PDF) — WMS Ремера</title>
+  <title>ИАР (PDF) — WMS «Ремера»</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; background: #f5f5f7; }
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-    nav { background: white; padding: 16px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    nav ul { list-style: none; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
-    nav a { color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.05rem; }
-    nav a:hover, nav a.active { color: #764ba2; }
-    header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; text-align: center; }
-    header h1 { font-size: 2.5rem; margin-bottom: 12px; }
-    header p { font-size: 1.15rem; opacity: 0.95; }
-    .card { background: white; border-radius: 16px; padding: 32px; margin-top: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
-    .btn { display: inline-block; padding: 16px 36px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 16px rgba(102,126,234,0.3); margin: 12px 6px; }
-    .btn:hover { transform: translateY(-2px); }
-    .btn.ghost { background: white; color: #667eea; border: 2px solid #667eea; box-shadow: none; }
-    .meta { color: #888; font-size: 0.95rem; margin-top: 8px; }
-    .preview { margin-top: 32px; }
-    .preview iframe { width: 100%; height: 75vh; border: 1px solid #e0e0e8; border-radius: 12px; background: #eee; }
-    footer { background: #1a1a1a; color: white; padding: 32px 0; margin-top: 60px; text-align: center; }
-    footer p { opacity: 0.8; }
+    :root{
+      --bg:#012032; --panel:#062a40; --text:#e6edf7; --muted:#9fb0c7;
+      --accent:#2dd4ea; --gold:#f0b429; --border:rgba(255,255,255,.08); --navy:#002140;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:1040px;margin:0 auto;padding:0 20px}
+
+    nav.top{position:sticky;top:0;z-index:20;background:rgba(0,33,64,.96);backdrop-filter:blur(8px);border-bottom:1px solid rgba(240,180,41,.25)}
+    nav.top .container{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 20px;flex-wrap:wrap}
+    .logo{color:var(--gold);font-weight:700;font-size:18px;text-decoration:none;letter-spacing:.04em}
+    .logo span{color:var(--accent)}
+    .nav-links{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;padding:8px 16px;border:1px solid rgba(240,180,41,.55);border-radius:999px;box-shadow:0 0 10px rgba(240,180,41,.28);transition:color .15s,border-color .15s,box-shadow .15s}
+    .nav-links a:hover{color:var(--accent);border-color:rgba(240,180,41,.9);box-shadow:0 0 14px rgba(240,180,41,.45)}
+    .nav-links a.active{color:var(--accent);font-weight:600;border-color:rgba(240,180,41,.9);box-shadow:0 0 14px rgba(240,180,41,.45)}
+
+    header.hero{position:relative;overflow:hidden;min-height:56vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:90px 0 60px;background:var(--bg)}
+    .hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+    .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;animation:imgReveal 3s ease-in-out forwards;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,#000 0%,#000 82%,transparent 100%)}
+    .hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(900px 500px at 50% 40%, rgba(1,32,50,.35), rgba(1,32,50,.80))}
+    .hero-content{position:relative;z-index:2;max-width:920px;padding:0 20px}
+    @keyframes imgReveal{0%{opacity:0}50%{opacity:1}100%{opacity:.5}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+    .hero-content .eyebrow{opacity:0;animation:fadeUp .8s ease 3s forwards}
+    .hero-content h1{opacity:0;animation:fadeUp .8s ease 3.8s forwards}
+    .hero-content .lead{opacity:0;animation:fadeUp .8s ease 4.6s forwards}
+    .hero-content .hero-cta{opacity:0;animation:fadeUp .8s ease 5.4s forwards}
+    .eyebrow{letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-size:13px;margin-bottom:16px}
+    h1{font-size:clamp(30px,4.6vw,54px);color:var(--gold);font-weight:700;line-height:1.1;margin-bottom:18px;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+    .lead{max-width:760px;margin:0 auto 28px;color:var(--text);font-size:16px;text-shadow:0 1px 12px rgba(0,0,0,.8)}
+    .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-block;padding:15px 34px;border-radius:10px;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;border:none;transition:transform .15s ease,box-shadow .15s ease}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#041018;box-shadow:0 6px 24px rgba(45,212,234,.25)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(45,212,234,.35)}
+    .btn-ghost{background:transparent;color:var(--gold);border:1px solid rgba(240,180,41,.7);box-shadow:0 0 12px rgba(240,180,41,.25)}
+    .btn-ghost:hover{transform:translateY(-2px);color:var(--accent);border-color:var(--accent);box-shadow:0 0 16px rgba(45,212,234,.35)}
+    .meta{margin-top:14px;color:var(--muted);font-size:13px}
+
+    section{padding:60px 0;position:relative}
+    section > .container{position:relative;z-index:1}
+    h2{color:var(--gold);font-size:clamp(24px,3.4vw,32px);margin-bottom:14px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+    .section-head{text-align:center;margin-bottom:36px}
+    .section-sub{color:var(--muted);max-width:760px;margin:14px auto 0}
+
+    .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:36px}
+    .fact{background:rgba(6,42,64,.82);border:1px solid var(--border);border-radius:12px;padding:18px 20px;text-align:center;backdrop-filter:blur(4px)}
+    .fact b{display:block;color:var(--gold);font-size:22px;font-weight:700}
+    .fact span{color:var(--muted);font-size:13px}
+
+    .preview iframe{width:100%;height:78vh;border:1px solid var(--border);border-radius:14px;background:#eee;display:block}
+
+    footer{padding:40px 0;border-top:1px solid rgba(240,180,41,.25);color:var(--muted);text-align:center;font-size:14px;background:var(--navy);margin-top:30px}
+    footer .container{display:flex;flex-direction:column;align-items:center;gap:8px}
+    footer a{color:var(--accent);text-decoration:none}
+    footer a:hover{color:var(--gold)}
+
+    .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media(max-width:640px){nav.top .container{justify-content:center}.hero{min-height:48vh;padding:60px 0 40px}}
   </style>
 </head>
 <body>
-  <nav>
-    <div class="container">
-      <ul>
-        <li><a href="index.html">Главная</a></li>
-        <li><a href="app.html">Приложение</a></li>
-        <li><a href="presentation.html">Презентация</a></li>
-        <li><a href="pdf.html" class="active">ИАР (PDF)</a></li>
-        <li><a href="about.html">О проекте</a></li>
-      </ul>
-    </div>
-  </nav>
 
-  <header>
-    <div class="container">
-      <h1>📄 Итоговая аттестационная работа</h1>
-      <p>PDF-буклет A4: обложка, 10 разделов по критериям LMS Odin, 4 схемы (архитектура, TO-BE, ROI, Гант)</p>
-    </div>
-  </header>
-
+<nav class="top">
   <div class="container">
-    <section class="card">
-      <h2>Скачать или смотреть</h2>
-      <a class="btn" href="files/iar-obruch.pdf" download>⬇ Скачать PDF</a>
-      <a class="btn ghost" href="files/iar-obruch.pdf" target="_blank" rel="noopener">Открыть в новой вкладке ↗</a>
-      <p class="meta">ИАР_Обруч_WMS_Ремера · 11 страниц · формат для загрузки в LMS Odin</p>
-    </section>
-
-    <section class="card preview">
-      <h2 style="margin-bottom:16px;">Превью</h2>
-      <iframe src="files/iar-obruch.pdf" title="ИАР WMS Ремера (PDF)"></iframe>
-    </section>
-  </div>
-
-  <footer>
-    <div class="container">
-      <p>© 2026 WMS «Ремера» · Обруч А.Г. · группа СИИ-1/2026</p>
+    <a href="index.html" class="logo">WMS <span>«Ремера»</span></a>
+    <div class="nav-links">
+      <a href="index.html">Главная</a>
+      <a href="app.html">Приложение</a>
+      <a href="presentation.html">Презентация</a>
+      <a href="pdf.html" class="active">ИАР (PDF)</a>
+      <a href="about.html">О проекте</a>
     </div>
-  </footer>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"><img src="sec-tech.jpg" alt="Итоговая аттестационная работа"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="eyebrow">Итоговая аттестационная работа · LMS Odin</p>
+    <h1>ИАР (PDF)</h1>
+    <p class="lead">Печатный буклет A4: обложка, 10 разделов по критериям итоговой аттестации, 4 схемы — архитектура боевого контура, поток TO-BE, структура годового эффекта, Гант спринтов.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="files/iar-obruch.pdf" download>⬇ Скачать PDF</a>
+      <a class="btn btn-ghost" href="files/iar-obruch.pdf" target="_blank" rel="noopener">Открыть в новой вкладке ↗</a>
+    </div>
+    <p class="meta">ИАР_Обруч_WMS_Ремера · 11 страниц · формат для загрузки в LMS Odin</p>
+  </div>
+</header>
+
+<section id="facts">
+  <div class="container">
+    <div class="facts reveal">
+      <div class="fact"><b>11</b><span>страниц A4</span></div>
+      <div class="fact"><b>10</b><span>разделов по критериям</span></div>
+      <div class="fact"><b>4</b><span>схемы (SVG)</span></div>
+      <div class="fact"><b>A4</b><span>печать без полей</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="preview" id="preview">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Превью</h2>
+      <p class="section-sub">Буклет рендерится прямо с сервера — листайте внутри окна ниже или откройте в новой вкладке.</p>
+    </div>
+    <iframe src="files/iar-obruch.pdf" title="ИАР WMS Ремера (PDF)" class="reveal"></iframe>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 WMS «Ремера» · Обруч А.Г. · группа СИИ-1/2026</p>
+    <p><a href="https://github.com/AndreyObruch/Remera-wms" target="_blank" rel="noopener">Репозиторий на GitHub</a></p>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target);} });
+  },{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
 </body>
 </html>
