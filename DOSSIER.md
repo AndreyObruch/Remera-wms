@@ -1,5 +1,5 @@
-# ДОСЬЕ · Интеллектуальная система управления складом (WMS) v2.2
-Обновлено: 26.09.2026. Закрыт этап: миграция Vercel → Amvera; многостраничный сайт website/; ИАР (iar/, печатная версия).
+# ДОСЬЕ · Интеллектуальная система управления складом (WMS) v2.3
+Обновлено: 11.10.2026. Закрыт этап: сайт-презентация 5 стр. в едином тёмном стиле; питч-дек website/pitch.html (актуален под Amvera); печатный контур ИАР пересобран (буклет 8 стр. landscape + паспорт 8 стр.); начата презентация ИАР (iar/iar-slides.html, слайд 1 готов).
 
 ## 0. ПРАВИЛА ЧАТА (ВШИТЫ КАЛЁНЫМ ЖЕЛЕЗОМ, ИЗМЕНЕНИЮ НЕ ПОДЛЕЖАТ)
 - Qwen присылает ровно одну команду или один файл за сообщение, затем ждёт ответ «готово».
@@ -14,22 +14,28 @@
 - Секреты (PIN) не пишутся в чат, репозиторий и скриншоты; единственные места — Amvera env (секрет) и блокнот Product Owner.
 - Дополнения (не противоречат правилам): Commit+Push после каждого файла; досье обновляется файлом после каждого закрытого этапа; футер «📊 Заполненность ~X% | Сжатие».
 
-## 1. ЦЕЛЬ — ДОСТИГНУТА (ядро + боевой контур + 1С + прогноз + упаковка к защите)
-Работник: телефон → PIN → рапорт. Директор: липкая очередь → «Провести/Отклонить» → остатки.
-Бухгалтер: только чтение. CSV ↔ 1С двусторонний. Аналитика: точка заказа (запас < 7 дней расхода).
-Упаковано к защите: питч 20 блоков, Agile-план (спринты/KPI/Гант/канбан), схема TO-BE с ИИ (Задание 4, сдано в LMS 21.09),
-многостраничный сайт-презентация website/, ИАР по критериям LMS Odin (iar/).
+## 1. ЦЕЛЬ — ДОСТИГНУТА (ядро + боевой контур + 1С + прогноз + полная упаковка к защите)
+Работник: телефон → PIN → рапорт (15 сек). Директор: липкая очередь → «Провести/Отклонить» → остатки.
+Бухгалтер: только чтение + CSV-экспорт. CSV ↔ 1С двусторонний (BOM \uFEFF). Аналитика: точка заказа (запас < 7 дней расхода).
+Упаковано к защите 11.10: питч-дек 20 блоков (website/pitch.html), Agile-план (спринты/KPI/Гант/канбан), схема TO-BE с ИИ (Задание 4, LMS 21.09),
+сайт-презентация website/ (5 стр., единый тёмный стиль), печатный ИАР (буклет 8 стр. + паспорт 8 стр.), презентация ИАР (8 слайдов, в работе), LINKS.md.
 
 ## 2. АРХИТЕКТУРА
-**Прод:** https://remera-wms-andrey-obruch.amvera.io
+**Прод:** https://remera-wms-andrey-obruch.amvera.io (11.10.2026 — Amvera недоступна, работаем локально + GitHub; после восстановления подхватится по push).
 **Хостинг:** Amvera (российское облако, контейнер Node.js 20, npm); запуск `npm start` → `node server.js` (Express, порт 80).
 **Хранилище:** файловая система /data (persistenceMount) → lib/blob-fs.js (обёртка вместо Vercel Blob) → wms2/state.json.
 chat.html → /api/{auth,chat,approve,stock,import,export,analytics} + /api/health →
 lib/core.js (108 поз., DAILY_NORM) + lib/store.js v17 → blob-fs.js → /data.
 index.html (учебная БД v1, SQLite-WASM) — тренажёр; guide.html — руководство.
-**Сайт-презентация:** website/{index,app,presentation,about}.html (статика того же хостинга, путь /website/);
-presentation.html встраивает prezentaciya-wms-agile.html через iframe.
-**ИАР:** iar/{title,index}.html → make_iar.py → iar/iar-print.html → печать в PDF → LMS Odin (локально, не деплоится).
+**Сайт-презентация:** website/{index,app,presentation,pdf,about}.html + website/pitch.html (статика того же хостинга, путь /website/);
+единый тёмный стиль: фон #012032, золото #f0b429, циан #2dd4ea, pill-меню, hero с фоновыми jpg, reveal-анимации;
+presentation.html встраивает pitch.html через iframe (тот же уровень — баг ../prezentaciya-wms-agile.html с fallback на дашборд исправлен).
+**ИАР (печатный контур, сборка headless Chrome, не make_iar.py):**
+- iar/iar-book.html → 8 стр. A4 landscape, тёмный стиль, 4 SVG-схемы (архитектура, эффект, TO-BE, Гант), кликабельные ссылки → website/files/iar-obruch.pdf;
+- iar/iar-site-book.html → паспорт проекта 8 стр. landscape, ссылки на все страницы сайта + GitHub → website/files/iar-site-passport.pdf;
+- iar/iar-slides.html → презентация ИАР 8 слайдов по образцу однокашницы (Алеся, «Ожившая История»), киберпанк-визуал; слайд 1 (титул) готов;
+- iar/signature.png → подпись (CSS: invert + hue-rotate + drop-shadow — чёрная ручка становится неоновой на тёмном фоне).
+Сборка PDF: `& "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="<цель>" "file:///<источник>"` (ошибки PdhAddEnglishCounter безвредны; после «bytes written» — Ctrl+C).
 ЛОКАЛЬНО: C:\Users\user\Projects\REMERA\Remera-wms.
 
 ## 3. ДАННЫЕ И ПРИНЦИПЫ КОДА
@@ -38,25 +44,33 @@ import ≤ 2000 строк; export CSV (BOM \uFEFF); analytics: daysLeft=stock/n
 Принципы исходного плана (действуют): Data-first; Security by default (try-catch на всех узлах); Zero-downtime fallback.
 
 ## 4. ENV (эталон)
-Amvera env (секреты, этап «Запуск»): DIRECTOR_PIN, WORKER_PIN, ACCOUNTANT_PIN (сейчас тестовые 1111/2222/3333 — заменить на боевые до защиты).
+Amvera env (секреты, этап «Запуск»): DIRECTOR_PIN, WORKER_PIN, ACCOUNTANT_PIN (сейчас тестовые — заменить на боевые до защиты).
 PRIV_READ_WRITE_TOKEN / PRIV_STORE_ID больше не нужны (файловое хранилище).
 Секреты — только Amvera env (секрет) и блокнот Product Owner (раздел 0).
 
 ## 5. ФАЙЛЫ (текущие версии)
 server.js · amvera.yaml · lib/store.js v17 · lib/blob-fs.js · lib/core.js ·
 api/{auth,chat,approve,stock,import,export,analytics}.js ·
-chat.html · index.html · guide.html · website/{index,app,presentation,about}.html ·
-iar/{title,index,iar-print}.html · make_iar.py ·
-AGILE.md · make_agile.py · WMS_REMERA_Agile.xlsx · prezentaciya-wms-agile.html ·
-питч 20 блоков (текст; войдёт в питч-дек) · DOSSIER.md.
+chat.html · index.html · guide.html ·
+website/{index,app,presentation,pdf,about}.html · website/pitch.html ·
+website/files/{iar-obruch.pdf, iar-site-passport.pdf} · website/*.jpg (hero, sec-tech, sec-roles, sec-next, sec-about) ·
+iar/iar-book.html · iar/iar-site-book.html · iar/iar-slides.html · iar/signature.png ·
+AGILE.md · make_agile.py · WMS_REMERA_Agile.xlsx · LINKS.md · DOSSIER.md.
+Legacy (не использовать в новом контуре): make_iar.py, iar-print.html, prezentaciya-wms-agile.html (из корня удалён/не в git).
 
 ## 6. СДЕЛАНО (все этапы)
 Ремонт store/SDK → Фаза 1 → Фаза 2 (проводки) → v14/идемпотентность → Фаза Б (бухгалтер) →
 UI-пакет → словарь 108 поз. → Фаза 4 (импорт CSV) → Фаза 4b (экспорт CSV) → Фаза 5a (точка заказа) →
 21.09: Задание 4 (схема TO-BE + docx в LMS), практика Agile (Яндекс-таблицы, канбан) →
 24.09: питч 20 блоков, xlsx-план (make_agile.py, openpyxl), переезд репо, разбор архива плана →
-26.09: миграция Vercel → Amvera (Express + /data, vercel.json удалён, amvera.yaml, домен amvera.io, PIN в env) →
-26.09: сайт website/ (4 страницы), ИАР iar/ (титул + 10 разделов по критериям LMS) + сборщик make_iar.py.
+26.09: миграция Vercel → Amvera (Express + /data, vercel.json удалён, amvera.yaml, домен amvera.io, PIN в env),
+сайт website/ (4 стр.), первый ИАР iar/ + make_iar.py →
+09–10.10: сайт расширен до 5 стр. + pitch.html (20 блоков), все страницы приведены к единому тёмному стилю;
+актуализация фактов питча (Vercel/Blob → Amvera + /data, футер → amvera.io, «письмо» → «сигнал в аналитике»);
+ИАР-буклет перекрашен в тёмный стиль и перекомпонован в 8 стр. landscape (двухколоночная вёрстка, 4 SVG-схемы перекрашены);
+создан паспорт проекта (8 стр., кликабельные ссылки); pdf.html — два артефакта на одной странице; создан LINKS.md;
+начата презентация ИАР: iar-slides.html, слайд 1 титульный (киберпанк: неоновый склад, голограмма-рапорт, робот-тележка, сканирующий луч;
+реквизиты: слушатель Обруч А.Г., преподаватели Королькова Е.А. и Кулешова Е.А., 12.10.2026, поле подписи signature.png).
 
 ## 7. ИСТОКИ: ПЛАН → ФАКТ (архив: «Промпт РЕМЕРА2.0», «ПЛАН-СЦЕНАРИЙ v2.0»)
 БД: Turso (облачный SQLite) → Vercel Blob private → Amvera /data (файловое, бесплатно, хватает на 2–3 пользователей).
@@ -73,24 +87,29 @@ JWT «позже» → Sprint 3; Resend (Фаза 3 плана) → Sprint 1, в
 ## 8. УРОКИ (конденсат)
 SDK latest + Redeploy without cache; Push после commit; NOT_FOUND = коммит не доехал; Env со следующего деплоя;
 идемпотентность от двойных кликов; битый JSON → defaultState;
-БОЛЬШИЕ ВСТАВКИ обрезаются → Ctrl+End (</html>) и маркеры; кэш → Ctrl+Shift+R/инкогнито;
+БОЛЬШИЕ ВСТАВКИ обрезаются → Ctrl+End (</html>) и маркеры; кэш → Ctrl+Shift+R/инкогнито/приватное окно;
 TSV в Яндекс-таблицу — один раз (дубли = лишние колонки справа); Яндекс Документы открывают .md/.txt;
 xlsx — только генерацией (openpyxl), скрипт держать в репо; VS Code: trust → Open, repos picker → выбрать репо;
 после переезда репо — аудит путей; CSV для Excel → BOM \uFEFF; «Импорт БД» (v1) ≠ «Импорт CSV» (v2);
 Vercel → Amvera: serverless переписать в Express + server.js, Blob заменить blob-fs.js; в amvera.yaml при toolchain npm
 не указывать scriptName/scriptArguments (хватает command: npm start); PIN — только runtime-env (этап «Запуск», не «Сборка»);
 SIGTERM в логах Amvera = штатный перезапуск контейнера; Excel-локи ~$* — в .gitignore;
-проверка «тот ли файл сохранён» — Get-Content <файл> -TotalCount 2 до запуска.
+проверка «тот ли файл сохранён» — Get-Content <файл> -TotalCount 2 до запуска;
+iframe-пути: только относительные того же уровня (../ резолвится в корень домена → fallback SPA);
+headless Chrome: --no-pdf-header-footer обязателен; PdhAddEnglishCounter в логах — мусор Windows; процесс не выходит сам → Ctrl+C;
+подпись на тёмном фоне: скан чёрной ручки + CSS invert/hue-rotate/drop-shadow — без пересъёмки;
+Amvera может падать (11.10) → печатные артефакты и сайт проверяются локально file://, прод — после восстановления.
 
 ## 9. ДОРОЖНАЯ КАРТА (осталось)
-**СЕЙЧАС (до 12.10):** ИАР → PDF: открыть iar/iar-print.html в браузере → Ctrl+P → «Сохранить как PDF» → загрузить в LMS Odin;
-заменить тестовые PIN на боевые (Amvera env → ↻); коммит website/ + iar/ + make_iar.py + DOSSIER v2.2.
-**Защита ~11.10:** демо-стенд, 3 репетиции с секундомером, фриз кода, план Б (видео + скриншоты).
-**Sprint 1 (до 28.09 → сдвиг по факту):** guide.html под актуальный UI; email-сервис + верификация; api/notify.js (Фаза 3 плана).
+**СЕЙЧАС (до 12.10, дедлайн жёсткий):** презентация ИАР — слайды 2–8 (теория+инструменты / MVP+сценарий / экономика+ROI / маркетинг+управление / кибербез+данные / масштабирование+Гант / итоги) в том же киберпанк-стиле;
+сборка PDF (headless Chrome) → загрузить в LMS Odin; проверить подпись на слайде 1;
+заменить тестовые PIN на боевые (Amvera env → ↻) после восстановления продa.
+**Защита 11.10:** демо-стенд (Amvera down → план Б: локальный запуск node server.js + скриншоты/видео), 3 репетиции с секундомером, фриз кода.
+**Sprint 1:** guide.html под актуальный UI; email-сервис + верификация домена (Resend/Mailgun — решение заказчика); api/notify.js.
 **Sprint 2:** QR-инвентаризация. **Sprint 3:** JWT + автопроводки + ABC-XYZ. **Sprint 4:** пилот и приёмка.
 
 ## 10. РИСКИ
 Файловое хранилище без транзакций (ок для 2–3 пользователей); PIN = MVP (JWT в Sprint 3); v1 и v2 — разные миры;
-демо на защите зависит от сети → план Б; переезд репо → старые пути (аудит перед защитой);
-дедлайн ИАР 12.10 жёсткий → PDF собрать и загрузить заранее, не в последний день;
-Turso/Resend — зарубежные облака (из исходного плана): канал работает, держать fallback.
+**Amvera недоступна 11.10 → демо на защите зависит от прод-доступности: план Б (локальный сервер + видео/скриншоты);**
+дедлайн ИАР 12.10 жёсткий → PDF собрать и загрузить заранее, не в последний день; презентация ИАР не доделана (слайды 2–8);
+переезд репо → старые пути (аудит перед защитой); Turso/Resend — зарубежные облака (из исходного плана): канал работает, держать fallback.
