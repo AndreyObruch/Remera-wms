@@ -10,73 +10,72 @@ html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: #012032; color: #e6edf7; }
 .slide { width: 297mm; height: 210mm; page-break-after: always; position: relative; overflow: hidden; background: #012032; }
 
-/* ── ТИТУЛЬНЫЙ ЛИСТ ── */
+/* ═══ ТИТУЛЬНЫЙ ЛИСТ (по образцу: слева сцена, справа панель с рамкой) ═══ */
 .t1 { display: flex; }
-/* левая половина — визуал */
-.t1-art { flex: 0 0 52%; position: relative; background: radial-gradient(120% 140% at 20% 10%, #062a40 0%, #012032 60%, #000d18 100%); overflow: hidden; }
-/* неоновая сетка пола */
-.t1-art .floor { position: absolute; left: -20%; right: -20%; bottom: -12%; height: 62%;
-  background:
-    repeating-linear-gradient(90deg, rgba(45,212,234,.28) 0 1px, transparent 1px 34px),
-    repeating-linear-gradient(0deg, rgba(45,212,234,.22) 0 1px, transparent 1px 30px);
-  transform: perspective(420px) rotateX(64deg); transform-origin: bottom;
-  mask-image: linear-gradient(180deg, transparent 0%, #000 55%); -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 55%); }
-/* верхняя сетка-«потолок» */
-.t1-art .ceil { position: absolute; left: -20%; right: -20%; top: -10%; height: 40%;
-  background:
-    repeating-linear-gradient(90deg, rgba(240,180,41,.14) 0 1px, transparent 1px 44px),
-    repeating-linear-gradient(0deg, rgba(240,180,41,.12) 0 1px, transparent 1px 36px);
-  transform: perspective(420px) rotateX(-64deg); transform-origin: top;
-  mask-image: linear-gradient(0deg, transparent 10%, #000 90%); -webkit-mask-image: linear-gradient(0deg, transparent 10%, #000 90%); }
-.t1-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* сканирующий луч */
-.t1-art .beam { position: absolute; top: 0; bottom: 0; left: 38%; width: 3px;
-  background: linear-gradient(180deg, transparent, #2dd4ea 30%, #fff 50%, #2dd4ea 70%, transparent);
-  box-shadow: 0 0 18px 4px rgba(45,212,234,.75); }
-.t1-art .beamzone { position: absolute; top: 0; bottom: 0; left: 30%; width: 19%;
-  background: linear-gradient(90deg, transparent, rgba(45,212,234,.10) 45%, rgba(45,212,234,.16) 50%, rgba(45,212,234,.10) 55%, transparent); }
-/* партиклы */
-.t1-art .dot { position: absolute; border-radius: 50%; background: #2dd4ea; box-shadow: 0 0 8px 2px rgba(45,212,234,.8); }
-.t1-art .dot.g { background: #f0b429; box-shadow: 0 0 8px 2px rgba(240,180,41,.8); }
 
-/* правая половина — панель реквизитов */
-.t1-panel { flex: 1; position: relative; padding: 13mm 12mm 10mm 10mm; display: flex; flex-direction: column;
-  background: linear-gradient(160deg, rgba(6,42,64,.92) 0%, rgba(1,32,50,.96) 100%); }
-.t1-panel::before { content: ''; position: absolute; inset: 4mm; border: 1px solid rgba(240,180,41,.55); border-radius: 3mm;
-  box-shadow: inset 0 0 24px rgba(45,212,234,.12), 0 0 18px rgba(240,180,41,.18); pointer-events: none; }
-.t1-panel::after { content: ''; position: absolute; inset: 5.2mm; border: 1px solid rgba(45,212,234,.35); border-radius: 2mm; pointer-events: none; }
-.t1-org { font-size: 8.5pt; color: #9fb0c7; line-height: 1.5; text-align: center; margin-bottom: 5mm; }
+/* ── левая половина: горизонтальная киберпанк-сцена склада ── */
+.t1-art { flex: 0 0 47%; position: relative; overflow: hidden;
+  background: radial-gradient(120% 120% at 30% 20%, #07304a 0%, #012032 55%, #000c16 100%); }
+.t1-art svg.scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* перспективный пол */
+.t1-art .floor { position: absolute; left: -25%; right: -25%; bottom: -8%; height: 50%;
+  background:
+    repeating-linear-gradient(90deg, rgba(45,212,234,.30) 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(0deg, rgba(45,212,234,.22) 0 1px, transparent 1px 26px);
+  transform: perspective(360px) rotateX(66deg); transform-origin: bottom;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 60%); -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 60%); }
+/* сканирующие лучи */
+.t1-art .beam { position: absolute; top: 4%; bottom: 18%; width: 2px;
+  background: linear-gradient(180deg, transparent, #2dd4ea 25%, #eafcff 50%, #2dd4ea 75%, transparent);
+  box-shadow: 0 0 16px 3px rgba(45,212,234,.7); }
+.t1-art .beam.b1 { left: 30%; } .t1-art .beam.b2 { left: 64%; opacity:.7; }
+.t1-art .dot { position: absolute; border-radius: 50%; background: #2dd4ea; box-shadow: 0 0 8px 2px rgba(45,212,234,.85); }
+.t1-art .dot.g { background: #f0b429; box-shadow: 0 0 8px 2px rgba(240,180,41,.85); }
+/* подпись-плашка на сцене */
+.t1-art .tag { position: absolute; left: 8mm; bottom: 7mm; font-size: 8pt; letter-spacing: .25em;
+  color: #2dd4ea; text-transform: uppercase; text-shadow: 0 0 10px rgba(45,212,234,.7); }
+
+/* ── правая половина: панель реквизитов с неоновой двойной рамкой ── */
+.t1-panel { flex: 1; position: relative; padding: 11mm 11mm 9mm 10mm; display: flex; flex-direction: column;
+  background: linear-gradient(165deg, rgba(7,40,62,.96) 0%, rgba(1,28,46,.98) 100%); }
+.t1-panel::before { content: ''; position: absolute; inset: 4mm; border: 1.4px solid rgba(240,180,41,.6); border-radius: 2.5mm;
+  box-shadow: inset 0 0 26px rgba(45,212,234,.10), 0 0 16px rgba(240,180,41,.16); pointer-events: none; }
+.t1-panel::after { content: ''; position: absolute; inset: 5.4mm; border: 1px solid rgba(45,212,234,.32); border-radius: 1.8mm; pointer-events: none; }
+.corner { position: absolute; width: 6mm; height: 6mm; border: 2px solid #f0b429; z-index: 3; }
+.corner.tl { top: 3mm; left: 3mm; border-right: none; border-bottom: none; }
+.corner.tr { top: 3mm; right: 3mm; border-left: none; border-bottom: none; }
+.corner.bl { bottom: 3mm; left: 3mm; border-right: none; border-top: none; }
+.corner.br { bottom: 3mm; right: 3mm; border-left: none; border-top: none; }
+
+.t1-org { font-size: 8pt; color: #9fb0c7; line-height: 1.45; text-align: center; margin-bottom: 4mm; }
 .t1-org b { color: #e6edf7; }
-.t1-iat { text-align: center; font-size: 10.5pt; letter-spacing: .35em; color: #2dd4ea; text-transform: uppercase; margin-bottom: 3mm; }
-.t1-title { text-align: center; font-size: 27pt; font-weight: 800; line-height: 1.12; letter-spacing: .01em; margin-bottom: 2mm;
-  background: linear-gradient(92deg, #f0b429 10%, #ffd97a 45%, #f0b429 80%); -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(240,180,41,.45)); }
-.t1-sub { text-align: center; font-size: 11.5pt; color: #2dd4ea; font-weight: 600; margin-bottom: 4mm; }
-.t1-desc { text-align: center; font-size: 9pt; color: #9fb0c7; max-width: 92mm; margin: 0 auto 5mm; line-height: 1.5; }
-.t1-divider { width: 60mm; height: 1px; margin: 0 auto 5mm; background: linear-gradient(90deg, transparent, #f0b429, transparent); }
-.t1-student { text-align: center; margin-bottom: 2mm; }
-.t1-student .lbl { font-size: 8pt; letter-spacing: .3em; color: #9fb0c7; text-transform: uppercase; }
-.t1-student .name { font-size: 15pt; font-weight: 700; color: #e6edf7; }
-/* ── ПОДПИСЬ ── */
-.t1-sign { display: flex; justify-content: center; align-items: flex-end; gap: 4mm; margin: 1mm 0 4mm; min-height: 14mm; }
-.sig-field { position: relative; width: 52mm; height: 14mm; border-bottom: 1px dashed rgba(159,176,199,.6); }
-.sig-field::before { content: 'ПОДПИСЬ'; position: absolute; left: 50%; bottom: -4.5mm; transform: translateX(-50%);
-  font-size: 6pt; letter-spacing: .3em; color: #9fb0c7; }
-.sig-field img { position: absolute; left: 2mm; bottom: 1mm; height: 12mm; width: auto;
-  filter: invert(1) hue-rotate(180deg) drop-shadow(0 0 4px rgba(45,212,234,.6)); }
-.t1-meta { margin-top: auto; text-align: center; font-size: 8.5pt; color: #9fb0c7; line-height: 1.7; }
+.t1-iat { text-align: center; font-size: 9.5pt; letter-spacing: .32em; color: #2dd4ea; text-transform: uppercase; margin-bottom: 2.5mm; }
+.t1-title { text-align: center; font-size: 23pt; font-weight: 800; line-height: 1.12; margin-bottom: 2mm;
+  background: linear-gradient(92deg, #f0b429 8%, #ffe08a 48%, #f0b429 88%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 12px rgba(240,180,41,.4)); }
+.t1-sub { text-align: center; font-size: 10.5pt; color: #2dd4ea; font-weight: 600; margin-bottom: 3mm; }
+.t1-rule { width: 46mm; height: 1px; margin: 0 auto 3mm; background: linear-gradient(90deg, transparent, #f0b429, transparent); }
+.t1-desc { text-align: center; font-size: 8.5pt; color: #b9c6d8; max-width: 96mm; margin: 0 auto 4mm; line-height: 1.5; }
+
+.t1-student { text-align: center; margin-bottom: 1mm; }
+.t1-student .lbl { font-size: 7.5pt; letter-spacing: .3em; color: #9fb0c7; text-transform: uppercase; }
+.t1-student .name { font-size: 14pt; font-weight: 700; color: #e6edf7; }
+
+/* ── ПОДПИСЬ: рукописная, повёрнута, пересекает линию; фон фото гасится blend ── */
+.t1-sign { position: relative; width: 62mm; height: 15mm; margin: 0 auto 3mm; }
+.t1-sign .line { position: absolute; left: 0; right: 0; bottom: 2mm; height: 1px; background: rgba(159,176,199,.7); }
+.t1-sign .who { position: absolute; left: 0; bottom: -3.5mm; font-size: 6.5pt; letter-spacing: .12em; color: #9fb0c7; }
+.t1-sign img { position: absolute; left: 6mm; bottom: 1mm; height: 13mm; width: auto; transform: rotate(-7deg);
+  /* белый/серый фон фото → чёрный → screen делает его прозрачным на тёмном; штрихи → светлые неоновые */
+  filter: grayscale(1) contrast(5) invert(1) brightness(1.15) drop-shadow(0 0 5px rgba(45,212,234,.7));
+  mix-blend-mode: screen; }
+
+.t1-meta { margin-top: auto; text-align: center; font-size: 8pt; color: #9fb0c7; line-height: 1.65; }
 .t1-meta b { color: #e6edf7; }
 .t1-date { color: #f0b429; font-weight: 700; }
-/* слоган внизу */
-.t1-slogan { position: absolute; left: 0; right: 0; bottom: 6mm; text-align: center; font-size: 11pt; font-style: italic; color: #2dd4ea;
-  text-shadow: 0 0 12px rgba(45,212,234,.6); }
+.t1-slogan { text-align: center; margin-top: 3mm; font-size: 10pt; font-style: italic; color: #2dd4ea;
+  text-shadow: 0 0 12px rgba(45,212,234,.55); }
 .t1-slogan::before, .t1-slogan::after { content: '—'; color: #f0b429; margin: 0 4mm; }
-/* уголки-декор */
-.corner { position: absolute; width: 7mm; height: 7mm; border: 2px solid #f0b429; z-index: 3; }
-.corner.tl { top: 2.5mm; left: 2.5mm; border-right: none; border-bottom: none; }
-.corner.tr { top: 2.5mm; right: 2.5mm; border-left: none; border-bottom: none; }
-.corner.bl { bottom: 2.5mm; left: 2.5mm; border-right: none; border-top: none; }
-.corner.br { bottom: 2.5mm; right: 2.5mm; border-left: none; border-top: none; }
 </style>
 </head>
 <body>
@@ -84,158 +83,147 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #012032; color: #
 <!-- ════════ СЛАЙД 1 · ТИТУЛЬНЫЙ ЛИСТ ════════ -->
 <div class="slide t1">
 
-  <!-- ЛЕВАЯ ЧАСТЬ: визуал «интеллектуальный склад» -->
+  <!-- ЛЕВАЯ ПОЛОВИНА: горизонтальная сцена «интеллектуальный склад» -->
   <div class="t1-art">
-    <div class="ceil"></div>
     <div class="floor"></div>
 
-    <svg viewBox="0 0 620 840" xmlns="http://www.w3.org/2000/svg">
+    <svg class="scene" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="rackG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#0e7490"/><stop offset="1" stop-color="#062a40"/>
+        <linearGradient id="rack" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#0e7490"/><stop offset="1" stop-color="#06263c"/>
         </linearGradient>
-        <linearGradient id="boxG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#f0b429"/><stop offset="1" stop-color="#8a6d1a"/>
+        <linearGradient id="box" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f0b429"/><stop offset="1" stop-color="#9a7418"/>
         </linearGradient>
-        <linearGradient id="holoG" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#2dd4ea" stop-opacity=".95"/><stop offset="1" stop-color="#2dd4ea" stop-opacity=".15"/>
+        <linearGradient id="holo" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2dd4ea" stop-opacity=".95"/><stop offset="1" stop-color="#2dd4ea" stop-opacity=".12"/>
         </linearGradient>
-        <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gl"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
 
-      <!-- дальний ряд стеллажей -->
-      <g opacity=".45">
-        <rect x="40" y="300" width="70" height="230" fill="url(#rackG)" stroke="#2dd4ea" stroke-width="1"/>
-        <rect x="130" y="280" width="70" height="250" fill="url(#rackG)" stroke="#2dd4ea" stroke-width="1"/>
-        <rect x="220" y="300" width="70" height="230" fill="url(#rackG)" stroke="#2dd4ea" stroke-width="1"/>
+      <!-- дальний ряд стеллажей (горизонтально по сцене) -->
+      <g opacity=".5">
+        <rect x="60"  y="250" width="120" height="180" fill="url(#rack)" stroke="#2dd4ea" stroke-width="1"/>
+        <rect x="210" y="235" width="120" height="195" fill="url(#rack)" stroke="#2dd4ea" stroke-width="1"/>
+        <rect x="360" y="250" width="120" height="180" fill="url(#rack)" stroke="#2dd4ea" stroke-width="1"/>
         <g stroke="#2dd4ea" stroke-width=".8" opacity=".7">
-          <line x1="40" y1="355" x2="110" y2="355"/><line x1="40" y1="415" x2="110" y2="415"/><line x1="40" y1="475" x2="110" y2="475"/>
-          <line x1="130" y1="340" x2="200" y2="340"/><line x1="130" y1="405" x2="200" y2="405"/><line x1="130" y1="470" x2="200" y2="470"/>
-          <line x1="220" y1="355" x2="290" y2="355"/><line x1="220" y1="415" x2="290" y2="415"/><line x1="220" y1="475" x2="290" y2="475"/>
+          <line x1="60" y1="295" x2="180" y2="295"/><line x1="60" y1="340" x2="180" y2="340"/><line x1="60" y1="385" x2="180" y2="385"/>
+          <line x1="210" y1="285" x2="330" y2="285"/><line x1="210" y1="335" x2="330" y2="335"/><line x1="210" y1="385" x2="330" y2="385"/>
+          <line x1="360" y1="295" x2="480" y2="295"/><line x1="360" y1="340" x2="480" y2="340"/><line x1="360" y1="385" x2="480" y2="385"/>
         </g>
-        <!-- коробки на дальних -->
-        <rect x="50" y="362" width="22" height="18" fill="url(#boxG)" opacity=".8"/>
-        <rect x="80" y="422" width="22" height="18" fill="url(#boxG)" opacity=".8"/>
-        <rect x="140" y="348" width="22" height="18" fill="url(#boxG)" opacity=".8"/>
-        <rect x="172" y="478" width="22" height="18" fill="url(#boxG)" opacity=".8"/>
-        <rect x="232" y="422" width="22" height="18" fill="url(#boxG)" opacity=".8"/>
-        <rect x="262" y="362" width="22" height="18" fill="url(#boxG)" opacity=".8"/>
+        <rect x="72"  y="303" width="30" height="22" fill="url(#box)" opacity=".85"/>
+        <rect x="132" y="348" width="30" height="22" fill="url(#box)" opacity=".85"/>
+        <rect x="224" y="293" width="30" height="22" fill="url(#box)" opacity=".85"/>
+        <rect x="286" y="393" width="30" height="22" fill="url(#box)" opacity=".85"/>
+        <rect x="372" y="348" width="30" height="22" fill="url(#box)" opacity=".85"/>
+        <rect x="434" y="303" width="30" height="22" fill="url(#box)" opacity=".85"/>
       </g>
 
-      <!-- ближний ряд стеллажей (крупнее, перспектива) -->
-      <g filter="url(#glow)">
-        <rect x="330" y="250" width="120" height="330" fill="url(#rackG)" stroke="#2dd4ea" stroke-width="1.5"/>
-        <rect x="470" y="270" width="110" height="310" fill="url(#rackG)" stroke="#2dd4ea" stroke-width="1.5"/>
+      <!-- ближний ряд стеллажей (крупнее, правее) -->
+      <g filter="url(#gl)">
+        <rect x="560" y="210" width="170" height="250" fill="url(#rack)" stroke="#2dd4ea" stroke-width="1.5"/>
+        <rect x="760" y="235" width="160" height="225" fill="url(#rack)" stroke="#2dd4ea" stroke-width="1.5"/>
       </g>
       <g stroke="#2dd4ea" stroke-width="1.2" opacity=".85">
-        <line x1="330" y1="320" x2="450" y2="320"/><line x1="330" y1="395" x2="450" y2="395"/>
-        <line x1="330" y1="470" x2="450" y2="470"/><line x1="330" y1="540" x2="450" y2="540"/>
-        <line x1="470" y1="335" x2="580" y2="335"/><line x1="470" y1="410" x2="580" y2="410"/>
-        <line x1="470" y1="485" x2="580" y2="485"/>
+        <line x1="560" y1="270" x2="730" y2="270"/><line x1="560" y1="335" x2="730" y2="335"/>
+        <line x1="560" y1="400" x2="730" y2="400"/>
+        <line x1="760" y1="290" x2="920" y2="290"/><line x1="760" y1="355" x2="920" y2="355"/><line x1="760" y1="415" x2="920" y2="415"/>
       </g>
-      <!-- коробки ближнего ряда -->
       <g>
-        <rect x="342" y="330" width="34" height="26" fill="url(#boxG)"/>
-        <rect x="384" y="330" width="34" height="26" fill="url(#boxG)" opacity=".85"/>
-        <rect x="408" y="405" width="34" height="26" fill="url(#boxG)"/>
-        <rect x="342" y="480" width="34" height="26" fill="url(#boxG)" opacity=".85"/>
-        <rect x="482" y="345" width="32" height="24" fill="url(#boxG)"/>
-        <rect x="524" y="420" width="32" height="24" fill="url(#boxG)" opacity=".85"/>
-        <rect x="482" y="495" width="32" height="24" fill="url(#boxG)"/>
+        <rect x="576" y="282" width="44" height="32" fill="url(#box)"/>
+        <rect x="632" y="282" width="44" height="32" fill="url(#box)" opacity=".85"/>
+        <rect x="676" y="347" width="44" height="32" fill="url(#box)"/>
+        <rect x="576" y="412" width="44" height="32" fill="url(#box)" opacity=".85"/>
+        <rect x="776" y="302" width="42" height="30" fill="url(#box)"/>
+        <rect x="838" y="367" width="42" height="30" fill="url(#box)" opacity=".85"/>
+        <rect x="776" y="427" width="42" height="30" fill="url(#box)"/>
       </g>
-      <!-- QR-наклейки на коробках -->
+      <!-- QR-наклейки -->
       <g fill="#012032">
-        <rect x="350" y="338" width="10" height="10"/><rect x="416" y="413" width="10" height="10"/>
-        <rect x="490" y="353" width="9" height="9"/><rect x="490" y="503" width="9" height="9"/>
+        <rect x="586" y="292" width="13" height="13"/><rect x="686" y="357" width="13" height="13"/>
+        <rect x="786" y="312" width="12" height="12"/><rect x="786" y="437" width="12" height="12"/>
       </g>
       <g fill="#2dd4ea">
-        <rect x="352" y="340" width="3" height="3"/><rect x="356" y="344" width="3" height="3"/>
-        <rect x="418" y="415" width="3" height="3"/><rect="422" y="419" width="3" height="3"/>
+        <rect x="589" y="295" width="4" height="4"/><rect x="595" y="301" width="4" height="4"/>
+        <rect x="689" y="360" width="4" height="4"/><rect x="695" y="366" width="4" height="4"/>
       </g>
 
-      <!-- голограмма-рапорт (парит над полом) -->
-      <g filter="url(#glow)">
-        <rect x="90" y="560" width="200" height="120" rx="6" fill="none" stroke="url(#holoG)" stroke-width="2"/>
-        <rect x="90" y="560" width="200" height="120" rx="6" fill="#2dd4ea" opacity=".07"/>
-        <line x1="105" y1="585" x2="215" y2="585" stroke="#2dd4ea" stroke-width="3" opacity=".9"/>
-        <line x1="105" y1="602" x2="270" y2="602" stroke="#2dd4ea" stroke-width="2" opacity=".55"/>
-        <line x1="105" y1="616" x2="250" y2="616" stroke="#2dd4ea" stroke-width="2" opacity=".55"/>
-        <line x1="105" y1="630" x2="262" y2="630" stroke="#f0b429" stroke-width="2" opacity=".8"/>
-        <text x="105" y="668" font-family="Consolas, monospace" font-size="15" fill="#f0b429" font-weight="bold">РАПОРТ · 15 сек</text>
-        <!-- «скан» рамка -->
-        <path d="M84 554 h14 M84 554 v14 M296 554 h-14 M296 554 v14 M84 686 h14 M84 686 v-14 M296 686 h-14 M296 686 v-14" stroke="#2dd4ea" stroke-width="3" fill="none"/>
+      <!-- голограмма-рапорт (центр сцены, парит над полом) -->
+      <g filter="url(#gl)">
+        <rect x="330" y="450" width="250" height="150" rx="7" fill="none" stroke="url(#holo)" stroke-width="2"/>
+        <rect x="330" y="450" width="250" height="150" rx="7" fill="#2dd4ea" opacity=".07"/>
+        <line x1="350" y1="482" x2="490" y2="482" stroke="#2dd4ea" stroke-width="3" opacity=".9"/>
+        <line x1="350" y1="503" x2="560" y2="503" stroke="#2dd4ea" stroke-width="2" opacity=".55"/>
+        <line x1="350" y1="521" x2="535" y2="521" stroke="#2dd4ea" stroke-width="2" opacity=".55"/>
+        <line x1="350" y1="539" x2="552" y2="539" stroke="#f0b429" stroke-width="2" opacity=".85"/>
+        <text x="350" y="578" font-family="Consolas, monospace" font-size="19" fill="#f0b429" font-weight="bold">РАПОРТ · 15 сек</text>
+        <path d="M322 442 h16 M322 442 v16 M588 442 h-16 M588 442 v16 M322 608 h16 M322 608 v-16 M588 608 h-16 M588 608 v-16" stroke="#2dd4ea" stroke-width="3" fill="none"/>
       </g>
-      <!-- луч от стеллажа к голограмме -->
-      <line x1="330" y1="470" x2="292" y2="600" stroke="#2dd4ea" stroke-width="1" stroke-dasharray="4 4" opacity=".6"/>
+      <!-- луч сканера от стеллажа к голограмме -->
+      <line x1="560" y1="400" x2="582" y2="470" stroke="#2dd4ea" stroke-width="1" stroke-dasharray="5 4" opacity=".6"/>
 
-      <!-- робот-тележка на полу -->
-      <g filter="url(#glow)">
-        <rect x="360" y="640" width="90" height="26" rx="5" fill="#062a40" stroke="#f0b429" stroke-width="1.5"/>
-        <circle cx="378" cy="672" r="7" fill="#012032" stroke="#2dd4ea" stroke-width="2"/>
-        <circle cx="432" cy="672" r="7" fill="#012032" stroke="#2dd4ea" stroke-width="2"/>
-        <rect x="372" y="622" width="66" height="18" fill="url(#boxG)"/>
-        <circle cx="405" cy="653" r="3" fill="#22c55e"/>
+      <!-- робот-тележка на полу (правее центра) -->
+      <g filter="url(#gl)">
+        <rect x="640" y="560" width="120" height="34" rx="6" fill="#06263c" stroke="#f0b429" stroke-width="1.5"/>
+        <circle cx="666" cy="602" r="9" fill="#012032" stroke="#2dd4ea" stroke-width="2"/>
+        <circle cx="734" cy="602" r="9" fill="#012032" stroke="#2dd4ea" stroke-width="2"/>
+        <rect x="656" y="536" width="88" height="24" fill="url(#box)"/>
+        <circle cx="700" cy="577" r="4" fill="#22c55e"/>
       </g>
 
-      <!-- восходящие данные-потки (streaks) -->
+      <!-- восходящие потоки данных -->
       <g stroke="#2dd4ea" stroke-width="1.5" opacity=".5">
-        <line x1="150" y1="250" x2="150" y2="120"/><line x1="160" y1="260" x2="160" y2="160"/>
-        <line x1="520" y1="230" x2="520" y2="90"/><line x1="530" y1="240" x2="530" y2="140"/>
+        <line x1="150" y1="230" x2="150" y2="90"/><line x1="162" y1="240" x2="162" y2="140"/>
+        <line x1="840" y1="210" x2="840" y2="70"/><line x1="852" y1="220" x2="852" y2="130"/>
       </g>
-      <g fill="#2dd4ea" opacity=".8">
-        <circle cx="150" cy="118" r="2.5"/><circle cx="520" cy="88" r="2.5"/>
-      </g>
+      <g fill="#2dd4ea" opacity=".85"><circle cx="150" cy="88" r="3"/><circle cx="840" cy="68" r="3"/></g>
     </svg>
 
-    <div class="beamzone"></div>
-    <div class="beam"></div>
-
-    <!-- партиклы -->
-    <div class="dot" style="left:12%;top:18%;width:4px;height:4px"></div>
-    <div class="dot g" style="left:24%;top:30%;width:3px;height:3px"></div>
-    <div class="dot" style="left:70%;top:14%;width:3px;height:3px"></div>
-    <div class="dot g" style="left:82%;top:26%;width:4px;height:4px"></div>
-    <div class="dot" style="left:55%;top:8%;width:2px;height:2px"></div>
-    <div class="dot" style="left:8%;top:52%;width:2px;height:2px"></div>
-    <div class="dot g" style="left:90%;top:60%;width:3px;height:3px"></div>
+    <div class="beam b1"></div>
+    <div class="beam b2"></div>
+    <div class="dot"   style="left:10%;top:16%;width:4px;height:4px"></div>
+    <div class="dot g" style="left:22%;top:30%;width:3px;height:3px"></div>
+    <div class="dot"   style="left:78%;top:12%;width:3px;height:3px"></div>
+    <div class="dot g" style="left:88%;top:26%;width:4px;height:4px"></div>
+    <div class="dot"   style="left:50%;top:8%;width:2px;height:2px"></div>
+    <div class="dot"   style="left:6%;top:60%;width:2px;height:2px"></div>
+    <div class="tag">WMS «Ремера» · боевой контур</div>
   </div>
 
-  <!-- ПРАВАЯ ЧАСТЬ: реквизиты -->
+  <!-- ПРАВАЯ ПОЛОВИНА: панель реквизитов -->
   <div class="t1-panel">
     <span class="corner tl"></span><span class="corner tr"></span>
     <span class="corner bl"></span><span class="corner br"></span>
 
     <div class="t1-org">
-      АНО ДПО «Академия цифровых технологий»<br>
-      Программа профессиональной переподготовки<br>
+      АНО ДПО «Академия цифровых технологий» · Программа профессиональной переподготовки<br>
       <b>«Азбука цифры. Специалист по внедрению искусственного интеллекта (ИИ)»</b>
     </div>
 
     <div class="t1-iat">Итоговая аттестационная работа</div>
     <div class="t1-title">ИНТЕЛЛЕКТУАЛЬНЫЙ<br>СКЛАД</div>
     <div class="t1-sub">WMS «Ремера» · склад, который заказывает сам</div>
-    <div class="t1-divider"></div>
-    <div class="t1-desc">Проект по разработке интеллектуальной системы управления складом
-      производства технических канатов: мобильные рапорты, контрольная точка директора,
-      ИИ-прогноз закупок. Human-in-the-loop: ИИ рекомендует — человек решает.</div>
+    <div class="t1-rule"></div>
+    <div class="t1-desc">Интеллектуальная система управления складом производства технических канатов:
+      мобильные рапорты работников, контрольная точка директора, ИИ-прогноз закупок.
+      Human-in-the-loop: ИИ рекомендует — человек решает.</div>
 
     <div class="t1-student">
       <div class="lbl">Слушатель</div>
       <div class="name">Обруч А.Г.</div>
     </div>
 
-    <!-- ══ ПОДПИСЬ ══
-         Как вставить: нарисуй подпись ручкой на белом листе → сфотографируй при ровном свете →
-         обрежь только подпись → сохрани как signature.png в папку:
-         C:\Users\user\Projects\REMERA\Remera-wms\iar\signature.png
-         Файл лежит рядом — подпись появится автоматически при сборке PDF. -->
+    <!-- ПОДПИСЬ: ideal — PNG с прозрачным фоном из Figma (чёрная/синяя ручка, фон удалён).
+         Если фон белый/серый — CSS (contrast+invert+screen) гасит его и делает штрихи неоновыми. -->
     <div class="t1-sign">
-      <div class="sig-field"><img src="signature.png" alt=""></div>
+      <div class="line"></div>
+      <div class="who">подпись</div>
+      <img src="signature.png" alt="">
     </div>
 
     <div class="t1-meta">
       Поток: <b>СИИ-1</b> · подгруппа <b>3</b><br>
-      Преподаватели: <b>Кулешова Елена Анатольевна, Королькова Екатерина Александровна</b><br>
+      Преподаватели: <b>Королькова Екатерина Александровна,</b><br><b>Кулешова Елена Анатольевна</b><br>
       <span class="t1-date">12 октября 2026 г.</span>
     </div>
 
